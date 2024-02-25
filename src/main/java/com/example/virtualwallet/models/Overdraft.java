@@ -12,12 +12,12 @@ public class Overdraft {
     @Column(name = "overdraft_id")
     private int id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnoreProperties({"id", "firstName", "lastName", "email", "role", "status", "isDeleted", "password", "profilePicture", "selfie", "photoCardId", "emailVerified", "overdraftEnabled", "overdraftLimit", "identity", "phoneNumber"})
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "wallet_id")
     @JsonIgnoreProperties({"balance", "interestRate", "duration"})
     private Wallet wallet;

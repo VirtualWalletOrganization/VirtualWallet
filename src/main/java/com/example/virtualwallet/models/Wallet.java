@@ -1,9 +1,7 @@
 package com.example.virtualwallet.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "saving_wallet")
@@ -11,7 +9,10 @@ public class Wallet {
     @Id
     @Column(name = "saving_wallet_id")
     private int id;
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"id", "firstName", "lastName", "email", "role", "status", "isDeleted", "password", "profilePicture", "selfie", "photoCardId", "emailVerified", "overdraftEnabled", "overdraftLimit", "identity", "phoneNumber"})
+    private User user;
     @Column(name = "balance")
     private double balance;
 
