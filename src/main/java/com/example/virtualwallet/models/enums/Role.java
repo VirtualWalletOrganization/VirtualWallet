@@ -1,4 +1,4 @@
-package com.example.virtualwallet.models;
+package com.example.virtualwallet.models.enums;
 
 public enum Role {
     ADMIN("ADMIN"),

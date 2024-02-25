@@ -1,5 +1,6 @@
-package com.example.virtualwallet.models;
+package com.example.virtualwallet.models.dtos;
 
+import com.example.virtualwallet.models.enums.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

@@ -1,5 +1,8 @@
 package com.example.virtualwallet.models;
 
+import com.example.virtualwallet.models.enums.Identity;
+import com.example.virtualwallet.models.enums.Role;
+import com.example.virtualwallet.models.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
