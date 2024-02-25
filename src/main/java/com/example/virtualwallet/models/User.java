@@ -46,7 +46,7 @@ public class User {
     private boolean overdraftEnabled;
 
     @Column(name = "overdraft_limit")
-    private int overdraftLimit;
+    private double overdraftLimit;
 
     @Column (name = "identity_verified")
     private Identity identity = Identity.INCOMPLETE;
@@ -66,6 +66,9 @@ public class User {
     @Column(name = "status")
     private Status status = Status.ACTIVE;
 
+    public void setOverdraftLimit(double overdraftLimit) {
+        this.overdraftLimit = overdraftLimit;
+    }
 
     public String getSelfie() {
         return selfie;
@@ -111,7 +114,7 @@ public class User {
         this.overdraftEnabled = overdraftEnabled;
     }
 
-    public int getOverdraftLimit() {
+    public double getOverdraftLimit() {
         return overdraftLimit;
     }
 
