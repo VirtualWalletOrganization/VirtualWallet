@@ -1,12 +1,12 @@
 package com.example.virtualwallet.models;
 
-public enum Status {
+public enum UserStatus {
     BLOCKED("BLOCKED"),
     ACTIVE("ACTIVE");
 
     private String name;
 
-    Status(String name) {
+    UserStatus(String name) {
         this.name = name;
     }
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Objects;
-import java.util.Set;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -64,7 +64,7 @@ public class User {
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private Status status = Status.ACTIVE;
+    private UserStatus status = UserStatus.ACTIVE;
 
     public void setOverdraftLimit(double overdraftLimit) {
         this.overdraftLimit = overdraftLimit;
@@ -199,16 +199,16 @@ public class User {
         isDeleted = deleted;
     }
 
-    public Status getStatus() {
+    public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 
     public boolean isBlocked() {
-        return status == Status.BLOCKED;
+        return status == UserStatus.BLOCKED;
     }
 
     @Override
