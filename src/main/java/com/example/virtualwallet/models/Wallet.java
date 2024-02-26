@@ -1,33 +1,70 @@
 package com.example.virtualwallet.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.example.virtualwallet.models.enums.Role;
+import com.example.virtualwallet.models.enums.WalletType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
-@Table(name = "saving_wallet")
+@Table(name = "wallets")
 public class Wallet {
     @Id
-    @Column(name = "saving_wallet_id")
+    @Column(name = "wallet_id")
     private int id;
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties({"id", "firstName", "lastName", "email", "role", "status", "isDeleted", "password", "profilePicture", "selfie", "photoCardId", "emailVerified", "overdraftEnabled", "overdraftLimit", "identity", "phoneNumber"})
-    private User user;
+    @JoinColumn(name = "creator_id")
+    private User creator;
+
     @Column(name = "balance")
     private double balance;
 
-    @Column(name = "interest_rate")
-    private double interestRate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "wallet_type")
+    private WalletType walletType;
 
-    @Column(name = "duration")
-    private int duration;
+    @Column(name = "currency")
+    private String currency;
+
+    @Column(name = "is_default")
+    private Boolean isDefault = Boolean.FALSE;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role = Role.USER;
+
+    @JsonIgnore
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = Boolean.FALSE;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "cards_wallets",
+            joinColumns = @JoinColumn(name = "wallet_id"),
+            inverseJoinColumns = @JoinColumn(name = "card_id")
+    )
+    private Set<Card> cards;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "wallets")
+    private Set<User> users;
+
+    public int getId() {
+        return id;
+    }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public int getId() {
-        return id;
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
     public double getBalance() {
@@ -38,19 +75,59 @@ public class Wallet {
         this.balance = balance;
     }
 
-    public double getInterestRate() {
-        return interestRate;
+    public WalletType getWalletType() {
+        return walletType;
     }
 
-    public void setInterestRate(double interestRate) {
-        this.interestRate = interestRate;
+    public void setWalletType(WalletType walletType) {
+        this.walletType = walletType;
     }
 
-    public int getDuration() {
-        return duration;
+    public String getCurrency() {
+        return currency;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public Boolean getDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(Boolean aDefault) {
+        isDefault = aDefault;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public Set<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<Card> cards) {
+        this.cards = cards;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }

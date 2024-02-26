@@ -119,7 +119,7 @@ create table wallets
     balance     decimal                                          not null,
     wallet_type enum ('JOINT', 'OVERDRAFT', 'REGULAR', 'SAVING') not null,
     currency    varchar(3)                                       not null,
-    isDefault   tinyint(1) default 0                             null,
+    is_default   tinyint(1) default 0                             null,
     role        enum ('ADMIN', 'USER')                           null,
     is_deleted  tinyint(1) default 0                             null
 );

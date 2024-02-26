@@ -1,10 +1,13 @@
 package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.CardType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "cards")
@@ -18,15 +21,11 @@ public class Card {
     @Column(name = "card_type")
     private CardType cardType;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties({"id", "firstName", "lastName", "email", "role", "status", "isDeleted", "password", "profilePicture", "selfie", "photoCardId", "emailVerified", "overdraftEnabled", "overdraftLimit", "identity", "phoneNumber"})
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "wallet_id")
-    @JsonIgnoreProperties({"balance", "interestRate", "duration"})
-    private Wallet wallet;
 
     @Column(name = "card_number")
     private String cardNumber;
@@ -34,10 +33,16 @@ public class Card {
     @Column(name = "expiration_date")
     private Date expirationDate;
 
+    @Column(name = "card_holder")
+    private String cardHolder;
     @Column(name = "check_number")
     private String checkNumber;
     @Column(name = "balance")
     private double balance;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "cards")
+    private Set<Wallet> wallets;
 
     public int getId() {
         return id;
@@ -63,14 +68,6 @@ public class Card {
         this.user = user;
     }
 
-    public Wallet getWallet() {
-        return wallet;
-    }
-
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
-    }
-
     public String getCardNumber() {
         return cardNumber;
     }
@@ -87,6 +84,14 @@ public class Card {
         this.expirationDate = expirationDate;
     }
 
+    public String getCardHolder() {
+        return cardHolder;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
+    }
+
     public String getCheckNumber() {
         return checkNumber;
     }
@@ -101,5 +106,26 @@ public class Card {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public Set<Wallet> getWallets() {
+        return wallets;
+    }
+
+    public void setWallets(Set<Wallet> wallets) {
+        this.wallets = wallets;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return id == card.id && Objects.equals(cardNumber, card.cardNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, cardNumber);
     }
 }
