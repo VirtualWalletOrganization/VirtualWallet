@@ -51,6 +51,9 @@ public class Wallet {
     @ManyToMany(mappedBy = "wallets")
     private Set<User> users;
 
+    public Wallet() {
+    }
+
     public int getId() {
         return id;
     }
