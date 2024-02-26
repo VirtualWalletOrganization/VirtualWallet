@@ -1,6 +1,6 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.Intervals;
+import com.example.virtualwallet.models.enums.Interval;
 import com.example.virtualwallet.models.enums.Status;
 import jakarta.persistence.*;
 
@@ -28,7 +28,7 @@ public class RecurringTransaction {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "intervals")
-    private Intervals intervals;
+    private Interval intervals;
 
     @Column(name = "start_date")
     private Date startDate;
@@ -78,11 +78,11 @@ public class RecurringTransaction {
         this.amount = amount;
     }
 
-    public Intervals getIntervals() {
+    public Interval getIntervals() {
         return intervals;
     }
 
-    public void setIntervals(Intervals intervals) {
+    public void setIntervals(Interval intervals) {
         this.intervals = intervals;
     }
 
