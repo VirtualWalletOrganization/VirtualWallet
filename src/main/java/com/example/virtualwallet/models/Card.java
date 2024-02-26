@@ -2,7 +2,6 @@ package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.CardType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Date;

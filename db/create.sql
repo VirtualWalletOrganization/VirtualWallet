@@ -89,13 +89,13 @@ create table cards
         foreign key (user_id) references users (user_id)
 );
 
-create table contacts
+create table users_contacts
 (
     user_id         int not null,
     contact_user_id int not null,
-    constraint contacts_users_user_id_fk
+    constraint users_contacts_users_user_id_fk
         foreign key (user_id) references users (user_id),
-    constraint contacts_users_user_id_fk_2
+    constraint users_contacts_users_user_id_fk_2
         foreign key (contact_user_id) references users (user_id)
 );
 

@@ -10,6 +10,7 @@ import java.util.Set;
 @Entity
 @Table(name = "wallets")
 public class Wallet {
+
     @Id
     @Column(name = "wallet_id")
     private int id;
