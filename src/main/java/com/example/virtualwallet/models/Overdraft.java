@@ -1,39 +1,41 @@
 package com.example.virtualwallet.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.example.virtualwallet.models.enums.OverdraftType;
 import jakarta.persistence.*;
+
+import java.util.Date;
 
 @Entity
 @Table(name = "overdrafts")
 public class Overdraft {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "overdraft_id")
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties({"id", "firstName", "lastName", "email", "role", "status", "isDeleted", "password", "profilePicture", "selfie", "photoCardId", "emailVerified", "overdraftEnabled", "overdraftLimit", "identity", "phoneNumber"})
-    private User user;
-
-    @ManyToOne
     @JoinColumn(name = "wallet_id")
-    @JsonIgnoreProperties({"balance", "interestRate", "duration"})
     private Wallet wallet;
 
-    @JsonIgnore
     @Column(name = "overdraft_enabled")
-    private Boolean overdraftEnabled = Boolean.FALSE;
+    private boolean overdraftEnabled;
 
-    @Column(name = "overdraft_limit")
-    private double overdraftLimit;
+    @Column(name = "balance")
+    private double balance;
 
-    @Column(name = "interest_rate")
-    private double interestRate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "overfraft_type_id")
+    private OverdraftType overdraftType;
 
-    @Column(name = "last_charged_date")
-    private int lastChargedDate;
+    @Column(name = "start_date")
+    private Date startDate;
+
+    @Column(name = "due_date")
+    private Date dueDate;
+
+    public Overdraft() {
+    }
 
     public int getId() {
         return id;
@@ -41,14 +43,6 @@ public class Overdraft {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Wallet getWallet() {
@@ -59,35 +53,43 @@ public class Overdraft {
         this.wallet = wallet;
     }
 
-    public Boolean getOverdraftEnabled() {
+    public boolean isOverdraftEnabled() {
         return overdraftEnabled;
     }
 
-    public void setOverdraftEnabled(Boolean overdraftEnabled) {
+    public void setOverdraftEnabled(boolean overdraftEnabled) {
         this.overdraftEnabled = overdraftEnabled;
     }
 
-    public double getOverdraftLimit() {
-        return overdraftLimit;
+    public double getBalance() {
+        return balance;
     }
 
-    public void setOverdraftLimit(double overdraftLimit) {
-        this.overdraftLimit = overdraftLimit;
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
-    public double getInterestRate() {
-        return interestRate;
+    public OverdraftType getOverdraftType() {
+        return overdraftType;
     }
 
-    public void setInterestRate(double interestRate) {
-        this.interestRate = interestRate;
+    public void setOverdraftType(OverdraftType overdraftType) {
+        this.overdraftType = overdraftType;
     }
 
-    public int getLastChargedDate() {
-        return lastChargedDate;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setLastChargedDate(int lastChargedDate) {
-        this.lastChargedDate = lastChargedDate;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 }

@@ -2,7 +2,6 @@ package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.CardType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -26,7 +25,6 @@ public class Card {
     @JoinColumn(name = "user_id")
     private User user;
 
-
     @Column(name = "card_number")
     private String cardNumber;
 
@@ -35,8 +33,10 @@ public class Card {
 
     @Column(name = "card_holder")
     private String cardHolder;
+
     @Column(name = "check_number")
     private String checkNumber;
+
     @Column(name = "balance")
     private double balance;
 

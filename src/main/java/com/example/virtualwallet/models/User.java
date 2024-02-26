@@ -1,138 +1,72 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User {
-    @JsonIgnore
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private int id;
 
-    @JsonIgnore
     @Column(name = "username")
     private String username;
 
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "email")
     private String email;
 
-    @JsonIgnore
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "profile_picture")
-    private String profilePicture;
-
-    @Column(name = "selfie")
-    private String selfie;
-    @Column(name = "photo_cardId")
-    private String photoCardId;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @Column(name = "email_verified")
     private boolean emailVerified;
 
-    @Column(name = "overdraft_enabled")
-    private boolean overdraftEnabled;
+    @Column(name = "identity_verified")
+    private String identityVerified;
 
-    @Column(name = "overdraft_limit")
-    private double overdraftLimit;
+    @ManyToOne
+    @JoinColumn(name = "photo_id")
+    private Photo photo;
 
-    @Column (name = "identity_verified")
-    private Identity identity = Identity.INCOMPLETE;
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private Role role = Role.USER;
+    private Role role;
 
-    @JsonIgnore
     @Column(name = "is_deleted")
-    private Boolean isDeleted = Boolean.FALSE;
+    private boolean isDeleted;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
-    @JsonIgnore
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private UserStatus status = UserStatus.ACTIVE;
+    private UserStatus status;
 
-    public void setOverdraftLimit(double overdraftLimit) {
-        this.overdraftLimit = overdraftLimit;
-    }
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_wallets",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "wallet_id")
+    )
+    private Set<Wallet> wallets;
 
-    public String getSelfie() {
-        return selfie;
-    }
-
-    public void setSelfie(String selfie) {
-        this.selfie = selfie;
-    }
-
-    public String getPhotoCardId() {
-        return photoCardId;
-    }
-
-    public void setPhotoCardId(String photoCardId) {
-        this.photoCardId = photoCardId;
-    }
-
-    public Identity getIdentity() {
-        return identity;
-    }
-
-    public void setIdentity(Identity identity) {
-        this.identity = identity;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public boolean isOverdraftEnabled() {
-        return overdraftEnabled;
-    }
-
-    public void setOverdraftEnabled(boolean overdraftEnabled) {
-        this.overdraftEnabled = overdraftEnabled;
-    }
-
-    public double getOverdraftLimit() {
-        return overdraftLimit;
-    }
-
-    public void setOverdraftLimit(int overdraftLimit) {
-        this.overdraftLimit = overdraftLimit;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "contacts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "contact_user_id")
+    )
+    private Set<User> contacts;
 
     public User() {
     }
@@ -153,20 +87,12 @@ public class User {
         this.username = username;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getPassword() {
+        return password;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
@@ -177,12 +103,36 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getIdentityVerified() {
+        return identityVerified;
+    }
+
+    public void setIdentityVerified(String identityVerified) {
+        this.identityVerified = identityVerified;
+    }
+
+    public Photo getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
     }
 
     public Role getRole() {
@@ -193,12 +143,11 @@ public class User {
         this.role = role;
     }
 
-    @JsonIgnore
-    public Boolean isDeleted() {
-        return Boolean.TRUE.equals(isDeleted);
+    public boolean isDeleted() {
+        return isDeleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(boolean deleted) {
         isDeleted = deleted;
     }
 
@@ -210,8 +159,20 @@ public class User {
         this.status = status;
     }
 
-    public boolean isBlocked() {
-        return status == UserStatus.BLOCKED;
+    public Set<Wallet> getWallets() {
+        return wallets;
+    }
+
+    public void setWallets(Set<Wallet> wallets) {
+        this.wallets = wallets;
+    }
+
+    public Set<User> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(Set<User> contacts) {
+        this.contacts = contacts;
     }
 
     @Override
@@ -225,13 +186,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
     }
 }

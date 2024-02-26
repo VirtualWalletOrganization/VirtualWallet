@@ -7,15 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class UserDto {
-    @NotNull(message = "First name can't be empty.")
-    @NotBlank(message = "First name can't be blank.")
-    @Size(min = 3, max = 32, message = "First name should be between 3 and 32 symbols.")
-    private String firstName;
-
-    @NotNull(message = "Last name can't be empty.")
-    @NotBlank(message = "Last name can't be blank.")
-    @Size(min = 3, max = 32, message = "Last name should be between 3 and 32 symbols.")
-    private String lastName;
 
     @NotNull(message = "Email must be unique.")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$",
@@ -31,27 +22,11 @@ public class UserDto {
 
     private Role role = Role.USER;
 
-    boolean overdraftEnabled;
-    int overdarftLimit;
+    private boolean overdraftEnabled;
 
+    private int overdarftLimit;
 
     public UserDto() {
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -84,5 +59,21 @@ public class UserDto {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public boolean isOverdraftEnabled() {
+        return overdraftEnabled;
+    }
+
+    public void setOverdraftEnabled(boolean overdraftEnabled) {
+        this.overdraftEnabled = overdraftEnabled;
+    }
+
+    public int getOverdarftLimit() {
+        return overdarftLimit;
+    }
+
+    public void setOverdarftLimit(int overdarftLimit) {
+        this.overdarftLimit = overdarftLimit;
     }
 }

@@ -1,29 +1,33 @@
 package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.ReferralStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "referrals")
 public class Referral {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "referral_id")
     private int id;
 
     @ManyToOne
     @JoinColumn(name = "referrer_user_id")
-    @JsonIgnoreProperties({"id", "firstName", "lastName", "email", "role", "status", "isDeleted", "password", "profilePicture", "selfie", "photoCardId", "emailVerified", "overdraftEnabled", "overdraftLimit", "identity", "phoneNumber"})
-    private User user;
+    private User referrerUser;
 
     @Column(name = "referred_email")
-    private String email;
+    private String referredEmail;
 
     @Column(name = "referral_code")
-    private String code;
+    private String referralCode;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "referral_status")
     private ReferralStatus referralStatus;
+
+    public Referral() {
+    }
 
     public int getId() {
         return id;
@@ -33,28 +37,28 @@ public class Referral {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public User getReferrerUser() {
+        return referrerUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setReferrerUser(User referrerUser) {
+        this.referrerUser = referrerUser;
     }
 
-    public String getEmail() {
-        return email;
+    public String getReferredEmail() {
+        return referredEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setReferredEmail(String referredEmail) {
+        this.referredEmail = referredEmail;
     }
 
-    public String getCode() {
-        return code;
+    public String getReferralCode() {
+        return referralCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setReferralCode(String referralCode) {
+        this.referralCode = referralCode;
     }
 
     public ReferralStatus getReferralStatus() {
