@@ -31,6 +31,7 @@ public class Wallet {
 
     @Column(name = "is_default")
     private Boolean isDefault = Boolean.FALSE;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role = Role.USER;

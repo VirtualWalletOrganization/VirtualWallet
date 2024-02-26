@@ -1,7 +1,7 @@
 package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.Direction;
-import com.example.virtualwallet.models.enums.TransferStatus;
+import com.example.virtualwallet.models.enums.Status;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -38,7 +38,7 @@ public class Transfer {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private TransferStatus status;
+    private Status status;
 
     @Column(name = "description")
     private String description;
@@ -102,11 +102,11 @@ public class Transfer {
         this.date = date;
     }
 
-    public TransferStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(TransferStatus status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

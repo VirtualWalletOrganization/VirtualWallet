@@ -1,6 +1,6 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.ReferralStatus;
+import com.example.virtualwallet.models.enums.Status;
 import jakarta.persistence.*;
 
 @Entity
@@ -24,7 +24,7 @@ public class Referral {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "referral_status")
-    private ReferralStatus referralStatus;
+    private Status referralStatus;
 
     public Referral() {
     }
@@ -61,11 +61,11 @@ public class Referral {
         this.referralCode = referralCode;
     }
 
-    public ReferralStatus getReferralStatus() {
+    public Status getReferralStatus() {
         return referralStatus;
     }
 
-    public void setReferralStatus(ReferralStatus referralStatus) {
+    public void setReferralStatus(Status referralStatus) {
         this.referralStatus = referralStatus;
     }
 }
