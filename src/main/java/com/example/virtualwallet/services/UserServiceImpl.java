@@ -3,13 +3,13 @@ package com.example.virtualwallet.services;
 import com.example.virtualwallet.exceptions.DeletionRestrictedException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
+import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.UserFilterOptions;
-import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,15 +54,7 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.getByEmail(email);
     }
 
-    @Override
-    public List<User> getByFirstName(String firstName) {
-        return this.userRepository.getByFirstName(firstName);
-    }
 
-    @Override
-    public User getUserByComment(int commentId) {
-        return this.userRepository.getUserByComment(commentId);
-    }
 
     @Override
     public void registerUser(User user) {
@@ -252,5 +244,9 @@ public class UserServiceImpl implements UserService {
                 && existingUser.getEmail().equals(user.getEmail())
                 && existingUser.getPassword().equals(user.getPassword());
     }
-
+    private void setAdminRoleIfDataBaseEmpty(User user) {
+        if (userRepository.isDataBaseEmpty()) {
+            user.setRole(Role.ADMIN);
+        }
+    }
 }
