@@ -15,14 +15,14 @@ import static com.example.virtualwallet.utils.CheckPermissions.checkAccessPermis
 import static com.example.virtualwallet.utils.Messages.MODIFY_CARD_ERROR_MESSAGE;
 
 public class CardServiceImpl implements CardService {
-     private final CardRepository cardRepository;
-     private  final WalletRepository walletRepository;
+
+    private final CardRepository cardRepository;
+    private final WalletRepository walletRepository;
 
     public CardServiceImpl(CardRepository cardRepository, WalletRepository walletRepository) {
         this.cardRepository = cardRepository;
         this.walletRepository = walletRepository;
     }
-
 
     @Override
     public List<Card> getAllCardsByUserId(int userId) {
@@ -36,24 +36,20 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void addCard(Card card, int walletId, User user) {
-        try{
+        try {
             Wallet wallet = walletRepository.getWalletById(walletId);
-            if(wallet.getCards().stream().anyMatch(c->c.getCardNumber().equals(card.getCardNumber()))){
-                throw new DuplicateEntityException("Wallet","card id", String.valueOf(card.getId()));
+
+            if (wallet.getCards().stream().anyMatch(c -> c.getCardNumber().equals(card.getCardNumber()))) {
+                throw new DuplicateEntityException("Wallet", "card id", String.valueOf(card.getId()));
             }
 
             wallet.setCreator(user);
             wallet.getCards().add(card);
             card.getWallets().add(wallet);
             cardRepository.addCard(card);
-
-        }catch (DuplicateEntityException e){
-            throw new DuplicateEntityException("Card","card holder", card.getCardHolder());
-
-
+        } catch (DuplicateEntityException e) {
+            throw new DuplicateEntityException("Card", "card holder", card.getCardHolder());
         }
-
-
     }
 
     @Override
@@ -64,17 +60,19 @@ public class CardServiceImpl implements CardService {
 //            throw new DuplicateEntityException("Card","id",String.valueOf(card.getId()));
 //        }
 //        checkAccessPermissionsUser(card.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
-      cardRepository.updateCard(card);
+        cardRepository.updateCard(card);
     }
 
     @Override
     public void deleteCard(int cardId, User user) {
         Card cardToDelete = cardRepository.getCardById(cardId);
         List<Wallet> wallets = new ArrayList<>(cardToDelete.getWallets());
+
         for (Wallet wallet : wallets) {
             wallet.getCards().remove(cardToDelete);
         }
+
         checkAccessPermissionsUser(cardToDelete.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
-    cardRepository.deleteCard(cardToDelete);
+        cardRepository.deleteCard(cardToDelete);
     }
 }

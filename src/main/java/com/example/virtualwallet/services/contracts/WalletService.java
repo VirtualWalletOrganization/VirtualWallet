@@ -1,10 +1,11 @@
-package com.example.virtualwallet.repositories.contracts;
+package com.example.virtualwallet.services.contracts;
 
+import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 
 import java.util.List;
 
-public interface WalletRepository {
+public interface WalletService {
 
     List<Wallet> findAll();
 
@@ -17,4 +18,8 @@ public interface WalletRepository {
     void update(Wallet wallet);
 
     void delete(Wallet wallet);
+
+    void addUsersToWallet(int walletId, int userId, User user);
+
+    void removeUsersFromWallet(int walletId, int userId, User user);
 }

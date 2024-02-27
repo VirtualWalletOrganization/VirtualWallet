@@ -18,12 +18,6 @@ public class Overdraft {
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    @Column(name = "overdraft_enabled")
-    private boolean overdraftEnabled;
-
-    @Column(name = "balance")
-    private double balance;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "overfraft_type_id")
     private OverdraftType overdraftType;
@@ -33,6 +27,9 @@ public class Overdraft {
 
     @Column(name = "due_date")
     private Date dueDate;
+
+    @Column(name = "is_paid")
+    private boolean isPaid;
 
     public Overdraft() {
     }
@@ -51,22 +48,6 @@ public class Overdraft {
 
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
-    }
-
-    public boolean isOverdraftEnabled() {
-        return overdraftEnabled;
-    }
-
-    public void setOverdraftEnabled(boolean overdraftEnabled) {
-        this.overdraftEnabled = overdraftEnabled;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
     }
 
     public OverdraftType getOverdraftType() {
@@ -91,5 +72,13 @@ public class Overdraft {
 
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public boolean isPaid() {
+        return isPaid;
+    }
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
     }
 }

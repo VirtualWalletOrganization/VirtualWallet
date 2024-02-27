@@ -13,8 +13,8 @@ public class Referral {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "referrer_user_id")
-    private User referrerUser;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "referred_email")
     private String referredEmail;
@@ -25,6 +25,9 @@ public class Referral {
     @Enumerated(EnumType.STRING)
     @Column(name = "referral_status")
     private Status referralStatus;
+
+    @Column(name = "bonus")
+    private double bonus;
 
     public Referral() {
     }
@@ -37,12 +40,12 @@ public class Referral {
         this.id = id;
     }
 
-    public User getReferrerUser() {
-        return referrerUser;
+    public User getUser() {
+        return user;
     }
 
-    public void setReferrerUser(User referrerUser) {
-        this.referrerUser = referrerUser;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getReferredEmail() {
@@ -67,5 +70,13 @@ public class Referral {
 
     public void setReferralStatus(Status referralStatus) {
         this.referralStatus = referralStatus;
+    }
+
+    public double getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(double bonus) {
+        this.bonus = bonus;
     }
 }

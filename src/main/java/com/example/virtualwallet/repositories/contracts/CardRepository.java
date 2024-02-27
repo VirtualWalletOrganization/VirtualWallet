@@ -6,6 +6,7 @@ import com.example.virtualwallet.models.User;
 import java.util.List;
 
 public interface CardRepository {
+
     List<Card> getAllCardsByUserId(int userId);
 
     Card getCardById(int cardId);

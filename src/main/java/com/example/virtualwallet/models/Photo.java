@@ -3,7 +3,7 @@ package com.example.virtualwallet.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "photos")
+@Table(name = "photos_verifications")
 public class Photo {
 
     @Id
@@ -16,9 +16,6 @@ public class Photo {
 
     @Column(name = "selfie")
     private String selfie;
-
-    @Column(name = "profile_picture")
-    private String profilePicture;
 
     public Photo() {
     }
@@ -45,13 +42,5 @@ public class Photo {
 
     public void setSelfie(String selfie) {
         this.selfie = selfie;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
     }
 }

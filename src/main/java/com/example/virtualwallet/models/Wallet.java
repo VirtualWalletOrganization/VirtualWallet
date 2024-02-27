@@ -1,6 +1,5 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.WalletType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -22,23 +21,25 @@ public class Wallet {
     @Column(name = "balance")
     private double balance;
 
+    @Column(name = "currency")
+    private String currency;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "wallet_type")
     private WalletType walletType;
 
-    @Column(name = "currency")
-    private String currency;
-
     @Column(name = "is_default")
     private Boolean isDefault = Boolean.FALSE;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private Role role = Role.USER;
 
     @JsonIgnore
     @Column(name = "is_deleted")
     private Boolean isDeleted = Boolean.FALSE;
+
+    @Column(name = "overdraft_enabled")
+    private boolean overdraftEnabled;
+
+    @Column(name = "saving_enabled")
+    private boolean savingEnabled;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -80,20 +81,20 @@ public class Wallet {
         this.balance = balance;
     }
 
-    public WalletType getWalletType() {
-        return walletType;
-    }
-
-    public void setWalletType(WalletType walletType) {
-        this.walletType = walletType;
-    }
-
     public String getCurrency() {
         return currency;
     }
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public WalletType getWalletType() {
+        return walletType;
+    }
+
+    public void setWalletType(WalletType walletType) {
+        this.walletType = walletType;
     }
 
     public Boolean getDefault() {
@@ -104,20 +105,28 @@ public class Wallet {
         isDefault = aDefault;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public Boolean getDeleted() {
         return isDeleted;
     }
 
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public boolean isOverdraftEnabled() {
+        return overdraftEnabled;
+    }
+
+    public void setOverdraftEnabled(boolean overdraftEnabled) {
+        this.overdraftEnabled = overdraftEnabled;
+    }
+
+    public boolean isSavingEnabled() {
+        return savingEnabled;
+    }
+
+    public void setSavingEnabled(boolean savingEnabled) {
+        this.savingEnabled = savingEnabled;
     }
 
     public Set<Card> getCards() {

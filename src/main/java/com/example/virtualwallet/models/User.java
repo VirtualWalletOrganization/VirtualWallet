@@ -2,6 +2,7 @@ package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
+import com.example.virtualwallet.models.enums.WalletRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -29,6 +30,9 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "profile_picture")
+    private String profilePicture;
+
     @Column(name = "email_verified")
     private boolean emailVerified;
 
@@ -49,6 +53,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private UserStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "wallet_admin")
+    private WalletRole walletRole;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -111,6 +119,14 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
     public boolean isEmailVerified() {
         return emailVerified;
     }
@@ -157,6 +173,14 @@ public class User {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public WalletRole getWalletRole() {
+        return walletRole;
+    }
+
+    public void setWalletRole(WalletRole walletRole) {
+        this.walletRole = walletRole;
     }
 
     public Set<Wallet> getWallets() {

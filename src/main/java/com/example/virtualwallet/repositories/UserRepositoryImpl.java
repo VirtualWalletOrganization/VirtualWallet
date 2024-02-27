@@ -7,7 +7,6 @@ import com.example.virtualwallet.utils.UserFilterOptions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.platform.engine.SelectorResolutionResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -74,7 +73,6 @@ public class UserRepositoryImpl implements UserRepository {
 
         }
     }
-
 
     @Override
     public User getById(int id) {

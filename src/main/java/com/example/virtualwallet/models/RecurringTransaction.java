@@ -8,23 +8,12 @@ import java.util.Date;
 
 @Entity
 @Table(name = "recurring_transactions")
-public class RecurringTransaction {
+public class RecurringTransaction extends Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recurring_transaction_id")
     private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "sender_wallet_id")
-    private Wallet senderWallet;
-
-    @ManyToOne
-    @JoinColumn(name = "receiver_wallet_id")
-    private Wallet receiverWallet;
-
-    @Column(name = "amount")
-    private double amount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "intervals")
@@ -36,13 +25,6 @@ public class RecurringTransaction {
     @Column(name = "end_date")
     private Date endDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private Status status;
-
-    @Column(name = "description")
-    private String description;
-
     public RecurringTransaction() {
     }
 
@@ -52,30 +34,6 @@ public class RecurringTransaction {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Wallet getSenderWallet() {
-        return senderWallet;
-    }
-
-    public void setSenderWallet(Wallet senderWallet) {
-        this.senderWallet = senderWallet;
-    }
-
-    public Wallet getReceiverWallet() {
-        return receiverWallet;
-    }
-
-    public void setReceiverWallet(Wallet receiverWallet) {
-        this.receiverWallet = receiverWallet;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
     }
 
     public Interval getIntervals() {
@@ -100,21 +58,5 @@ public class RecurringTransaction {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

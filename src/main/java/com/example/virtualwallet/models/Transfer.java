@@ -2,6 +2,7 @@ package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.Direction;
 import com.example.virtualwallet.models.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -42,6 +43,11 @@ public class Transfer {
 
     @Column(name = "description")
     private String description;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private SpendingCategory spendingCategory;
 
     public Transfer() {
     }

@@ -10,17 +10,17 @@ import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.UserFilterOptions;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.example.virtualwallet.utils.CheckPermission.*;
-import static com.example.virtualwallet.utils.Messages.*;
-
 import java.util.List;
+
+import static com.example.virtualwallet.utils.CheckPermissions.*;
+import static com.example.virtualwallet.utils.Messages.*;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -30,7 +30,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAll(User user, UserFilterOptions userFilterOptions) {
-
         return this.userRepository.getAll(userFilterOptions);
     }
 
@@ -54,8 +53,6 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.getByEmail(email);
     }
 
-
-
     @Override
     public void registerUser(User user) {
         setAdminRoleIfDataBaseEmpty(user);
@@ -74,8 +71,8 @@ public class UserServiceImpl implements UserService {
         checkAccessPermissionsUser(targetUser.getId(), executingUser, MODIFY_USER_MESSAGE_ERROR);
 
         if (!targetUser.getUsername().equals(executingUser.getUsername())) {
-            throw new com.example.virtualwallet.exceptions.EntityNotFoundException("User", "username", targetUser.getUsername());
-//
+            throw new com.example.virtualwallet.exceptions.EntityNotFoundException
+                    ("User", "username", targetUser.getUsername());
         }
 
         if (!targetUser.getEmail().equals(executingUser.getEmail())) {
@@ -176,6 +173,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void unBlockUser(User admin, User unBlockUser) {
         checkAccessPermissionsAdmin(admin, MODIFY_ADMIN_MESSAGE_ERROR);
+
         if (unBlockUser.getStatus() == UserStatus.ACTIVE) {
             throw new DuplicateEntityException(
                     "User", "id", String.valueOf(unBlockUser.getId()), "has already been activated");
@@ -203,6 +201,7 @@ public class UserServiceImpl implements UserService {
             }
 
             updateUser(admin, userPhoneNumberToBeUpdate);
+
         } else {
             throw new com.example.virtualwallet.exceptions.EntityNotFoundException("Admin", "phone number");
         }
@@ -221,7 +220,6 @@ public class UserServiceImpl implements UserService {
         if (userToDelete.getPhoneNumber() == null) {
             throw new EntityAlreadyDeleteException(
                     "User's phone number", "id", String.valueOf(userId));
-
         }
 
         userToDelete.setPhoneNumber(null);
@@ -244,6 +242,7 @@ public class UserServiceImpl implements UserService {
                 && existingUser.getEmail().equals(user.getEmail())
                 && existingUser.getPassword().equals(user.getPassword());
     }
+
     private void setAdminRoleIfDataBaseEmpty(User user) {
         if (userRepository.isDataBaseEmpty()) {
             user.setRole(Role.ADMIN);
