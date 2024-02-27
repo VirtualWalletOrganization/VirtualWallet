@@ -11,5 +11,10 @@ public class Messages {
     public static final String UPDATE_TO_USER_ERROR_MESSAGE = "Only admin can adjust the role of the user.";
     public static final String DELETE_PHONE_NUMBER_MESSAGE_ERROR = "Only owner admin can delete phone number.";
 
+    public static final String USER_HAS_BEEN_BLOCKED_OR_DELETED = "User has been blocked or deleted.";
+    public static final String UPDATE_USER_MESSAGE_ERROR = "Only user creator is able to update.";
+    public static final String MODIFY_CARD_ERROR_MESSAGE = "“Only the owner of this card has permission to delete or update it.";
+
+
 
 }

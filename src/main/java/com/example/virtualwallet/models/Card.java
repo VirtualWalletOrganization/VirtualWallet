@@ -124,11 +124,11 @@ public class Card {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
-        return id == card.id && Objects.equals(cardNumber, card.cardNumber);
+        return id == card.id && cardType == card.cardType && Objects.equals(cardNumber, card.cardNumber) && Objects.equals(expirationDate, card.expirationDate) && Objects.equals(cardHolder, card.cardHolder) && Objects.equals(checkNumber, card.checkNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, cardNumber);
+        return Objects.hash(id, cardType, cardNumber, expirationDate, cardHolder, checkNumber);
     }
 }
