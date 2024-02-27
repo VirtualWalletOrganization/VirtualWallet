@@ -1,5 +1,6 @@
 package com.example.virtualwallet.models;
 
+import com.example.virtualwallet.models.enums.CardStatus;
 import com.example.virtualwallet.models.enums.CardType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -37,6 +38,11 @@ public class Card {
     @Column(name = "check_number")
     private String checkNumber;
 
+    @Column(name = "currency")
+    private String currency;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private CardStatus cardStatus;
     @Column(name = "balance")
     private double balance;
 
@@ -101,6 +107,22 @@ public class Card {
 
     public void setCheckNumber(String checkNumber) {
         this.checkNumber = checkNumber;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public CardStatus getCardStatus() {
+        return cardStatus;
+    }
+
+    public void setCardStatus(CardStatus cardStatus) {
+        this.cardStatus = cardStatus;
     }
 
     public double getBalance() {

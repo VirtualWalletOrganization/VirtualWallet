@@ -10,6 +10,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -82,4 +83,14 @@ public class CardRepositoryImpl implements CardRepository {
         }
     }
 
+    @Override
+    public List<Card> findExpiredCards(Date currentDate) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Card> query = session.createQuery("FROM Card as c where c.expirationDate < :currentDate", Card.class);
+            query.setParameter("currentDate", currentDate);
+            return query.list();
+        }
+
+
+    }
 }

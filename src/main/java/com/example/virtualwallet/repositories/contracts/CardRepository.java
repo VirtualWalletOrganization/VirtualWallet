@@ -3,6 +3,7 @@ package com.example.virtualwallet.repositories.contracts;
 import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
 
+import java.util.Date;
 import java.util.List;
 
 public interface CardRepository {
@@ -16,4 +17,6 @@ public interface CardRepository {
     void updateCard(Card card);
 
     void deleteCard(Card card);
+
+    List<Card> findExpiredCards(Date currentDate);
 }
