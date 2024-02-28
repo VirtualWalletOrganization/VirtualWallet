@@ -1,8 +1,6 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Card;
-import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.repositories.contracts.CardRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,20 +20,20 @@ public class CardRepositoryImpl implements CardRepository {
         this.sessionFactory = sessionFactory;
     }
 
+    @Override
+    public List<Card> getAllCards() {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Card> query = session.createQuery("SELECT c from Card c", Card.class);
+            return query.list();
+        }
+    }
 
     @Override
     public List<Card> getAllCardsByUserId(int userId) {
         try (Session session = sessionFactory.openSession()) {
-            User user = session.get(User.class, userId);
-
-            if (user == null) {
-                throw new EntityNotFoundException("User", "id", String.valueOf(userId));
-            }
-
-            List<Card> cards = session.createQuery("select c From Card c WHERE c.user.id= :userId ", Card.class)
-                    .setParameter("userId", userId).list();
-
-            return cards;
+            Query<Card> query = session.createQuery("select c From Card c WHERE c.user.id= :userId ", Card.class);
+            query.setParameter("userId", userId);
+            return query.list();
         }
     }
 
@@ -44,14 +42,17 @@ public class CardRepositoryImpl implements CardRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<Card> query = session.createQuery("FROM Card as c where c.id = :id", Card.class);
             query.setParameter("id", cardId);
-            List<Card> cards = query.list();
+            return query.uniqueResult();
 
+        }
+    }
 
-            if (cards.isEmpty()) {
-                throw new EntityNotFoundException("Card", "id", String.valueOf(cardId));
-            }
-
-            return cards.get(0);
+    @Override
+    public Card getByCardNumber(String cardNumber) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Card> query = session.createQuery("SELECT c FROM Card AS c WHERE c.cardNumber = :cardNumber", Card.class);
+            query.setParameter("cardNumber", cardNumber);
+            return query.uniqueResult();
         }
     }
 

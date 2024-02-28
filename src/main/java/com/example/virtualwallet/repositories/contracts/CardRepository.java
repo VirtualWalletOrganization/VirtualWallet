@@ -8,9 +8,13 @@ import java.util.List;
 
 public interface CardRepository {
 
+    List<Card> getAllCards();
+
     List<Card> getAllCardsByUserId(int userId);
 
     Card getCardById(int cardId);
+
+    Card getByCardNumber(String cardNumber);
 
     void addCard(Card card);
 

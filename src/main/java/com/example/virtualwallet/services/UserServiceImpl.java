@@ -40,7 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(int id) {
-        return this.userRepository.getById(id);
+        User user = userRepository.getById(id);
+        throwIfUserDoesNotYetExist(user);
+        return user;
     }
 
     @Override
@@ -246,6 +248,11 @@ public class UserServiceImpl implements UserService {
     private void setAdminRoleIfDataBaseEmpty(User user) {
         if (userRepository.isDataBaseEmpty()) {
             user.setRole(Role.ADMIN);
+        }
+    }
+    private void throwIfUserDoesNotYetExist(User user) {
+        if (user == null) {
+            throw new EntityNotFoundException("User");
         }
     }
 }
