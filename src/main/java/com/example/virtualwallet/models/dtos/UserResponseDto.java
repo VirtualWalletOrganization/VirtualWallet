@@ -1,14 +1,10 @@
 package com.example.virtualwallet.models.dtos;
 
 
-import com.example.forum.models.Comment;
-import com.example.forum.models.Post;
-import com.example.forum.models.enums.Role;
 import com.example.virtualwallet.models.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Objects;
-import java.util.Set;
 
 public class UserResponseDto {
 
