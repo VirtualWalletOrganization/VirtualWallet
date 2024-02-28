@@ -22,7 +22,6 @@ public class CardRepositoryImpl implements CardRepository {
         this.sessionFactory = sessionFactory;
     }
 
-
     @Override
     public List<Card> getAllCardsByUserId(int userId) {
         try (Session session = sessionFactory.openSession()) {
@@ -75,7 +74,6 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public void deleteCard(Card cardToDelete) {
-
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.remove(cardToDelete);
@@ -90,7 +88,5 @@ public class CardRepositoryImpl implements CardRepository {
             query.setParameter("currentDate", currentDate);
             return query.list();
         }
-
-
     }
 }

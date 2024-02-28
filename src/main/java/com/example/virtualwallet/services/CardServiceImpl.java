@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +21,7 @@ import static com.example.virtualwallet.utils.Messages.MODIFY_CARD_ERROR_MESSAGE
 
 @Service
 public class CardServiceImpl implements CardService {
+
     private final CardRepository cardRepository;
     private final WalletRepository walletRepository;
 
@@ -44,17 +44,18 @@ public class CardServiceImpl implements CardService {
     @Override
     public void addCard(Card card, int walletId, User user) {
         Wallet wallet = walletRepository.getWalletById(walletId);
+
         if (wallet.getCards()
                 .stream()
                 .anyMatch(c -> c.getCardNumber().equals(card.getCardNumber()))) {
             throw new DuplicateEntityException("Card", "card holder", card.getCardHolder());
         }
+
         wallet.getCards().add(card);
         card.setUser(user);
         card.getWallets().add(wallet);
         cardRepository.addCard(card);
     }
-
 
     @Override
     public void updateCard(Card card, User user) {
@@ -67,13 +68,14 @@ public class CardServiceImpl implements CardService {
     public void deleteCard(int cardId, User user) {
         Card cardToDelete = cardRepository.getCardById(cardId);
         List<Wallet> wallets = new ArrayList<>(cardToDelete.getWallets());
+
         for (Wallet wallet : wallets) {
             wallet.getCards().remove(cardToDelete);
         }
+
         checkAccessPermissionsUser(cardToDelete.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
         cardRepository.deleteCard(cardToDelete);
     }
-
 
     @Scheduled(cron = "0 0 0 1 * *")
     public void deactivateExpiredCards() {

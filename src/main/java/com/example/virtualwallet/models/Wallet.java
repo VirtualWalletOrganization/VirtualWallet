@@ -4,6 +4,7 @@ import com.example.virtualwallet.models.enums.WalletType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Entity
@@ -19,7 +20,7 @@ public class Wallet {
     private User creator;
 
     @Column(name = "balance")
-    private double balance;
+    private BigDecimal balance;
 
     @Column(name = "currency")
     private String currency;
@@ -73,11 +74,11 @@ public class Wallet {
         this.creator = creator;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
