@@ -37,15 +37,33 @@ public class UserRepositoryImpl implements UserRepository {
                 params.put("username", String.format("%%%s%%", value));
             });
 
+//            userFilterOptions.getFirstName().ifPresent(value -> {
+//                filters.add(" firstName like :firstName ");
+//                params.put("firstName", String.format("%%%s%%", value));
+//            });
+//
+//            userFilterOptions.getFirstName().ifPresent(value -> {
+//                filters.add(" firstName like :firstName ");
+//                params.put("firstName", String.format("%%%s%%", value));
+//            });
+//
+//            userFilterOptions.getLastName().ifPresent(value -> {
+//                filters.add(" lastName like :lastName ");
+//                params.put("lastName", String.format("%%%s%%", value));
+//            });
 
             userFilterOptions.getEmail().ifPresent(value -> {
-                filters.add("email like :email ");
+                filters.add(" email like :email ");
                 params.put("email", String.format("%%%s%%", value));
             });
 
             userFilterOptions.getRole().ifPresent(value -> {
-                filters.add("phoneNumber = :phoneNumber ");
-                params.put("phoneNumber", value);
+                filters.add(" role = :role ");
+                params.put("role", value);
+            });
+            userFilterOptions.getStatus().ifPresent(value -> {
+                filters.add(" status = :status ");
+                params.put("status", value);
             });
 
             StringBuilder queryString = new StringBuilder("from User");

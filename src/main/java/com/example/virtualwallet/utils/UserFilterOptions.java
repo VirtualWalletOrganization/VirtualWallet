@@ -7,8 +7,10 @@ import java.util.Optional;
 
 public class UserFilterOptions {
     private Optional<String> username;
-    private Optional<String> firstName;
-    private Optional<String> lastName;
+
+//    private Optional<String> firstName;
+//    private Optional<String> lastName;
+
     private Optional<String> email;
     private Optional<Role> role;
     private Optional<Status> status;
@@ -17,16 +19,16 @@ public class UserFilterOptions {
 
     public UserFilterOptions(
             String username,
-            String firstName,
-            String lastName,
+//            String firstName,
+//            String lastName,
             String email,
             Role role,
             Status status,
             String sortBy,
             String sortOrder) {
         this.username = Optional.ofNullable(username);
-        this.firstName = Optional.ofNullable(firstName);
-        this.lastName = Optional.ofNullable(lastName);
+//        this.firstName = Optional.ofNullable(firstName);
+//        this.lastName = Optional.ofNullable(lastName);
         this.email = Optional.ofNullable(email);
         this.role = Optional.ofNullable(role);
         this.status = Optional.ofNullable(status);
@@ -38,13 +40,13 @@ public class UserFilterOptions {
         return username;
     }
 
-    public Optional<String> getFirstName() {
-        return firstName;
-    }
-
-    public Optional<String> getLastName() {
-        return lastName;
-    }
+//    public Optional<String> getFirstName() {
+//        return firstName;
+//    }
+//
+//    public Optional<String> getLastName() {
+//        return lastName;
+//    }
 
     public Optional<String> getEmail() {
         return email;
