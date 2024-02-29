@@ -23,18 +23,18 @@ public class ReferralServiceImpl implements ReferralService {
     }
 
     @Override
-    public Referral findById(int id) {
-        return referralRepository.findById(id);
+    public Referral getById(int id) {
+        return referralRepository.getById(id);
     }
 
     @Override
-    public User findReferrerUserIdByEmail(String email) {
-        return referralRepository.findReferrerUserIdByEmail(email);
+    public User getReferrerUserIdByEmail(String email) {
+        return referralRepository.getReferrerUserIdByEmail(email);
     }
 
     @Override
-    public Status findReferralStatusByEmail(String email) {
-        return referralRepository.findReferralStatusByEmail(email);
+    public Status getReferralStatusByEmail(String email) {
+        return referralRepository.getReferralStatusByEmail(email);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ReferralServiceImpl implements ReferralService {
             throw new DuplicateEntityException("User", "email", friendEmail);
         }
 
-        String email = referralRepository.findReferralEmail(friendEmail);
+        String email = referralRepository.getReferralEmail(friendEmail);
 
         if (email == null) {
             //send referral email and set scheduled for 7 days.

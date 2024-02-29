@@ -15,6 +15,7 @@ import java.util.List;
 
 @Repository
 public class CardRepositoryImpl implements CardRepository {
+
     private final SessionFactory sessionFactory;
 
     @Autowired
@@ -44,7 +45,6 @@ public class CardRepositoryImpl implements CardRepository {
             Query<Card> query = session.createQuery("FROM Card as c where c.id = :id", Card.class);
             query.setParameter("id", cardId);
             List<Card> cards = query.list();
-
 
             if (cards.isEmpty()) {
                 throw new EntityNotFoundException("Card", "id", String.valueOf(cardId));

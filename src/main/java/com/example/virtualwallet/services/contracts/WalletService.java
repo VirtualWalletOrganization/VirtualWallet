@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface WalletService {
 
-    List<Wallet> findAll();
+    List<Wallet> getAll();
 
     Wallet getWalletById(int walletId);
 
-    List<Wallet> findByCreatorId(int creatorId);
+    List<Wallet> getByCreatorId(int creatorId);
 
     Wallet create(Wallet wallet);
 

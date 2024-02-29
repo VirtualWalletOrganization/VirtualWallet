@@ -3,6 +3,8 @@ package com.example.virtualwallet.utils;
 import java.math.BigDecimal;
 
 public class Messages {
+
+    public static final String UNAUTHORIZED_USER_ERROR_MESSAGE = "You are not authorized to browse user information.";
     public static final String MASTER_ADMIN_MESSAGE_ERROR = "Master admin user can not be downgrade to user.";
     public static final String MASTER_ADMIN_MESSAGE_ERROR_BLOCK = "Master admin user can not be blocked.";
     public static final String DELETE_USER_MESSAGE_ERROR = "Only owner of this account can delete this profile.";

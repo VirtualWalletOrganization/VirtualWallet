@@ -81,6 +81,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User confirmUserRegistration(User currentUser, User user) {
+        checkAccessPermissionsAdmin(currentUser, VERIFY_USER);
+        User userToBeVerified = userRepository.getByEmail(user.getEmail());
+
+        if (userToBeVerified == null) {
+            throw new EntityNotFoundException("User", "email", user.getEmail());
+        }
+
+        if (user.getIdentityVerified().equals(Identity.APPROVED)) {
+            throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
+        } else if (userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
+            userToBeVerified.setIdentityVerified(Identity.REJECTED);
+        } else {
+            user.setIdentityVerified(Identity.APPROVED);
+            userRepository.updateUser(user);
+
+            if (referralRepository.getReferralEmail(user.getEmail()) != null) {
+                if (referralRepository.getReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
+                    User referrerUser = referralRepository.getReferrerUserIdByEmail(user.getEmail());
+                    addBonus(referrerUser);
+
+                    addBonus(user);
+                }
+            }
+        }
+
+        return user;
+    }
+
+    @Override
     public void updateUser(User executingUser, User targetUser) {
         checkAccessPermissionsUser(targetUser.getId(), executingUser, MODIFY_USER_MESSAGE_ERROR);
 
@@ -113,36 +143,6 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.deleteUser(deleteUser);
-    }
-
-    @Override
-    public User confirmUserRegistration(User currentUser, User user) {
-        checkAccessPermissionsAdmin(currentUser, VERIFY_USER);
-        User userToBeVerified = userRepository.getByEmail(user.getEmail());
-
-        if (userToBeVerified == null) {
-            throw new EntityNotFoundException("User", "email", user.getEmail());
-        }
-
-        if (user.getIdentityVerified().equals(Identity.APPROVED)) {
-            throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
-        } else if (userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
-            userToBeVerified.setIdentityVerified(Identity.REJECTED);
-        } else {
-            user.setIdentityVerified(Identity.APPROVED);
-            userRepository.updateUser(user);
-
-            if (referralRepository.findReferralEmail(user.getEmail()) != null) {
-                if (referralRepository.findReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
-                    User referrerUser = referralRepository.findReferrerUserIdByEmail(user.getEmail());
-                    addBonus(referrerUser);
-
-                    addBonus(user);
-                }
-            }
-        }
-
-        return user;
     }
 
     @Override

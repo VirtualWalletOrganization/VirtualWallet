@@ -22,7 +22,7 @@ public class WalletRepositoryImpl implements WalletRepository {
     }
 
     @Override
-    public List<Wallet> findAll() {
+    public List<Wallet> getAll() {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("SELECT w FROM Wallet w", Wallet.class)
                     .getResultList();
@@ -46,7 +46,7 @@ public class WalletRepositoryImpl implements WalletRepository {
     }
 
     @Override
-    public List<Wallet> findByCreatorId(int creatorId) {
+    public List<Wallet> getByCreatorId(int creatorId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Wallet> query = session.createQuery(
                     "SELECT w FROM Wallet w WHERE w.creator.id = :creatorId", Wallet.class);

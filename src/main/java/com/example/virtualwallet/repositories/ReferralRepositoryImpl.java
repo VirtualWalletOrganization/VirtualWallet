@@ -25,7 +25,7 @@ public class ReferralRepositoryImpl implements ReferralRepository {
     }
 
     @Override
-    public Referral findById(int id) {
+    public Referral getById(int id) {
         try (Session session = sessionFactory.openSession()) {
             Query<Referral> query = session.createQuery(
                     "FROM Referral as r where r.id = :id", Referral.class);
@@ -41,7 +41,7 @@ public class ReferralRepositoryImpl implements ReferralRepository {
     }
 
     @Override
-    public String findReferralEmail(String referredEmail) {
+    public String getReferralEmail(String referredEmail) {
         try (Session session = sessionFactory.openSession()) {
             Query<Referral> query = session.createQuery(
                     "SELECT r FROM Referral r WHERE referredEmail = :email", Referral.class);
@@ -59,7 +59,7 @@ public class ReferralRepositoryImpl implements ReferralRepository {
     }
 
     @Override
-    public User findReferrerUserIdByEmail(String email) {
+    public User getReferrerUserIdByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
             Query<Referral> query = session.createQuery(
                     "SELECT user FROM Referral r WHERE r.referredEmail = :email", Referral.class);
@@ -77,7 +77,7 @@ public class ReferralRepositoryImpl implements ReferralRepository {
     }
 
     @Override
-    public Status findReferralStatusByEmail(String email) {
+    public Status getReferralStatusByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
             Query<Referral> query = session.createQuery(
                     "SELECT referralStatus FROM Referral r WHERE r.referredEmail = :email", Referral.class);

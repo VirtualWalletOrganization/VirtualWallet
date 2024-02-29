@@ -6,6 +6,7 @@ import com.example.virtualwallet.utils.UserFilterOptions;
 import java.util.List;
 
 public interface UserRepository {
+
     List<User> getAll(UserFilterOptions userFilterOptions);
 
     long getAllNumber();

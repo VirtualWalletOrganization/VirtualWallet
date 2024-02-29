@@ -1,7 +1,6 @@
 package com.example.virtualwallet.services;
 
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.WalletRole;
@@ -32,8 +31,8 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<Wallet> findAll() {
-        return walletRepository.findAll();
+    public List<Wallet> getAll() {
+        return walletRepository.getAll();
     }
 
     @Override
@@ -42,8 +41,8 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<Wallet> findByCreatorId(int creatorId) {
-        return walletRepository.findByCreatorId(creatorId);
+    public List<Wallet> getByCreatorId(int creatorId) {
+        return walletRepository.getByCreatorId(creatorId);
     }
 
     @Override
