@@ -5,9 +5,15 @@ import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.dtos.WalletDto;
+import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
+import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.UserStatus;
+import com.example.virtualwallet.repositories.contracts.ReferralRepository;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
+import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +28,14 @@ import static com.example.virtualwallet.utils.Messages.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ReferralRepository referralRepository;
+    private final WalletRepository walletRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository) {
         this.userRepository = userRepository;
+        this.referralRepository = referralRepository;
+        this.walletRepository = walletRepository;
     }
 
     @Override
@@ -56,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(User user) {
+    public void registerUser(User user, WalletDto walletDto) {
         setAdminRoleIfDataBaseEmpty(user);
         User existingUser = userRepository.getByUsername(user.getUsername());
 
@@ -65,6 +75,10 @@ public class UserServiceImpl implements UserService {
         } else {
             checkDuplicateEntity(user);
             userRepository.registerUser(user);
+            Wallet wallet = new Wallet();
+            wallet.setCurrency(walletDto.getCurrency());
+            wallet.setDefault(true);
+            walletRepository.create(wallet);
         }
     }
 
@@ -101,6 +115,36 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.deleteUser(deleteUser);
+    }
+
+    @Override
+    public User confirmUserRegistration(User currentUser, User user) {
+        checkAccessPermissionsAdmin(currentUser, VERIFY_USER);
+        User userToBeVerified = userRepository.getByEmail(user.getEmail());
+
+        if (userToBeVerified == null) {
+            throw new EntityNotFoundException("User", "email", user.getEmail());
+        }
+
+        if (user.getIdentityVerified().equals(Identity.APPROVED)) {
+            throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
+        } else if (userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
+            userToBeVerified.setIdentityVerified(Identity.REJECTED);
+        } else {
+            user.setIdentityVerified(Identity.APPROVED);
+            userRepository.updateUser(user);
+
+            if (referralRepository.findReferralEmail(user.getEmail()) != null) {
+                if (referralRepository.findReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
+                    User referrerUser = referralRepository.findReferrerUserIdByEmail(user.getEmail());
+                    addBonus(referrerUser);
+
+                    addBonus(user);
+                }
+            }
+        }
+
+        return user;
     }
 
     @Override
@@ -226,6 +270,14 @@ public class UserServiceImpl implements UserService {
 
         userToDelete.setPhoneNumber(null);
         userRepository.updateUser(userToDelete);
+    }
+
+    private void addBonus(User user) {
+        Wallet userWallet = user.getWallets().stream()
+                .filter(Wallet::getDefault)
+                .findFirst().get();
+        userWallet.setBalance(userWallet.getBalance().add(REFERRAL_BONUS));
+        walletRepository.update(userWallet);
     }
 
     private void checkDuplicateEntity(User user) {

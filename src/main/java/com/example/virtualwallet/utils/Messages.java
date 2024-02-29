@@ -1,5 +1,7 @@
 package com.example.virtualwallet.utils;
 
+import java.math.BigDecimal;
+
 public class Messages {
     public static final String MASTER_ADMIN_MESSAGE_ERROR = "Master admin user can not be downgrade to user.";
     public static final String MASTER_ADMIN_MESSAGE_ERROR_BLOCK = "Master admin user can not be blocked.";
@@ -15,6 +17,8 @@ public class Messages {
     public static final String MODIFY_CARD_ERROR_MESSAGE = "“Only the owner of this card has permission to delete or update it.";
     public static final String ADD_USER_TO_WALLET = "You are not authorized to add users to this wallet.";
     public static final String REMOVE_USER_FROM_WALLET = "You are not authorized to remove users from this wallet.";
-
+    public static final String ALREADY_APPROVED = "has already been approved.";
+    public static final String VERIFY_USER = "Only admin can verify users.";
+    public static final BigDecimal REFERRAL_BONUS = BigDecimal.valueOf(20);
 
 }

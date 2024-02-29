@@ -1,5 +1,6 @@
 package com.example.virtualwallet.models;
 
+import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.models.enums.WalletRole;
@@ -36,8 +37,9 @@ public class User {
     @Column(name = "email_verified")
     private boolean emailVerified;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "identity_verified")
-    private String identityVerified;
+    private Identity identityVerified;
 
     @ManyToOne
     @JoinColumn(name = "photo_id")
@@ -68,13 +70,8 @@ public class User {
     private Set<Wallet> wallets;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "users_contacts",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "contact_user_id")
-    )
-    private Set<User> contacts;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<Contact> contacts;
 
     public User() {
     }
@@ -135,11 +132,11 @@ public class User {
         this.emailVerified = emailVerified;
     }
 
-    public String getIdentityVerified() {
+    public Identity getIdentityVerified() {
         return identityVerified;
     }
 
-    public void setIdentityVerified(String identityVerified) {
+    public void setIdentityVerified(Identity identityVerified) {
         this.identityVerified = identityVerified;
     }
 
@@ -191,11 +188,11 @@ public class User {
         this.wallets = wallets;
     }
 
-    public Set<User> getContacts() {
+    public Set<Contact> getContacts() {
         return contacts;
     }
 
-    public void setContacts(Set<User> contacts) {
+    public void setContacts(Set<Contact> contacts) {
         this.contacts = contacts;
     }
 

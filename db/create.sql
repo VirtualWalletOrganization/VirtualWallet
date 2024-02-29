@@ -14,24 +14,24 @@ create table users
     phone_number      varchar(10) unique  not null,
     profile_picture   varchar(255) null,
     email_verified    tinyint(1) default 0 null,
-    identity_verified enum ('INCOMPLETE', 'PENDING', 'APPROVED', 'REJECTED') default 'INCOMPLETE' null,
+    identity_verified enum ('APPROVED', 'INCOMPLETE', 'PENDING', 'REJECTED') default 'INCOMPLETE' null,
     photo_id          int null,
     role              enum ('ADMIN', 'USER') null,
     is_deleted        tinyint(1) default 0 null,
-    status            enum ('BLOCKED', 'ACTIVE') null,
+    status            enum ('ACTIVE', 'BLOCKED') null,
     wallet_admin      enum ('ADMIN', 'REGULAR') null,
     constraint users_photos_verifications_photo_id_fk
         foreign key (photo_id) references photos_verifications (photo_id)
 );
 
-create table users_contacts
+create table contacts
 (
-    user_id         int not null,
-    contact_user_id int not null,
+    contact_id   int auto_increment primary key,
+    user_id      int                not null,
+    username     varchar(50) unique not null,
+    phone_number varchar(10) unique not null,
     constraint users_contacts_users_user_id_fk
         foreign key (user_id) references users (user_id),
-    constraint users_contacts_users_user_id_fk_2
-        foreign key (contact_user_id) references users (user_id)
 );
 
 create table cards
@@ -163,7 +163,7 @@ create table recurring_transactions
     receiver_wallet_id       int          not null,
     amount                   decimal      not null,
     currency                 varchar(3)   not null,
-    intervals                enum ('DAILY', 'WEEKLY', 'MONTHLY') not null,
+    intervals                enum ('DAILY', 'MONTHLY', 'WEEKLY') not null,
     date                     date         not null,
     start_date               date         not null,
     end_date                 date         not null,
