@@ -1,5 +1,6 @@
 package com.example.virtualwallet.controllers.rest;
 
+import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
@@ -37,6 +38,8 @@ public class ReferralRestController {
             return new ResponseEntity<>(referral, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (AuthorizationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -48,6 +51,8 @@ public class ReferralRestController {
             return new ResponseEntity<>(createdReferral, HttpStatus.CREATED);
         } catch (DuplicateEntityException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } catch (AuthorizationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -62,6 +67,8 @@ public class ReferralRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (DuplicateEntityException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } catch (AuthorizationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -73,6 +80,8 @@ public class ReferralRestController {
             return new ResponseEntity<>(status, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (AuthorizationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -84,6 +93,8 @@ public class ReferralRestController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (AuthorizationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 }

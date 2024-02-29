@@ -9,6 +9,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -85,6 +86,18 @@ public class WalletRepositoryImpl implements WalletRepository {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.remove(wallet);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public void updateBalance(int walletId, BigDecimal newBalance) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            Query query = session.createQuery("UPDATE Wallet SET balance = :newBalance WHERE id = :walletId");
+            query.setParameter("newBalance", newBalance);
+            query.setParameter("walletId", walletId);
+            query.executeUpdate();
             session.getTransaction().commit();
         }
     }

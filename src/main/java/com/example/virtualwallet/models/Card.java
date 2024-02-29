@@ -14,6 +14,7 @@ import java.util.Set;
 public class Card {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "card_id")
     private int id;
 
@@ -40,9 +41,11 @@ public class Card {
 
     @Column(name = "currency")
     private String currency;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private CardStatus cardStatus;
+
     @Column(name = "balance")
     private double balance;
 
