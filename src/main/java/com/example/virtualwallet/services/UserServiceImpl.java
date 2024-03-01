@@ -11,7 +11,9 @@ import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.UserStatus;
+import com.example.virtualwallet.repositories.contracts.ReferralRepository;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
+import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.ReferralService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
@@ -26,18 +28,18 @@ import static com.example.virtualwallet.utils.CheckPermissions.*;
 import static com.example.virtualwallet.utils.Messages.*;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
-    private final ReferralService referralService;
-    private final WalletService walletService;
+   private final ReferralRepository referralRepository;
+    private final WalletRepository walletRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ReferralService referralService,
-                           WalletService walletService) {
+    public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository) {
         this.userRepository = userRepository;
-        this.referralService = referralService;
-        this.walletService = walletService;
+        this.referralRepository = referralRepository;
+
+        this.walletRepository = walletRepository;
     }
 
     @Override
@@ -82,7 +84,7 @@ public class UserServiceImpl implements UserService {
             Wallet wallet = new Wallet();
             wallet.setCurrency(walletDto.getCurrency());
             wallet.setDefault(true);
-            walletService.create(wallet);
+            walletRepository.create(wallet);
         }
     }
 
@@ -105,9 +107,9 @@ public class UserServiceImpl implements UserService {
             user.setIdentityVerified(Identity.APPROVED);
             userRepository.updateUser(user);
 
-            if (referralService.getReferralEmail(user.getEmail()) != null) {
-                if (referralService.getReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
-                    User referrerUser = referralService.getReferrerUserIdByEmail(user.getEmail());
+            if (referralRepository.getReferralEmail(user.getEmail()).isPresent()) {
+                if (referralRepository.getReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
+                    User referrerUser = referralRepository.getReferrerUserIdByEmail(user.getEmail()).get();
                     addBonus(referrerUser);
                     addBonus(user);
                 }
@@ -284,7 +286,7 @@ public class UserServiceImpl implements UserService {
                 .filter(Wallet::getDefault)
                 .findFirst().get();
         userWallet.setBalance(userWallet.getBalance().add(REFERRAL_BONUS));
-        walletService.update(userWallet);
+        walletRepository.update(userWallet);
     }
 
     private void checkDuplicateEntity(User user) {
