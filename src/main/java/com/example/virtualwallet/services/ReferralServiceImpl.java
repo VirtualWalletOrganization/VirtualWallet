@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 public class ReferralServiceImpl implements ReferralService {
 
     private final ReferralRepository referralRepository;
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
 
     @Autowired
-    public ReferralServiceImpl(ReferralRepository referralRepository, UserRepository userRepository) {
+    public ReferralServiceImpl(ReferralRepository referralRepository, UserServiceImpl userService) {
         this.referralRepository = referralRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ReferralServiceImpl implements ReferralService {
 
     @Override
     public void referFriend(User user, String friendEmail) {
-        User existingUser = userRepository.getByEmail(user.getEmail());
+        User existingUser = userService.getByEmail(user.getEmail());
 
         if (existingUser != null) {
             throw new DuplicateEntityException("User", "email", friendEmail);

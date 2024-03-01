@@ -17,9 +17,13 @@ import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.virtualwallet.utils.CheckPermissions.*;
 import static com.example.virtualwallet.utils.Messages.*;
@@ -30,12 +34,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ReferralRepository referralRepository;
     private final WalletRepository walletRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository) {
+    public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.referralRepository = referralRepository;
         this.walletRepository = walletRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
@@ -50,28 +57,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(int id) {
-        User user = userRepository.getById(id);
-        throwIfUserDoesNotYetExist(user);
-        return user;
+        return userRepository.getById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User", "id", String.valueOf(id)));
     }
 
     @Override
     public User getByUsername(String username) {
-        return this.userRepository.getByUsername(username);
+        return userRepository.getByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User", "username", username));
     }
 
     @Override
     public User getByEmail(String email) {
-        return this.userRepository.getByEmail(email);
+        return userRepository.getByUsername(email)
+                .orElseThrow(() -> new EntityNotFoundException("User", "email", email));
     }
 
-    @Override
+        @Override
     public void registerUser(User user, WalletDto walletDto) {
         setAdminRoleIfDataBaseEmpty(user);
-        User existingUser = userRepository.getByUsername(user.getUsername());
+        User existingUser = getByUsername(user.getUsername());
 
-        if (existingUser != null && isSameUser(existingUser, user) && existingUser.isDeleted()) {
-            userRepository.reactivated(existingUser);
+        if (isSameUser(existingUser, user) && existingUser.isDeleted()) {
+            existingUser.setDeleted(false);
+            userRepository.updateUser(existingUser);
         } else {
             checkDuplicateEntity(user);
             userRepository.registerUser(user);
@@ -85,12 +94,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User confirmUserRegistration(User currentUser, User user) {
         checkAccessPermissionsAdmin(currentUser, VERIFY_USER);
-        User userToBeVerified = userRepository.getByEmail(user.getEmail());
+        Optional<User> userToBeVerifiedOptional = userRepository.getByEmail(user.getEmail());
 
-        if (userToBeVerified == null) {
+        if (userToBeVerifiedOptional.isEmpty()) {
             throw new EntityNotFoundException("User", "email", user.getEmail());
         }
-
+        User userToBeVerified=userToBeVerifiedOptional.get();
         if (user.getIdentityVerified().equals(Identity.APPROVED)) {
             throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
         } else if (userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
@@ -122,7 +131,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (!targetUser.getEmail().equals(executingUser.getEmail())) {
-            if (userRepository.getByEmail(targetUser.getEmail()) != null) {
+            if (userRepository.getByEmail(targetUser.getEmail()).isPresent()) {
                 throw new DuplicateEntityException("User", "email", targetUser.getEmail());
             }
         }
@@ -143,31 +152,37 @@ public class UserServiceImpl implements UserService {
         if (userToDelete.getId() == 1) {
             throw new DeletionRestrictedException(MASTER_ADMIN_MESSAGE_ERROR);
         }
-
-        userRepository.deleteUser(deleteUser);
+        userToDelete.setDeleted(true);
+        userRepository.updateUser(userToDelete);
     }
 
     @Override
     public void saveProfilePictureUrl(String username, String profilePictureUrl) {
-        User user = userRepository.getByUsername(username);
-
-        if (user == null) {
-            throw new com.example.virtualwallet.exceptions.EntityNotFoundException("User", "username", username);
+        Optional<User> userOptional = userRepository.getByUsername(username);
+        if(userOptional.isPresent()){
+            User user=userOptional.get();
+            user.getPhoto().setSelfie(profilePictureUrl);
+            userRepository.updateUser(user);
+        }else {
+            throw new EntityNotFoundException("User", "username", username);
         }
 
-        user.getPhoto().setSelfie(profilePictureUrl);
-        userRepository.updateUser(user);
+
     }
 
     @Override
     public String getProfilePictureUrl(String username) {
-        User user = userRepository.getByUsername(username);
 
-        if (user == null) {
+        Optional<User> userOptional = userRepository.getByUsername(username);
+        if(userOptional.isPresent()){
+            User user=userOptional.get();
+            return user.getPhoto().getSelfie();
+        }else {
             throw new EntityNotFoundException("User", "username", username);
         }
 
-        return user.getPhoto().getSelfie();
+
+
     }
 
     @Override
@@ -255,7 +270,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deletePhoneNumber(int userId, User user) {
-        User userToDelete = userRepository.getById(userId);
+        User userToDelete = getById(userId);
         checkAccessPermissionsAdmin(userToDelete, DELETE_PHONE_NUMBER_MESSAGE_ERROR);
         checkAccessPermissionsUser(userId, user, DELETE_PHONE_NUMBER_MESSAGE_ERROR);
 
@@ -281,11 +296,11 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkDuplicateEntity(User user) {
-        if (userRepository.getByUsername(user.getUsername()) != null) {
+        if (userRepository.getByUsername(user.getUsername()).isPresent()) {
             throw new DuplicateEntityException("User", "username", user.getUsername());
         }
 
-        if (userRepository.getByEmail(user.getEmail()) != null) {
+        if (userRepository.getByEmail(user.getEmail()).isPresent()) {
             throw new DuplicateEntityException("User", "email", user.getEmail());
         }
     }
@@ -302,9 +317,12 @@ public class UserServiceImpl implements UserService {
             user.setRole(Role.ADMIN);
         }
     }
-    private void throwIfUserDoesNotYetExist(User user) {
-        if (user == null) {
-            throw new EntityNotFoundException("User");
-        }
+    @Override
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+            return userRepository.getByUsername(username)
+                    .orElseThrow(() ->
+                            new UsernameNotFoundException(
+                                    String.format(USER_NOT_FOUND_MSG, username)));
     }
 }

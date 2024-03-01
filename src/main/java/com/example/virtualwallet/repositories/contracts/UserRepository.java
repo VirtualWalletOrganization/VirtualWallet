@@ -4,6 +4,7 @@ import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.utils.UserFilterOptions;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository {
 
@@ -11,11 +12,11 @@ public interface UserRepository {
 
     long getAllNumber();
 
-    User getById(int id);
+    Optional<User> getById(int id);
 
-    User getByUsername(String username);
+    Optional<User> getByUsername(String username);
 
-    User getByEmail(String email);
+    Optional<User> getByEmail(String email);
 
     void registerUser(User user);
 
@@ -23,7 +24,7 @@ public interface UserRepository {
 
     void updateUser(User targetUser);
 
-    void deleteUser(int targetUserId);
+    void deleteUser(User targetUser);
 
     boolean isDataBaseEmpty();
 

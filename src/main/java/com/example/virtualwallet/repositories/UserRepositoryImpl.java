@@ -10,10 +10,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
@@ -93,39 +90,32 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User getById(int id) {
+    public Optional<User> getById(int id) {
         try (Session session = sessionFactory.openSession()) {
             User user = session.get(User.class, id);
 
-            if (user == null) {
-                throw new EntityNotFoundException("User", id);
-            }
-
-            return user;
+            return Optional.ofNullable(user);
         }
     }
 
     @Override
-    public User getByUsername(String username) {
+    public Optional<User> getByUsername(String username) {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);
 
-            List<User> result = query.list();
+            return Optional.ofNullable(query.list().get(0));
 
-            return result.isEmpty() ? null : result.get(0);
         }
     }
 
     @Override
-    public User getByEmail(String email) {
+    public Optional<User> getByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where email = :email", User.class);
             query.setParameter("email", email);
 
-            List<User> result = query.list();
-
-            return result.isEmpty() ? null : result.get(0);
+            return Optional.ofNullable(query.list().get(0));
         }
     }
 
@@ -158,8 +148,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void deleteUser(int targetUserId) {
-        User userToDelete = getById(targetUserId);
+    public void deleteUser(User userToDelete) {
 
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();

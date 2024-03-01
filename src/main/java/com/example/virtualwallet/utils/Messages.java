@@ -22,5 +22,6 @@ public class Messages {
     public static final String ALREADY_APPROVED = "has already been approved.";
     public static final String VERIFY_USER = "Only admin can verify users.";
     public static final BigDecimal REFERRAL_BONUS = BigDecimal.valueOf(20);
+    public final static String USER_NOT_FOUND_MSG = "user with username %s not found";
 
 }

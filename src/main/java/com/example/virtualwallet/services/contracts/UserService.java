@@ -3,10 +3,12 @@ package com.example.virtualwallet.services.contracts;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.utils.UserFilterOptions;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
     List<User> getAll(User user, UserFilterOptions userFilterOptions);
 
     long getAllNumber();
