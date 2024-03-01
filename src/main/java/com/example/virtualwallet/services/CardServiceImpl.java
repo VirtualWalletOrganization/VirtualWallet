@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.virtualwallet.utils.CheckPermissions.checkAccessPermissionsUser;
 import static com.example.virtualwallet.utils.CheckPermissions.checkBlockOrDeleteUser;
@@ -42,15 +43,20 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<Card> getAllCardsByUserId(int userId) {
-        userService.getById(userId);
-        return getAllCardsByUserId(userId);
+        return cardRepository.getAllCardsByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cards"));
     }
 
     @Override
     public Card getCardById(int cardId) {
-        Card card = cardRepository.getCardById(cardId);
-        throwIfCardDoesNotYetExist( card);
-        return card;
+        return cardRepository.getCardById(cardId)
+                .orElseThrow(() -> new EntityNotFoundException("Card", "id", String.valueOf(cardId)));
+    }
+
+    @Override
+    public Card getCardByCardNumber(String cardNumber) {
+        return cardRepository.getByCardNumber(cardNumber)
+                .orElseThrow(() -> new EntityNotFoundException("Card", "card number", String.valueOf(cardNumber)));
     }
 
     @Override
@@ -96,28 +102,28 @@ public class CardServiceImpl implements CardService {
     }
 
     private void throwIfCardWithSameNumberAlreadyExistsInSystem(Card card) {
-        if (cardRepository.getByCardNumber(card.getCardNumber()) != null) {
+        if (cardRepository.getByCardNumber(card.getCardNumber()).isPresent()) {
             throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
         }
     }
 
     private void throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(Card card) {
-        Card existingCard = cardRepository.getByCardNumber(card.getCardNumber());
-        if (existingCard != null && existingCard.getId() != card.getId()) {
-            throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
-        }
+        Optional<Card> existingCardOptional = getAllCards().stream()
+                .filter(c -> c.getCardNumber().equals(card.getCardNumber()))
+                .findFirst();
+        existingCardOptional.ifPresent(existingCard -> {
+            if (existingCard.getId() != card.getId()) {
+                throw new DuplicateEntityException("Card", "card number", card.getCardNumber());}
+        });
+
     }
+
 
     private void throwIfCardWithSameNumberAlreadyExistsInWallet(Card card, Wallet wallet) {
         if (wallet.getCards()
                 .stream()
                 .anyMatch(c -> c.getCardNumber().equals(card.getCardNumber()))) {
             throw new DuplicateEntityException("Card", "card number", String.valueOf(card.getCardNumber()), "has already exist in wallet");
-        }
-    }
-    private void throwIfCardDoesNotYetExist(Card card) {
-        if (card == null) {
-            throw new EntityNotFoundException("Card", "id", String.valueOf(card.getId()));
         }
     }
 }

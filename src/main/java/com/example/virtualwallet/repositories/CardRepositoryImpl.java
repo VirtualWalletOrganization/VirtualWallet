@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CardRepositoryImpl implements CardRepository {
@@ -29,30 +30,30 @@ public class CardRepositoryImpl implements CardRepository {
     }
 
     @Override
-    public List<Card> getAllCardsByUserId(int userId) {
+    public Optional<List<Card>> getAllCardsByUserId(int userId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Card> query = session.createQuery("select c From Card c WHERE c.user.id= :userId ", Card.class);
             query.setParameter("userId", userId);
-            return query.list();
+            return Optional.ofNullable(query.list());
         }
     }
 
     @Override
-    public Card getCardById(int cardId) {
+    public Optional<Card> getCardById(int cardId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Card> query = session.createQuery("FROM Card as c where c.id = :id", Card.class);
             query.setParameter("id", cardId);
-            return query.uniqueResult();
+            return Optional.ofNullable(query.uniqueResult());
 
         }
     }
 
     @Override
-    public Card getByCardNumber(String cardNumber) {
+    public Optional<Card>getByCardNumber(String cardNumber) {
         try (Session session = sessionFactory.openSession()) {
             Query<Card> query = session.createQuery("SELECT c FROM Card AS c WHERE c.cardNumber = :cardNumber", Card.class);
             query.setParameter("cardNumber", cardNumber);
-            return query.uniqueResult();
+            return Optional.ofNullable(query.uniqueResult());
         }
     }
 

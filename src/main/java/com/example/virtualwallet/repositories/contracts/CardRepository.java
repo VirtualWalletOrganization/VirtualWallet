@@ -5,16 +5,17 @@ import com.example.virtualwallet.models.User;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface CardRepository {
 
     List<Card> getAllCards();
 
-    List<Card> getAllCardsByUserId(int userId);
+    Optional<List<Card>> getAllCardsByUserId(int userId);
 
-    Card getCardById(int cardId);
+   Optional<Card> getCardById(int cardId);
 
-    Card getByCardNumber(String cardNumber);
+    Optional<Card> getByCardNumber(String cardNumber);
 
     void addCard(Card card);
 

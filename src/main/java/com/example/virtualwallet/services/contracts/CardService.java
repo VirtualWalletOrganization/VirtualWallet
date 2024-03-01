@@ -11,6 +11,7 @@ public interface CardService {
     List<Card> getAllCardsByUserId(int userId);
 
     Card getCardById(int cardId);
+    Card getCardByCardNumber(String cardNumber);
 
     void addCard(Card card, int walletId, User user);
 
