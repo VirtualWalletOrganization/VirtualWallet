@@ -2,9 +2,9 @@ package com.example.virtualwallet.models.enums;
 
 public enum Identity {
 
+    APPROVED("APPROVED"),
     INCOMPLETE("INCOMPLETE"),
     PENDING("PENDING"),
-    APPROVED("APPROVED"),
     REJECTED("REJECTED");
 
     private String name;

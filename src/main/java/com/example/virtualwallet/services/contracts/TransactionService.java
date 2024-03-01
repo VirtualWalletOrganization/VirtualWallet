@@ -5,6 +5,7 @@ import com.example.virtualwallet.models.Transaction;
 import java.util.List;
 
 public interface TransactionService {
+
     List<Transaction> getAllTransfers();
 
     Transaction getTransactionById(int transactionId);

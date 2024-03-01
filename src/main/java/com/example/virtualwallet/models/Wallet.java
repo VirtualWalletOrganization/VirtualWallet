@@ -26,7 +26,7 @@ public class Wallet {
     @Column(name = "currency")
     private String currency;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "wallet_type_id")
     private WalletType walletType;
 

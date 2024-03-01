@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface TransferService {
 
-
     List<Transfer> getAllTransfers();
 
     Transfer getTransferById(int transferId);

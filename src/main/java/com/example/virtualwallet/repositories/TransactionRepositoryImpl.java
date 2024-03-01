@@ -21,7 +21,6 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         this.sessionFactory = sessionFactory;
     }
 
-
     @Override
     public Optional<List<Transaction>> getAllTransaction() {
         try (Session session = sessionFactory.openSession()) {
@@ -48,6 +47,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                             " AND  t.walletReceiver.id= :userId", Transaction.class);
             query.setParameter("walletSender", userId);
             query.setParameter("walletReceiver", userId);
+
             return Optional.ofNullable(query.list());
         }
     }

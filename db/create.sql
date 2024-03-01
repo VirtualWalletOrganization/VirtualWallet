@@ -26,8 +26,8 @@ CREATE TABLE wallets_roles
 create table users
 (
     user_id            int auto_increment primary key,
-    first_name VARCHAR(32)        NOT NULL,
-    last_name  VARCHAR(32)        NOT NULL,
+    first_name         VARCHAR(32)         NOT NULL,
+    last_name          VARCHAR(32)         NOT NULL,
     username           varchar(20) unique  not null,
     password           varchar(50)         not null,
     email              varchar(100) unique not null,
@@ -93,7 +93,7 @@ create table wallets
 (
     wallet_id         int auto_increment primary key,
     creator_id        int                   not null,
-    balance           decimal               not null,
+    balance           decimal default 0 null,
     currency          varchar(3)            not null,
     wallet_type_id    int                   not null,
     is_default        boolean default false not null,

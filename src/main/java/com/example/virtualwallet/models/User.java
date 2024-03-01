@@ -6,12 +6,7 @@ import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -48,7 +43,7 @@ public class User {
     @Column(name = "email_verified")
     private boolean emailVerified;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "identity_status_id")
     private Identity identityVerified;
 
@@ -56,7 +51,7 @@ public class User {
     @JoinColumn(name = "photo_id")
     private Photo photo;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "role_id")
     private Role role;
 
@@ -67,7 +62,7 @@ public class User {
     @Column(name = "status")
     private UserStatus status;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "wallet_role_id")
     private WalletRole walletRole;
 

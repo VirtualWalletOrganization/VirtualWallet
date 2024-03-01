@@ -18,7 +18,7 @@ public class Card {
     @Column(name = "card_id")
     private int id;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "card_type_id")
     private CardType cardType;
 

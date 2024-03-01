@@ -1,6 +1,5 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.utils.UserFilterOptions;
@@ -14,6 +13,7 @@ import java.util.*;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
+
     private final SessionFactory sessionFactory;
 
     @Autowired
@@ -34,20 +34,15 @@ public class UserRepositoryImpl implements UserRepository {
                 params.put("username", String.format("%%%s%%", value));
             });
 
-//            userFilterOptions.getFirstName().ifPresent(value -> {
-//                filters.add(" firstName like :firstName ");
-//                params.put("firstName", String.format("%%%s%%", value));
-//            });
-//
-//            userFilterOptions.getFirstName().ifPresent(value -> {
-//                filters.add(" firstName like :firstName ");
-//                params.put("firstName", String.format("%%%s%%", value));
-//            });
-//
-//            userFilterOptions.getLastName().ifPresent(value -> {
-//                filters.add(" lastName like :lastName ");
-//                params.put("lastName", String.format("%%%s%%", value));
-//            });
+            userFilterOptions.getFirstName().ifPresent(value -> {
+                filters.add(" firstName like :firstName ");
+                params.put("firstName", String.format("%%%s%%", value));
+            });
+
+            userFilterOptions.getLastName().ifPresent(value -> {
+                filters.add(" lastName like :lastName ");
+                params.put("lastName", String.format("%%%s%%", value));
+            });
 
             userFilterOptions.getEmail().ifPresent(value -> {
                 filters.add(" email like :email ");
@@ -149,7 +144,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void deleteUser(User userToDelete) {
-
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             userToDelete.setDeleted(true);
