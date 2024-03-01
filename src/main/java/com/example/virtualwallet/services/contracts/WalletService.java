@@ -5,12 +5,15 @@ import com.example.virtualwallet.models.Wallet;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface WalletService {
 
     List<Wallet> getAll();
 
     Wallet getWalletById(int walletId);
+
+    Wallet getDefaultWallet(int recipientUserId);
 
     List<Wallet> getByCreatorId(int creatorId);
 

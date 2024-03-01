@@ -43,6 +43,12 @@ public class WalletServiceImpl implements com.example.virtualwallet.services.con
     }
 
     @Override
+    public Wallet getDefaultWallet(int recipientUserId) {
+        return walletRepository.getDefaultWallet(recipientUserId)
+                .orElseThrow(() -> new EntityNotFoundException("Recipient's wallet"));
+    }
+
+    @Override
     public List<Wallet> getByCreatorId(int creatorId) {
         return walletRepository.getByCreatorId(creatorId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallets"));
