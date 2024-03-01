@@ -3,9 +3,8 @@ package com.example.virtualwallet.controllers.rest;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
-import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.services.contracts.WalletService;
+import com.example.virtualwallet.models.Overdraft;
+import com.example.virtualwallet.services.contracts.OverdraftService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,46 +14,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/wallets")
-public class WalletRestController {
+@RequestMapping("/api/overdrafts")
+public class OverdraftRestController {
 
-    private final WalletService walletService;
+    private final OverdraftService overdraftService;
     private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public WalletRestController(WalletService walletService, AuthenticationHelper authenticationHelper) {
-        this.walletService = walletService;
+    public OverdraftRestController(OverdraftService overdraftService, AuthenticationHelper authenticationHelper) {
+        this.overdraftService = overdraftService;
         this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Wallet>> getAllWallets(@RequestHeader HttpHeaders headers) {
+    public ResponseEntity<List<Overdraft>> getAllOverdrafts(@RequestHeader HttpHeaders headers) {
         try {
             authenticationHelper.tryGetUser(headers);
-            List<Wallet> wallets = walletService.getAll();
-            return new ResponseEntity<>(wallets, HttpStatus.OK);
+            List<Overdraft> overdrafts = overdraftService.getAllOverdrafts();
+            return new ResponseEntity<>(overdrafts, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (AuthorizationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Wallet> getWalletById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    public ResponseEntity<Overdraft> getOverdraftById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             authenticationHelper.tryGetUser(headers);
-            Wallet wallet = walletService.getWalletById(id);
-            return new ResponseEntity<>(wallet, HttpStatus.OK);
+            Overdraft overdraft = overdraftService.getOverdraftById(id);
+            return new ResponseEntity<>(overdraft, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (AuthorizationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
     @PostMapping
-    public ResponseEntity<Wallet> create(@RequestHeader HttpHeaders headers, @RequestBody Wallet wallet) {
+    public ResponseEntity<Overdraft> create(@RequestHeader HttpHeaders headers, @RequestBody Overdraft overdraft) {
         try {
             authenticationHelper.tryGetUser(headers);
-            Wallet createdWallet = walletService.create(wallet);
-            return new ResponseEntity<>(createdWallet, HttpStatus.CREATED);
+            Overdraft createdOverdraft = overdraftService.create(overdraft);
+            return new ResponseEntity<>(createdOverdraft, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (AuthorizationException e) {
@@ -63,12 +66,12 @@ public class WalletRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody Wallet wallet) {
+    public ResponseEntity<Overdraft> update(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody Overdraft overdraft) {
         try {
             authenticationHelper.tryGetUser(headers);
-            wallet.setId(id);
-            walletService.update(wallet);
-            return new ResponseEntity<>(wallet, HttpStatus.OK);
+            overdraft.setId(id);
+            overdraftService.update(overdraft);
+            return new ResponseEntity<>(overdraft, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (AuthorizationException e) {
@@ -80,8 +83,8 @@ public class WalletRestController {
     public ResponseEntity<Void> delete(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             authenticationHelper.tryGetUser(headers);
-            Wallet wallet = walletService.getWalletById(id);
-            walletService.delete(wallet);
+            Overdraft overdraft = overdraftService.getOverdraftById(id);
+            overdraftService.delete(overdraft);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -90,24 +93,11 @@ public class WalletRestController {
         }
     }
 
-    @PostMapping("/{walletId}/users/{userId}")
-    public ResponseEntity<Void> addUserToWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody User user) {
+    @PutMapping("/{id}/paid")
+    public ResponseEntity<Void> updatePaidStatus(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestParam boolean isPaid) {
         try {
             authenticationHelper.tryGetUser(headers);
-            walletService.addUsersToWallet(walletId, userId, user);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    @DeleteMapping("/{walletId}/users/{userId}")
-    public ResponseEntity<Void> removeUserFromWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody User user) {
-        try {
-            authenticationHelper.tryGetUser(headers);
-            walletService.removeUsersFromWallet(walletId, userId, user);
+            overdraftService.updatePaidStatus(id, isPaid);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

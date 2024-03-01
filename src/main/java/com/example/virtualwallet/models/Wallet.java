@@ -12,6 +12,7 @@ import java.util.Set;
 public class Wallet {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "wallet_id")
     private int id;
 

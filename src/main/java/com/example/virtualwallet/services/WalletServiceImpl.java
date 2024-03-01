@@ -11,6 +11,7 @@ import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -94,6 +95,13 @@ public class WalletServiceImpl implements WalletService {
 
         wallet.getUsers().remove(userToRemove);
         userToRemove.getWallets().remove(wallet);
+        walletRepository.update(wallet);
+    }
+
+    @Override
+    public void updateBalance(int walletId, BigDecimal newBalance) {
+        Wallet wallet = walletRepository.getWalletById(walletId);
+        wallet.setBalance(newBalance);
         walletRepository.update(wallet);
     }
 }
