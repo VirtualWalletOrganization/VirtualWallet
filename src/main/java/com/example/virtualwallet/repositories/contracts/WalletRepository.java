@@ -4,14 +4,15 @@ import com.example.virtualwallet.models.Wallet;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface WalletRepository {
 
     List<Wallet> getAll();
 
-    Wallet getWalletById(int walletId);
+   Optional< Wallet> getWalletById(int walletId);
 
-    List<Wallet> getByCreatorId(int creatorId);
+    Optional<List<Wallet>> getByCreatorId(int creatorId);
 
     Wallet create(Wallet wallet);
 

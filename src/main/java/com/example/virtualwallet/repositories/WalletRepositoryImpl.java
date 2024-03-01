@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class WalletRepositoryImpl implements WalletRepository {
@@ -31,34 +32,24 @@ public class WalletRepositoryImpl implements WalletRepository {
     }
 
     @Override
-    public Wallet getWalletById(int walletId) {
+    public Optional<Wallet> getWalletById(int walletId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Wallet> query = session.createQuery(
                     "FROM Wallet as w where w.id = :walletId", Wallet.class);
             query.setParameter("walletId", walletId);
             List<Wallet> wallets = query.list();
 
-            if (wallets.isEmpty()) {
-                throw new EntityNotFoundException("Wallet", "id", String.valueOf(walletId));
-            }
-
-            return wallets.get(0);
+            return Optional.ofNullable(wallets.get(0));
         }
     }
 
     @Override
-    public List<Wallet> getByCreatorId(int creatorId) {
+    public Optional<List<Wallet>> getByCreatorId(int creatorId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Wallet> query = session.createQuery(
                     "SELECT w FROM Wallet w WHERE w.creator.id = :creatorId", Wallet.class);
             query.setParameter("creatorId", creatorId);
-            List<Wallet> wallets = query.list();
-
-            if (wallets.isEmpty()) {
-                throw new EntityNotFoundException("Wallet", "creator id", String.valueOf(creatorId));
-            }
-
-            return wallets;
+            return Optional.ofNullable(query.list());
         }
     }
 

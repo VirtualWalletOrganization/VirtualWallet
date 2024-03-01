@@ -10,6 +10,7 @@ import com.example.virtualwallet.repositories.contracts.CardRepository;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.CardService;
 import com.example.virtualwallet.services.contracts.UserService;
+import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,13 @@ import static com.example.virtualwallet.utils.Messages.USER_HAS_BEEN_BLOCKED_OR_
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserService userService;
-    private final WalletRepository walletRepository;
+    private final WalletService walletService;
 
     @Autowired
-    public CardServiceImpl(CardRepository cardRepository, UserService userService, WalletRepository walletRepository) {
+    public CardServiceImpl(CardRepository cardRepository, UserService userService, WalletService walletService) {
         this.cardRepository = cardRepository;
         this.userService = userService;
-        this.walletRepository = walletRepository;
+        this.walletService = walletService;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public void addCard(Card card, int walletId, User user) {
         throwIfCardWithSameNumberAlreadyExistsInSystem(card);
-        Wallet wallet = walletRepository.getWalletById(walletId);
+        Wallet wallet = walletService.getWalletById(walletId);
         throwIfCardWithSameNumberAlreadyExistsInWallet(card, wallet);
         wallet.getCards().add(card);
         card.setUser(user);
