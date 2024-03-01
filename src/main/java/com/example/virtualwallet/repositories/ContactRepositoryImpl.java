@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ContactRepositoryImpl implements ContactRepository {
@@ -22,34 +23,24 @@ public class ContactRepositoryImpl implements ContactRepository {
     }
 
     @Override
-    public Contact getContactById(int contactId) {
+    public Optional<Contact> getContactById(int contactId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Contact> query = session.createQuery(
                     "FROM Contact as c where c.id = :contactId", Contact.class);
             query.setParameter("id", contactId);
-            List<Contact> contacts = query.list();
 
-            if (contacts.isEmpty()) {
-                throw new EntityNotFoundException("Contact", "id", String.valueOf(contactId));
-            }
-
-            return contacts.get(0);
+            return Optional.ofNullable(query.list().get(0));
         }
     }
 
     @Override
-    public List<Contact> getAllContactsByUserId(int userId) {
+    public Optional<List<Contact>> getAllContactsByUserId(int userId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Contact> query = session.createQuery(
                     "FROM Contact as c where user.id = :userId", Contact.class);
             query.setParameter("userId", userId);
-            List<Contact> contacts = query.list();
 
-            if (contacts.isEmpty()) {
-                throw new EntityNotFoundException("Contacts");
-            }
-
-            return contacts;
+            return Optional.ofNullable(query.list());
         }
     }
 

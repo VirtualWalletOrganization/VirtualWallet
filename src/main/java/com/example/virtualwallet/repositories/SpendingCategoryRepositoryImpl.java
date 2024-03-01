@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class SpendingCategoryRepositoryImpl implements SpendingCategoryRepository {
@@ -22,21 +23,17 @@ public class SpendingCategoryRepositoryImpl implements SpendingCategoryRepositor
     }
 
     @Override
-    public List<SpendingCategory> getAllSpendingCategories() {
+    public Optional<List<SpendingCategory>> getAllSpendingCategories() {
         try (Session session = sessionFactory.openSession()) {
             Query<SpendingCategory> query = session.createQuery("FROM SpendingCategory", SpendingCategory.class);
-            return query.getResultList();
+            return Optional.ofNullable(query.list());
         }
     }
 
     @Override
-    public SpendingCategory getSpendingCategoryById(int categoryId) {
+    public Optional<SpendingCategory> getSpendingCategoryById(int categoryId) {
         try (Session session = sessionFactory.openSession()) {
-            SpendingCategory category = session.get(SpendingCategory.class, categoryId);
-            if (category == null) {
-                throw new EntityNotFoundException("SpendingCategory", "id", String.valueOf(categoryId));
-            }
-            return category;
+            return Optional.ofNullable(session.get(SpendingCategory.class, categoryId));
         }
     }
 

@@ -4,11 +4,13 @@ import com.example.virtualwallet.models.Contact;
 import com.example.virtualwallet.models.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ContactRepository {
-    Contact getContactById(int contactId);
 
-    List<Contact> getAllContactsByUserId(int userId);
+    Optional<Contact> getContactById(int contactId);
+
+    Optional<List<Contact>> getAllContactsByUserId(int userId);
 
     void create(Contact contact);
 

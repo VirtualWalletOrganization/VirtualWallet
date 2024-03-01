@@ -1,17 +1,18 @@
 package com.example.virtualwallet.services;
 
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
+import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Referral;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.ReferralRepository;
-import com.example.virtualwallet.repositories.contracts.UserRepository;
-import com.example.virtualwallet.services.contracts.ReferralService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-public class ReferralServiceImpl implements ReferralService {
+public class ReferralServiceImpl implements com.example.virtualwallet.services.contracts.ReferralService {
 
     private final ReferralRepository referralRepository;
     private final UserServiceImpl userService;
@@ -24,17 +25,26 @@ public class ReferralServiceImpl implements ReferralService {
 
     @Override
     public Referral getById(int id) {
-        return referralRepository.getById(id);
+        return referralRepository.getById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Referral", "id", String.valueOf(id)));
+    }
+
+    @Override
+    public String getReferralEmail(String email) {
+        return referralRepository.getReferralEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Referral", "email", email));
     }
 
     @Override
     public User getReferrerUserIdByEmail(String email) {
-        return referralRepository.getReferrerUserIdByEmail(email);
+        return referralRepository.getReferrerUserIdByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User", "email", email));
     }
 
     @Override
     public Status getReferralStatusByEmail(String email) {
-        return referralRepository.getReferralStatusByEmail(email);
+        return referralRepository.getReferralStatusByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Status", "email", email));
     }
 
     @Override
@@ -50,9 +60,9 @@ public class ReferralServiceImpl implements ReferralService {
             throw new DuplicateEntityException("User", "email", friendEmail);
         }
 
-        String email = referralRepository.getReferralEmail(friendEmail);
+        Optional<String> email = referralRepository.getReferralEmail(friendEmail);
 
-        if (email == null) {
+        if (email.isEmpty()) {
             //send referral email and set scheduled for 7 days.
             // If email expired we need to change status to expired
 

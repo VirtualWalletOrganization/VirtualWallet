@@ -1,5 +1,6 @@
 package com.example.virtualwallet.services;
 
+import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.SpendingCategory;
 import com.example.virtualwallet.repositories.contracts.SpendingCategoryRepository;
 import com.example.virtualwallet.services.contracts.SpendingCategoryService;
@@ -20,12 +21,14 @@ public class SpendingCategoryServiceImpl implements SpendingCategoryService {
 
     @Override
     public List<SpendingCategory> getAllSpendingCategories() {
-        return categoryRepository.getAllSpendingCategories();
+        return categoryRepository.getAllSpendingCategories()
+                .orElseThrow(() -> new EntityNotFoundException("Categories"));
     }
 
     @Override
     public SpendingCategory getSpendingCategoryById(int categoryId) {
-        return categoryRepository.getSpendingCategoryById(categoryId);
+        return categoryRepository.getSpendingCategoryById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category", "id", String.valueOf(categoryId)));
     }
 
     @Override
@@ -41,7 +44,7 @@ public class SpendingCategoryServiceImpl implements SpendingCategoryService {
 
     @Override
     public void deleteSpendingCategory(int categoryId) {
-        SpendingCategory category = categoryRepository.getSpendingCategoryById(categoryId);
+        SpendingCategory category = getSpendingCategoryById(categoryId);
         categoryRepository.delete(category);
     }
 }

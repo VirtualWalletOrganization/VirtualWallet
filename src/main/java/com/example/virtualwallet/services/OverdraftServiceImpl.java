@@ -1,13 +1,14 @@
 package com.example.virtualwallet.services;
 
+import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Overdraft;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.repositories.contracts.OverdraftRepository;
-import com.example.virtualwallet.repositories.contracts.UserRepository;
-import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.OverdraftService;
+import com.example.virtualwallet.services.contracts.UserService;
+import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,24 +20,26 @@ import java.util.List;
 public class OverdraftServiceImpl implements OverdraftService {
 
     private final OverdraftRepository overdraftRepository;
-    private final WalletRepository walletRepository;
-    private final UserRepository userRepository;
+    private final WalletService walletService;
+    private final UserService userService;
 
     @Autowired
-    public OverdraftServiceImpl(OverdraftRepository overdraftRepository, WalletRepository walletRepository, UserRepository userRepository) {
+    public OverdraftServiceImpl(OverdraftRepository overdraftRepository, WalletService walletService, UserService userService) {
         this.overdraftRepository = overdraftRepository;
-        this.walletRepository = walletRepository;
-        this.userRepository = userRepository;
+        this.walletService = walletService;
+        this.userService = userService;
     }
 
     @Override
     public List<Overdraft> getAllOverdrafts() {
-        return overdraftRepository.getAllOverdrafts();
+        return overdraftRepository.getAllOverdrafts()
+                .orElseThrow(() -> new EntityNotFoundException("Overdrafts"));
     }
 
     @Override
     public Overdraft getOverdraftById(int overdraftId) {
-        return overdraftRepository.getOverdraftById(overdraftId);
+        return overdraftRepository.getOverdraftById(overdraftId)
+                .orElseThrow(() -> new EntityNotFoundException("Overdraft", "id", String.valueOf(overdraftId)));
     }
 
     @Override
@@ -56,16 +59,16 @@ public class OverdraftServiceImpl implements OverdraftService {
 
     @Override
     public void enableOverdraft(int userId, boolean enable) {
-        List<Wallet> wallets = walletRepository.getByCreatorId(userId);
+        List<Wallet> wallets = walletService.getByCreatorId(userId);
         for (Wallet wallet : wallets) {
             wallet.setOverdraftEnabled(enable);
-            walletRepository.update(wallet);
+            walletService.update(wallet);
         }
     }
 
     @Override
     public void chargeInterest() {
-        List<Overdraft> overdrafts = overdraftRepository.getAllOverdrafts();
+        List<Overdraft> overdrafts = getAllOverdrafts();
 
         for (Overdraft overdraft : overdrafts) {
             if (overdraft.isPaid()) {
@@ -76,10 +79,10 @@ public class OverdraftServiceImpl implements OverdraftService {
             LocalDate dueDate = LocalDate.parse(overdraft.getDueDate().toString());
 
             if (currentDate.isAfter(dueDate)) {
-                BigDecimal balance = walletRepository.getWalletById(overdraft.getWallet().getId()).getBalance();
+                BigDecimal balance = walletService.getWalletById(overdraft.getWallet().getId()).getBalance();
                 BigDecimal interest = balance.multiply(BigDecimal.valueOf(overdraft.getOverdraftType().getInterestRate()));
                 balance = balance.add(interest);
-                walletRepository.updateBalance(overdraft.getWallet().getId(), balance);
+                walletService.updateBalance(overdraft.getWallet().getId(), balance);
                 overdraft.setPaid(true);
                 overdraftRepository.update(overdraft);
             }
@@ -88,7 +91,7 @@ public class OverdraftServiceImpl implements OverdraftService {
 
     @Override
     public void blockAccounts(int userId) {
-        User user = userRepository.getById(userId);
+        User user = userService.getById(userId);
         user.setStatus(UserStatus.BLOCKED);
     }
 

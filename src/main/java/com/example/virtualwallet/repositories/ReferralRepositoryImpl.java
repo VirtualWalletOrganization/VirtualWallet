@@ -1,6 +1,5 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Referral;
 import com.example.virtualwallet.models.User;
@@ -12,7 +11,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReferralRepositoryImpl implements ReferralRepository {
@@ -25,72 +24,50 @@ public class ReferralRepositoryImpl implements ReferralRepository {
     }
 
     @Override
-    public Referral getById(int id) {
+    public Optional<Referral> getById(int id) {
         try (Session session = sessionFactory.openSession()) {
             Query<Referral> query = session.createQuery(
                     "FROM Referral as r where r.id = :id", Referral.class);
             query.setParameter("id", id);
-            List<Referral> referrals = query.list();
 
-            if (referrals.isEmpty()) {
-                throw new EntityNotFoundException("Referral", "id", String.valueOf(id));
-            }
-
-            return referrals.get(0);
+            return Optional.ofNullable(query.list().get(0));
         }
     }
 
     @Override
-    public String getReferralEmail(String referredEmail) {
+    public Optional<String> getReferralEmail(String referredEmail) {
         try (Session session = sessionFactory.openSession()) {
             Query<Referral> query = session.createQuery(
                     "SELECT r FROM Referral r WHERE referredEmail = :email", Referral.class);
             query.setParameter("referredEmail", referredEmail);
             Referral result = query.list().get(0);
-
             String email = result.getReferredEmail();
 
-            if (email != null) {
-                throw new DuplicateEntityException("Referral", "email", email);
-            }
-
-            return email;
+            return Optional.ofNullable(email);
         }
     }
 
     @Override
-    public User getReferrerUserIdByEmail(String email) {
+    public Optional<User> getReferrerUserIdByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
             Query<Referral> query = session.createQuery(
                     "SELECT user FROM Referral r WHERE r.referredEmail = :email", Referral.class);
             query.setParameter("referredEmail", email);
             Referral result = query.list().get(0);
 
-            User user = result.getUser();
-
-            if (user == null) {
-                throw new EntityNotFoundException("User", "email", email);
-            }
-
-            return user;
+            return Optional.ofNullable(result.getUser());
         }
     }
 
     @Override
-    public Status getReferralStatusByEmail(String email) {
+    public Optional<Status> getReferralStatusByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
             Query<Referral> query = session.createQuery(
                     "SELECT referralStatus FROM Referral r WHERE r.referredEmail = :email", Referral.class);
             query.setParameter("referredEmail", email);
             Referral result = query.list().get(0);
 
-            Status status = result.getReferralStatus();
-
-            if (status == null) {
-                throw new EntityNotFoundException("Referrals", "email", email);
-            }
-
-            return status;
+            return Optional.ofNullable(result.getReferralStatus());
         }
     }
 

@@ -4,11 +4,11 @@ import com.example.virtualwallet.models.Referral;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Status;
 
-import java.util.List;
-
 public interface ReferralService {
 
     Referral getById(int id);
+
+    String getReferralEmail(String email);
 
     User getReferrerUserIdByEmail(String email);
 

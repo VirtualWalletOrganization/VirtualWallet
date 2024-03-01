@@ -3,11 +3,13 @@ package com.example.virtualwallet.repositories.contracts;
 import com.example.virtualwallet.models.SpendingCategory;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SpendingCategoryRepository {
-    List<SpendingCategory> getAllSpendingCategories();
 
-    SpendingCategory getSpendingCategoryById(int categoryId);
+    Optional<List<SpendingCategory>> getAllSpendingCategories();
+
+    Optional<SpendingCategory> getSpendingCategoryById(int categoryId);
 
     SpendingCategory create(SpendingCategory category);
 

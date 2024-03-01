@@ -4,15 +4,17 @@ import com.example.virtualwallet.models.Referral;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Status;
 
+import java.util.Optional;
+
 public interface ReferralRepository {
 
-    Referral getById(int id);
+    Optional<Referral> getById(int id);
 
-    String getReferralEmail(String email);
+    Optional<String> getReferralEmail(String email);
 
-    User getReferrerUserIdByEmail(String email);
+    Optional<User> getReferrerUserIdByEmail(String email);
 
-    Status getReferralStatusByEmail(String email);
+    Optional<Status> getReferralStatusByEmail(String email);
 
     Referral create(Referral referral);
 }

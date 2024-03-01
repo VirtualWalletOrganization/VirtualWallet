@@ -1,15 +1,12 @@
 package com.example.virtualwallet.services;
 
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
-import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.UserService;
-import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +19,7 @@ import static com.example.virtualwallet.utils.Messages.ADD_USER_TO_WALLET;
 import static com.example.virtualwallet.utils.Messages.REMOVE_USER_FROM_WALLET;
 
 @Service
-public class WalletServiceImpl implements WalletService {
+public class WalletServiceImpl implements com.example.virtualwallet.services.contracts.WalletService {
 
     private final WalletRepository walletRepository;
     private final UserService userService;
@@ -40,16 +37,13 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet getWalletById(int walletId) {
-        return walletRepository.getWalletById(walletId)
-                .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
+        return walletRepository.getWalletById(walletId);
     }
 
     @Override
     public List<Wallet> getByCreatorId(int creatorId) {
-        return walletRepository.getByCreatorId(creatorId)
-                .orElseThrow(() ->new EntityNotFoundException("Wallet", "creator id", String.valueOf(creatorId)));
+        return walletRepository.getByCreatorId(creatorId);
     }
-
 
     @Override
     public Wallet create(Wallet wallet) {

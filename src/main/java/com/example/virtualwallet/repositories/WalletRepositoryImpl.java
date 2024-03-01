@@ -1,6 +1,5 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import org.hibernate.Session;

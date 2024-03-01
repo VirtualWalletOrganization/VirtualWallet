@@ -11,15 +11,12 @@ import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.UserStatus;
-import com.example.virtualwallet.repositories.contracts.ReferralRepository;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
-import com.example.virtualwallet.repositories.contracts.WalletRepository;
+import com.example.virtualwallet.services.contracts.ReferralService;
 import com.example.virtualwallet.services.contracts.UserService;
+import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,17 +29,15 @@ import static com.example.virtualwallet.utils.Messages.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ReferralRepository referralRepository;
-    private final WalletRepository walletRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    private final ReferralService referralService;
+    private final WalletService walletService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, ReferralService referralService,
+                           WalletService walletService) {
         this.userRepository = userRepository;
-        this.referralRepository = referralRepository;
-        this.walletRepository = walletRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.referralService = referralService;
+        this.walletService = walletService;
     }
 
     @Override
@@ -73,7 +68,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User", "email", email));
     }
 
-        @Override
+    @Override
     public void registerUser(User user, WalletDto walletDto) {
         setAdminRoleIfDataBaseEmpty(user);
         User existingUser = getByUsername(user.getUsername());
@@ -87,7 +82,7 @@ public class UserServiceImpl implements UserService {
             Wallet wallet = new Wallet();
             wallet.setCurrency(walletDto.getCurrency());
             wallet.setDefault(true);
-            walletRepository.create(wallet);
+            walletService.create(wallet);
         }
     }
 
@@ -99,7 +94,9 @@ public class UserServiceImpl implements UserService {
         if (userToBeVerifiedOptional.isEmpty()) {
             throw new EntityNotFoundException("User", "email", user.getEmail());
         }
-        User userToBeVerified=userToBeVerifiedOptional.get();
+
+        User userToBeVerified = userToBeVerifiedOptional.get();
+
         if (user.getIdentityVerified().equals(Identity.APPROVED)) {
             throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
         } else if (userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
@@ -108,11 +105,10 @@ public class UserServiceImpl implements UserService {
             user.setIdentityVerified(Identity.APPROVED);
             userRepository.updateUser(user);
 
-            if (referralRepository.getReferralEmail(user.getEmail()) != null) {
-                if (referralRepository.getReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
-                    User referrerUser = referralRepository.getReferrerUserIdByEmail(user.getEmail());
+            if (referralService.getReferralEmail(user.getEmail()) != null) {
+                if (referralService.getReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
+                    User referrerUser = referralService.getReferrerUserIdByEmail(user.getEmail());
                     addBonus(referrerUser);
-
                     addBonus(user);
                 }
             }
@@ -142,7 +138,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(int deleteUser, User executingUser) {
         checkAccessPermissions(deleteUser, executingUser, DELETE_USER_MESSAGE_ERROR);
-
         User userToDelete = getById(deleteUser);
 
         if (userToDelete.isDeleted()) {
@@ -152,6 +147,7 @@ public class UserServiceImpl implements UserService {
         if (userToDelete.getId() == 1) {
             throw new DeletionRestrictedException(MASTER_ADMIN_MESSAGE_ERROR);
         }
+
         userToDelete.setDeleted(true);
         userRepository.updateUser(userToDelete);
     }
@@ -159,30 +155,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveProfilePictureUrl(String username, String profilePictureUrl) {
         Optional<User> userOptional = userRepository.getByUsername(username);
-        if(userOptional.isPresent()){
-            User user=userOptional.get();
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             user.getPhoto().setSelfie(profilePictureUrl);
             userRepository.updateUser(user);
-        }else {
+        } else {
             throw new EntityNotFoundException("User", "username", username);
         }
-
-
     }
 
     @Override
     public String getProfilePictureUrl(String username) {
-
         Optional<User> userOptional = userRepository.getByUsername(username);
-        if(userOptional.isPresent()){
-            User user=userOptional.get();
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             return user.getPhoto().getSelfie();
-        }else {
+        } else {
             throw new EntityNotFoundException("User", "username", username);
         }
-
-
-
     }
 
     @Override
@@ -264,7 +256,7 @@ public class UserServiceImpl implements UserService {
             updateUser(admin, userPhoneNumberToBeUpdate);
 
         } else {
-            throw new com.example.virtualwallet.exceptions.EntityNotFoundException("Admin", "phone number");
+            throw new EntityNotFoundException("Admin", "phone number");
         }
     }
 
@@ -292,7 +284,7 @@ public class UserServiceImpl implements UserService {
                 .filter(Wallet::getDefault)
                 .findFirst().get();
         userWallet.setBalance(userWallet.getBalance().add(REFERRAL_BONUS));
-        walletRepository.update(userWallet);
+        walletService.update(userWallet);
     }
 
     private void checkDuplicateEntity(User user) {
@@ -316,13 +308,5 @@ public class UserServiceImpl implements UserService {
         if (userRepository.isDataBaseEmpty()) {
             user.setRole(Role.ADMIN);
         }
-    }
-    @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException {
-            return userRepository.getByUsername(username)
-                    .orElseThrow(() ->
-                            new UsernameNotFoundException(
-                                    String.format(USER_NOT_FOUND_MSG, username)));
     }
 }

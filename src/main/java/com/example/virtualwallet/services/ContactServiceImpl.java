@@ -1,5 +1,6 @@
 package com.example.virtualwallet.services;
 
+import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Contact;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.repositories.contracts.ContactRepository;
@@ -21,12 +22,14 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact getContactById(int contactId) {
-        return contactRepository.getContactById(contactId);
+        return contactRepository.getContactById(contactId)
+                .orElseThrow(() -> new EntityNotFoundException("Contact", "id", String.valueOf(contactId)));
     }
 
     @Override
     public List<Contact> getAllContactsByUserId(int userId) {
-        return contactRepository.getAllContactsByUserId(userId);
+        return contactRepository.getAllContactsByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Contact"));
     }
 
     @Override

@@ -7,9 +7,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.OpAnd;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TransferRepositoryImpl implements TransferRepository {
@@ -22,26 +24,21 @@ public class TransferRepositoryImpl implements TransferRepository {
     }
 
     @Override
-    public List<Transfer> getAllTransfers() {
+    public Optional<List<Transfer>> getAllTransfers() {
         try (Session session = sessionFactory.openSession()) {
             Query<Transfer> query = session.createQuery("FROM Transfer", Transfer.class);
-            return query.getResultList();
+            return Optional.ofNullable(query.list());
         }
     }
 
     @Override
-    public Transfer getTransferById(int transferId) {
+    public Optional<Transfer> getTransferById(int transferId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Transfer> query = session.createQuery(
                     "FROM Transfer as t where t.transferId = :transferId", Transfer.class);
             query.setParameter("transferId", transferId);
-            List<Transfer> transfers = query.list();
 
-            if (transfers.isEmpty()) {
-                throw new EntityNotFoundException("Transfer", "id", String.valueOf(transferId));
-            }
-
-            return transfers.get(0);
+            return Optional.ofNullable(query.list().get(0));
         }
     }
 

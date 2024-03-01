@@ -19,7 +19,7 @@ public interface TransferService {
 
     void transferMoney(int senderUserId, int recipientUserId, int walletId, double amount);
 
-    void confirmTransfer(int transferId, int recipientId, int recipientWalletId);
+    void confirmTransfer(int transferId, int senderUserId, int recipientId, int recipientWalletId);
 
     void editTransfer(int transferId, double newAmount);
 }

@@ -3,11 +3,13 @@ package com.example.virtualwallet.repositories.contracts;
 import com.example.virtualwallet.models.Overdraft;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OverdraftRepository {
 
-    List<Overdraft> getAllOverdrafts();
-    Overdraft getOverdraftById(int overdraftId);
+    Optional<List<Overdraft>> getAllOverdrafts();
+
+    Optional<Overdraft> getOverdraftById(int overdraftId);
 
     Overdraft create(Overdraft overdraft);
 

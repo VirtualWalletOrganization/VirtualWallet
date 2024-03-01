@@ -1,6 +1,5 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Overdraft;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.repositories.contracts.OverdraftRepository;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class OverdraftRepositoryImpl implements OverdraftRepository {
@@ -23,26 +23,21 @@ public class OverdraftRepositoryImpl implements OverdraftRepository {
     }
 
     @Override
-    public List<Overdraft> getAllOverdrafts() {
+    public Optional<List<Overdraft>> getAllOverdrafts() {
         try (Session session = sessionFactory.openSession()) {
             Query<Overdraft> query = session.createQuery("FROM Overdraft", Overdraft.class);
-            return query.getResultList();
+            return Optional.ofNullable(query.getResultList());
         }
     }
 
     @Override
-    public Overdraft getOverdraftById(int overdraftId) {
+    public Optional<Overdraft> getOverdraftById(int overdraftId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Overdraft> query = session.createQuery(
                     "FROM Overdraft as o where o.id = :overdraftId", Overdraft.class);
             query.setParameter("overdraftId", overdraftId);
-            List<Overdraft> overdrafts = query.list();
 
-            if (overdrafts.isEmpty()) {
-                throw new EntityNotFoundException("Overdraft", "id", String.valueOf(overdraftId));
-            }
-
-            return overdrafts.get(0);
+            return Optional.ofNullable(query.list().get(0));
         }
     }
 

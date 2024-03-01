@@ -108,10 +108,10 @@ public class TransferRestController {
     }
 
     @PostMapping("/confirm-transfer")
-    public ResponseEntity<Void> confirmTransfer(@RequestHeader HttpHeaders headers, @RequestParam int transferId, @RequestParam int recipientId, @RequestParam int recipientWalletId) {
+    public ResponseEntity<Void> confirmTransfer(@RequestHeader HttpHeaders headers, @RequestParam int transferId, @RequestParam int senderId, @RequestParam int recipientId, @RequestParam int recipientWalletId) {
         try {
             authenticationHelper.tryGetUser(headers);
-            transferService.confirmTransfer(transferId, recipientId, recipientWalletId);
+            transferService.confirmTransfer(transferId, senderId, recipientId, recipientWalletId);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
