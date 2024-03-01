@@ -17,12 +17,18 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private int id;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
 
     @Column(name = "username")
     private String username;
@@ -43,7 +49,7 @@ public class User implements UserDetails {
     private boolean emailVerified;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "identity_verified")
+    @Column(name = "identity_status_id")
     private Identity identityVerified;
 
     @ManyToOne
@@ -51,7 +57,7 @@ public class User implements UserDetails {
     private Photo photo;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
+    @Column(name = "role_id")
     private Role role;
 
     @Column(name = "is_deleted")
@@ -62,7 +68,7 @@ public class User implements UserDetails {
     private UserStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "wallet_admin")
+    @Column(name = "wallet_role_id")
     private WalletRole walletRole;
 
     @JsonIgnore
@@ -81,38 +87,28 @@ public class User implements UserDetails {
     public User() {
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getUsername() {

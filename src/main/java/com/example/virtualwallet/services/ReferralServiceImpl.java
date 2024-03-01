@@ -6,19 +6,21 @@ import com.example.virtualwallet.models.Referral;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.ReferralRepository;
+import com.example.virtualwallet.services.contracts.ReferralService;
+import com.example.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class ReferralServiceImpl implements com.example.virtualwallet.services.contracts.ReferralService {
+public class ReferralServiceImpl implements ReferralService {
 
     private final ReferralRepository referralRepository;
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @Autowired
-    public ReferralServiceImpl(ReferralRepository referralRepository, UserServiceImpl userService) {
+    public ReferralServiceImpl(ReferralRepository referralRepository, UserService userService) {
         this.referralRepository = referralRepository;
         this.userService = userService;
     }

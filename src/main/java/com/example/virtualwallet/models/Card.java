@@ -19,7 +19,7 @@ public class Card {
     private int id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "card_type")
+    @Column(name = "card_type_id")
     private CardType cardType;
 
     @JsonIgnore
@@ -45,9 +45,6 @@ public class Card {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private CardStatus cardStatus;
-
-    @Column(name = "balance")
-    private double balance;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "cards")
@@ -126,14 +123,6 @@ public class Card {
 
     public void setCardStatus(CardStatus cardStatus) {
         this.cardStatus = cardStatus;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
     }
 
     public Set<Wallet> getWallets() {

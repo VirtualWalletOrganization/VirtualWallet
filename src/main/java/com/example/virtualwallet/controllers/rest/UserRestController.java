@@ -46,8 +46,8 @@ public class UserRestController {
     @GetMapping
     public List<UserResponseDto> getAll(@RequestHeader HttpHeaders headers,
                                         @RequestParam(required = false) String username,
-//                                        @RequestParam(required = false) String firstName,
-//                                        @RequestParam(required = false) String lastName,
+                                        @RequestParam(required = false) String firstName,
+                                        @RequestParam(required = false) String lastName,
                                         @RequestParam(required = false) String email,
                                         @RequestParam(required = false) Role role,
                                         @RequestParam(required = false) Status status,
@@ -57,7 +57,7 @@ public class UserRestController {
             User user = authenticationHelper.tryGetUser(headers);
             UserFilterOptions userFilterOptions =
                     new UserFilterOptions(
-                            username, email, role, status, sortBy, sortOrder);
+                            username, firstName, lastName, email, role, status, sortBy, sortOrder);
 
             List<User> users = userService.getAll(user, userFilterOptions);
 

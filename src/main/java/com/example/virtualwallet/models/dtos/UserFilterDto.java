@@ -6,6 +6,8 @@ import com.example.virtualwallet.models.enums.UserStatus;
 public class UserFilterDto {
 
     private String username;
+    private String firstName;
+    private String lastName;
     private String email;
     private Role role;
     private UserStatus status;
@@ -13,7 +15,6 @@ public class UserFilterDto {
     private String sortOrder;
 
     public UserFilterDto() {
-
     }
 
     public String getUsername() {
@@ -22,6 +23,22 @@ public class UserFilterDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {

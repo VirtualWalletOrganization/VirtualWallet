@@ -2,13 +2,14 @@ package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.Direction;
 import com.example.virtualwallet.models.enums.Status;
+import com.example.virtualwallet.models.enums.TransactionType;
 import jakarta.persistence.*;
 
 import java.util.Date;
 
-@Inheritance
 @Entity
 @Table(name = "transactions")
+//@SecondaryTable(name = "recurring_transactions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "transaction_id"))
 public class Transaction {
 
     @Id
@@ -38,11 +39,18 @@ public class Transaction {
     private Date date;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "transaction_status_id")
     private Status status;
 
     @Column(name = "description")
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type_id")
+    private TransactionType transactionType;
+
+//    @Column(name = "recurring_transaction_id", table = "recurring_transactions")
+//    private int recuringTransactionId;
 
     public Transaction() {
     }
@@ -118,4 +126,20 @@ public class Transaction {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public TransactionType getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
+    }
+
+//    public int getRecuringTransactionId() {
+//        return recuringTransactionId;
+//    }
+//
+//    public void setRecuringTransactionId(int recuringTransactionId) {
+//        this.recuringTransactionId = recuringTransactionId;
+//    }
 }

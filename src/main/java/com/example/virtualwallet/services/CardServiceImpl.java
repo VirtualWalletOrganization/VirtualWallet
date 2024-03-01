@@ -27,13 +27,11 @@ import static com.example.virtualwallet.utils.Messages.USER_HAS_BEEN_BLOCKED_OR_
 @Service
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
-    private final UserService userService;
     private final WalletService walletService;
 
     @Autowired
-    public CardServiceImpl(CardRepository cardRepository, UserService userService, WalletService walletService) {
+    public CardServiceImpl(CardRepository cardRepository, WalletService walletService) {
         this.cardRepository = cardRepository;
-        this.userService = userService;
         this.walletService = walletService;
     }
 

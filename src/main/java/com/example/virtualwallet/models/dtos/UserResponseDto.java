@@ -10,6 +10,8 @@ public class UserResponseDto {
 
     @JsonIgnore
     private int id;
+    private String firstName;
+    private String lastName;
     private String email;
     private Role role = Role.USER;
     private String phoneNumber;
@@ -17,8 +19,11 @@ public class UserResponseDto {
     public UserResponseDto() {
     }
 
-    public UserResponseDto(int id, String email, Role role, String phoneNumber) {
+    public UserResponseDto(int id, String firstName, String lastName,
+                           String email, Role role, String phoneNumber) {
         this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.role = role;
         this.phoneNumber = phoneNumber;
@@ -30,6 +35,22 @@ public class UserResponseDto {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {

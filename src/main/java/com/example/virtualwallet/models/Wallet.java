@@ -27,7 +27,7 @@ public class Wallet {
     private String currency;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "wallet_type")
+    @Column(name = "wallet_type_id")
     private WalletType walletType;
 
     @Column(name = "is_default")
