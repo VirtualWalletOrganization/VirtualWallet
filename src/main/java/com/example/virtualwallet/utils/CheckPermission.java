@@ -6,13 +6,13 @@ import com.example.virtualwallet.models.enums.Role;
 
 public class CheckPermission {
     public static void checkAccessPermissions(int targetUserId, User executingUser, String message) {
-        if (!executingUser.getRole().name().equals("ADMIN") && executingUser.getId() != targetUserId) {
+        if (!executingUser.getUsersRole().toString().equals("ADMIN") && executingUser.getId() != targetUserId) {
             throw new AuthorizationException(message);
         }
     }
 
     public static void checkAccessPermissionsAdmin(User executingUser, String message) {
-        if (!executingUser.getRole().equals(Role.ADMIN)) {
+        if (!executingUser.getUsersRole().toString().equals("ADMIN")) {
             throw new AuthorizationException(message);
         }
     }
