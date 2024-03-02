@@ -1,5 +1,6 @@
 package com.example.virtualwallet.repositories;
 
+import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import org.hibernate.Session;
@@ -8,7 +9,6 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +30,27 @@ public class WalletRepositoryImpl implements WalletRepository {
         }
     }
 
+//    @Override
+//    public Optional<List<User>> getAllUsersByWalletId(int walletId) {
+//        try (Session session = sessionFactory.openSession()) {
+//            Query<User> query = session.createQuery(
+//                    "SELECT u FROM User u JOIN u.wallets w WHERE w.id = :walletId", User.class);
+//            query.setParameter("walletId", walletId);
+//            return Optional.ofNullable(query.list());
+//        }
+//    }
+
+    @Override
+    public Optional<User> existsUserWithWallet(int userId, int walletId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery(
+                    "SELECT u FROM User u JOIN u.wallets w WHERE u.id = :userId AND w.id = :walletId", User.class);
+            query.setParameter("userId", userId);
+            query.setParameter("walletId", walletId);
+            return Optional.ofNullable(query.uniqueResult());
+        }
+    }
+
     @Override
     public Optional<Wallet> getWalletById(int walletId) {
         try (Session session = sessionFactory.openSession()) {
@@ -41,6 +62,7 @@ public class WalletRepositoryImpl implements WalletRepository {
             return Optional.ofNullable(wallets.get(0));
         }
     }
+
     @Override
     public Optional<Wallet> getDefaultWallet(int recipientUserId) {
         try (Session session = sessionFactory.openSession()) {
@@ -88,18 +110,6 @@ public class WalletRepositoryImpl implements WalletRepository {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.remove(wallet);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void updateBalance(int walletId, BigDecimal newBalance) {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("UPDATE Wallet SET balance = :newBalance WHERE id = :walletId");
-            query.setParameter("newBalance", newBalance);
-            query.setParameter("walletId", walletId);
-            query.executeUpdate();
             session.getTransaction().commit();
         }
     }

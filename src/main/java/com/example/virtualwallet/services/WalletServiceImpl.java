@@ -8,6 +8,7 @@ import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.UserService;
+import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +16,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
-import static com.example.virtualwallet.utils.CheckPermissions.checkUserWalletAdmin;
-import static com.example.virtualwallet.utils.Messages.ADD_USER_TO_WALLET;
-import static com.example.virtualwallet.utils.Messages.REMOVE_USER_FROM_WALLET;
+import static com.example.virtualwallet.utils.CheckPermissions.*;
+import static com.example.virtualwallet.utils.Messages.*;
 
 @Service
-public class WalletServiceImpl implements com.example.virtualwallet.services.contracts.WalletService {
+public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
     private final UserService userService;
@@ -32,12 +32,24 @@ public class WalletServiceImpl implements com.example.virtualwallet.services.con
     }
 
     @Override
-    public List<Wallet> getAll() {
+    public List<Wallet> getAll(User user) {
+        checkAccessPermissionsAdmin(user, WALLET_ERROR_MESSAGE);
         return walletRepository.getAll();
     }
 
+//    @Override
+//    public List<User> getAllUsersByWalletId(int walletId) {
+//        getWalletById(walletId);
+//        return walletRepository.getAllUsersByWalletId(walletId)
+//                .orElseThrow(() -> new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId)));
+//    }
+
     @Override
-    public Wallet getWalletById(int walletId) {
+    public Wallet getWalletById(int walletId, int userId) {
+        if (walletRepository.existsUserWithWallet(userId, walletId).isEmpty()) {
+            throw new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId));
+        }
+
         return walletRepository.getWalletById(walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
     }
@@ -53,6 +65,7 @@ public class WalletServiceImpl implements com.example.virtualwallet.services.con
         return walletRepository.getByCreatorId(creatorId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallets"));
     }
+
     @Override
     public Wallet create(Wallet wallet) {
         if (wallet.getWalletType().equals(WalletType.JOINT)) {
@@ -65,23 +78,25 @@ public class WalletServiceImpl implements com.example.virtualwallet.services.con
     }
 
     @Override
-    public void update(Wallet wallet) {
+    public void update(Wallet wallet, User user) {
+        checkAccessPermissionWalletUser(wallet, user, MODIFY_WALLET_ERROR_MESSAGE);
         walletRepository.update(wallet);
     }
 
     @Override
-    public void delete(Wallet wallet) {
+    public void delete(Wallet wallet, User user) {
+        checkAccessPermissionWalletUser(wallet, user, MODIFY_WALLET_ERROR_MESSAGE);
         walletRepository.delete(wallet);
     }
 
     @Override
-    public void addUsersToWallet(int walletId, int userId, User user) {
-        Wallet wallet = getWalletById(walletId);
+    public void addUsersToWallet(int walletId, int userId, User executingUser) {
+        Wallet wallet = getWalletById(executingUser.getId(), walletId);
+        User userToAdd = userService.getById(userId);
 
-        checkUserWalletAdmin(wallet, user, ADD_USER_TO_WALLET);
+        checkUserWalletAdmin(wallet, executingUser, ADD_USER_TO_WALLET);
 
         Set<User> existingUsers = wallet.getUsers();
-        User userToAdd = userService.getById(userId);
 
         if (existingUsers.contains(userToAdd)) {
             throw new DuplicateEntityException("User", "id", "one of the provided user IDs");
@@ -93,22 +108,14 @@ public class WalletServiceImpl implements com.example.virtualwallet.services.con
     }
 
     @Override
-    public void removeUsersFromWallet(int walletId, int userId, User user) {
-        Wallet wallet = getWalletById(walletId);
-
-        checkUserWalletAdmin(wallet, user, REMOVE_USER_FROM_WALLET);
-
+    public void removeUsersFromWallet(int walletId, int userId, User executingUser) {
+        Wallet wallet = getWalletById(executingUser.getId(), walletId);
         User userToRemove = userService.getById(userId);
+
+        checkUserWalletAdmin(wallet, executingUser, REMOVE_USER_FROM_WALLET);
 
         wallet.getUsers().remove(userToRemove);
         userToRemove.getWallets().remove(wallet);
-        walletRepository.update(wallet);
-    }
-
-    @Override
-    public void updateBalance(int walletId, BigDecimal newBalance) {
-        Wallet wallet = getWalletById(walletId);
-        wallet.setBalance(newBalance);
         walletRepository.update(wallet);
     }
 }

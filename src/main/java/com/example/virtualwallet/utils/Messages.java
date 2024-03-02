@@ -23,5 +23,10 @@ public class Messages {
     public static final String VERIFY_USER = "Only admin can verify users.";
     public static final BigDecimal REFERRAL_BONUS = BigDecimal.valueOf(20);
     public final static String USER_NOT_FOUND_MSG = "user with username %s not found";
+    public static final String WALLET_ERROR_MESSAGE = "Only admin can review all wallets";
+    public static final String ERROR_USER_FOUND = "Only users with access could review this wallet.";
+    public static final String MODIFY_WALLET_ERROR_MESSAGE = "“Only the owner of this wallet has permission to delete or update it.";
+
+
 
 }

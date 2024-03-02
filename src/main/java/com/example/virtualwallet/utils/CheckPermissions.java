@@ -10,7 +10,7 @@ import com.example.virtualwallet.models.enums.WalletRole;
 public class CheckPermissions {
 
     public static void checkAccessPermissions(int targetUserId, User executingUser, String message) {
-        if (!executingUser.getRole().name().equals("ADMIN") && executingUser.getId() != targetUserId) {
+        if (!executingUser.getRole().equals(Role.ADMIN) && executingUser.getId() != targetUserId) {
             throw new AuthorizationException(message);
         }
     }
@@ -35,6 +35,12 @@ public class CheckPermissions {
 
     public static void checkUserWalletAdmin(Wallet wallet, User user, String message) {
         if (!wallet.getCreator().equals(user) || !user.getWalletRole().equals(WalletRole.ADMIN)) {
+            throw new AuthorizationException(message);
+        }
+    }
+
+    public static void checkAccessPermissionWalletUser(Wallet wallet, User user, String message) {
+        if (wallet.getCreator().getId() != user.getId()) {
             throw new AuthorizationException(message);
         }
     }
