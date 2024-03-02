@@ -112,17 +112,27 @@ public class UserRepositoryImpl implements UserRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where email = :email", User.class);
             query.setParameter("email", email);
-
-            return Optional.ofNullable(query.list().get(0));
-        }
-    }
+            List<User> userList = query.list();
+            if(!userList.isEmpty()){
+                return Optional.ofNullable(userList.get(0));
+            }else{
+                return Optional.empty();
+            }
+//            return Optional.ofNullable(query.list().get(0));
+//        }
+    }}
 
     public Optional<User>getByPhoneNumber(String phoneNumber){
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where phoneNumber = :phoneNumber", User.class);
             query.setParameter("phoneNumber", phoneNumber);
-
-            return Optional.ofNullable(query.list().get(0));
+            List<User> userList = query.list();
+            if(!userList.isEmpty()){
+                return Optional.ofNullable(userList.get(0));
+            }else{
+                return Optional.empty();
+            }
+//            return Optional.ofNullable(query.list().get(0));
         }
     }
 
