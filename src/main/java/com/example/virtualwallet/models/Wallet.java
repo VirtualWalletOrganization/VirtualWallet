@@ -26,9 +26,9 @@ public class Wallet {
     @Column(name = "currency")
     private String currency;
 
-//    @Enumerated(EnumType.STRING)
-    @Column(name = "wallet_type_id")
-    private WalletType walletType;
+    @ManyToOne
+    @JoinColumn(name = "wallet_type_id")
+    private WalletsType walletType;
 
     @Column(name = "is_default")
     private Boolean isDefault = Boolean.FALSE;
@@ -91,11 +91,11 @@ public class Wallet {
         this.currency = currency;
     }
 
-    public WalletType getWalletType() {
+    public WalletsType getWalletType() {
         return walletType;
     }
 
-    public void setWalletType(WalletType walletType) {
+    public void setWalletType(WalletsType walletType) {
         this.walletType = walletType;
     }
 

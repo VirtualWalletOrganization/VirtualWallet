@@ -98,9 +98,12 @@ public class UserRepositoryImpl implements UserRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);
-
-            return Optional.ofNullable(query.list().get(0));
-
+            List<User> userList = query.list();
+            if(!userList.isEmpty()){
+                return Optional.ofNullable(userList.get(0));
+            }else{
+                return Optional.empty();
+            }
         }
     }
 

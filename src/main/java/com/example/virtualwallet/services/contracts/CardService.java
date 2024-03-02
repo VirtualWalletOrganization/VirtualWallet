@@ -8,9 +8,10 @@ import java.util.List;
 public interface CardService {
     List<Card> getAllCards();
 
-    List<Card> getAllCardsByUserId(int userId);
+    Card getCardById(int cardId, User user);
 
-    Card getCardById(int cardId);
+    List<Card> getAllCardsByUserId(int userId, User user);
+
     Card getCardByCardNumber(String cardNumber);
 
     void addCard(Card card, int walletId, User user);

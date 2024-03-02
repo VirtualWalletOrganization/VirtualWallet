@@ -7,7 +7,6 @@ import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.CardStatus;
 import com.example.virtualwallet.repositories.contracts.CardRepository;
-import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.CardService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
@@ -19,41 +18,45 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.virtualwallet.utils.CheckPermissions.checkAccessPermissionsUser;
-import static com.example.virtualwallet.utils.CheckPermissions.checkBlockOrDeleteUser;
-import static com.example.virtualwallet.utils.Messages.MODIFY_CARD_ERROR_MESSAGE;
-import static com.example.virtualwallet.utils.Messages.USER_HAS_BEEN_BLOCKED_OR_DELETED;
+import static com.example.virtualwallet.utils.CheckPermissions.*;
+import static com.example.virtualwallet.utils.Messages.*;
 
 @Service
 public class CardServiceImpl implements CardService {
+
     private final CardRepository cardRepository;
     private final WalletService walletService;
+    private final UserService userService;
 
     @Autowired
-    public CardServiceImpl(CardRepository cardRepository, WalletService walletService) {
+    public CardServiceImpl(CardRepository cardRepository, WalletService walletService, UserService userService) {
         this.cardRepository = cardRepository;
         this.walletService = walletService;
+        this.userService = userService;
     }
 
     @Override
     public List<Card> getAllCards() {
         return cardRepository.getAllCards();
     }
-
     @Override
-    public List<Card> getAllCardsByUserId(int userId) {
-        return cardRepository.getAllCardsByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Cards"));
-    }
-
-    @Override
-    public Card getCardById(int cardId) {
+    public Card getCardById(int cardId, User executingUser){
+      //  checkAccessPermissionsCardUserById(cardId, executingUser, SEARCH_CARD_ERROR_MESSAGE);
         return cardRepository.getCardById(cardId)
                 .orElseThrow(() -> new EntityNotFoundException("Card", "id", String.valueOf(cardId)));
     }
 
     @Override
+    public List<Card> getAllCardsByUserId(int userId,User executingUser) {
+        checkAccessPermissionsUser(userId, executingUser, SEARCH_CARD_ERROR_MESSAGE);
+        return cardRepository.getAllCardsByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cards"));
+    }
+
+
+    @Override
     public Card getCardByCardNumber(String cardNumber) {
+       // checkAccessPermissionsCardUserByCardNumber(cardNumber, executingUser, SEARCH_CARD_ERROR_MESSAGE);
         return cardRepository.getByCardNumber(cardNumber)
                 .orElseThrow(() -> new EntityNotFoundException("Card", "card number", String.valueOf(cardNumber)));
     }
@@ -61,7 +64,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public void addCard(Card card, int walletId, User user) {
         throwIfCardWithSameNumberAlreadyExistsInSystem(card);
-        Wallet wallet = walletService.getWalletById(walletId);
+        Wallet wallet = walletService.getWalletById(walletId, user.getId());
         throwIfCardWithSameNumberAlreadyExistsInWallet(card, wallet);
         wallet.getCards().add(card);
         card.setUser(user);
@@ -69,25 +72,22 @@ public class CardServiceImpl implements CardService {
         cardRepository.addCard(card);
     }
 
-
     @Override
     public void updateCard(Card card, User user) {
-        Card cardToUpdate = getCardById(card.getId());
+        Card cardToUpdate = getCardById(card.getId(),user);
         checkAccessPermissionsUser(cardToUpdate.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
         checkBlockOrDeleteUser(user, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(card);
-
         cardRepository.updateCard(card);
     }
 
     @Override
     public void deleteCard(int cardId, User user) {
-        Card cardToDelete = getCardById(cardId);
+        Card cardToDelete = getCardById(cardId,user);
         checkAccessPermissionsUser(cardToDelete.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
         checkBlockOrDeleteUser(user, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         cardRepository.deleteCard(cardToDelete);
     }
-
 
     @Scheduled(cron = "0 0 0 1 * *")
     public void deactivateExpiredCards() {
@@ -112,11 +112,10 @@ public class CardServiceImpl implements CardService {
                 .findFirst();
         existingCardOptional.ifPresent(existingCard -> {
             if (existingCard.getId() != card.getId()) {
-                throw new DuplicateEntityException("Card", "card number", card.getCardNumber());}
+                throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
+            }
         });
-
     }
-
 
     private void throwIfCardWithSameNumberAlreadyExistsInWallet(Card card, Wallet wallet) {
         if (wallet.getCards()

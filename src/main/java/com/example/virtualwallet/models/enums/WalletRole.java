@@ -3,7 +3,7 @@ package com.example.virtualwallet.models.enums;
 public enum WalletRole {
 
     ADMIN("ADMIN"),
-    REGULAR("REGULAR");
+    USER("USER");
 
     private String name;
 

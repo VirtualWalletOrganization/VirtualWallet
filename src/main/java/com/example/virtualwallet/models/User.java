@@ -43,17 +43,17 @@ public class User {
     @Column(name = "email_verified")
     private boolean emailVerified;
 
-//    @Enumerated(EnumType.STRING)
-    @Column(name = "identity_status_id")
-    private Identity identityVerified;
+    @ManyToOne
+    @JoinColumn(name = "identity_status_id")
+    private IdentityStatus identityStatus;
 
     @ManyToOne
     @JoinColumn(name = "photo_id")
     private Photo photo;
 
-//    @Enumerated(EnumType.STRING)
-    @Column(name = "role_id")
-    private Role role;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private UsersRole usersRole;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
@@ -62,9 +62,9 @@ public class User {
     @Column(name = "status")
     private UserStatus status;
 
-//    @Enumerated(EnumType.STRING)
-    @Column(name = "wallet_role_id")
-    private WalletRole walletRole;
+    @ManyToOne
+    @JoinColumn(name = "wallet_role_id")
+    private WalletsRole walletRole;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -75,6 +75,9 @@ public class User {
     )
     private Set<Wallet> wallets;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<Card> cards;
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Contact> contacts;
@@ -154,12 +157,12 @@ public class User {
         this.emailVerified = emailVerified;
     }
 
-    public Identity getIdentityVerified() {
-        return identityVerified;
+    public IdentityStatus getIdentityStatus() {
+        return identityStatus;
     }
 
-    public void setIdentityVerified(Identity identityVerified) {
-        this.identityVerified = identityVerified;
+    public void setIdentityStatus(IdentityStatus identityStatus) {
+        this.identityStatus = identityStatus;
     }
 
     public Photo getPhoto() {
@@ -170,12 +173,12 @@ public class User {
         this.photo = photo;
     }
 
-    public Role getRole() {
-        return role;
+    public UsersRole getUsersRole() {
+        return usersRole;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setUsersRole(UsersRole usersRole) {
+        this.usersRole = usersRole;
     }
 
     public boolean isDeleted() {
@@ -194,11 +197,11 @@ public class User {
         this.status = status;
     }
 
-    public WalletRole getWalletRole() {
+    public WalletsRole getWalletRole() {
         return walletRole;
     }
 
-    public void setWalletRole(WalletRole walletRole) {
+    public void setWalletRole(WalletsRole walletRole) {
         this.walletRole = walletRole;
     }
 
@@ -208,6 +211,14 @@ public class User {
 
     public void setWallets(Set<Wallet> wallets) {
         this.wallets = wallets;
+    }
+
+    public Set<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<Card> cards) {
+        this.cards = cards;
     }
 
     public Set<Contact> getContacts() {

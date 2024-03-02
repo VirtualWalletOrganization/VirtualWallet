@@ -47,7 +47,7 @@ public class UserMapper {
         userResponseDto.setFirstName(user.getFirstName());
         userResponseDto.setLastName(user.getLastName());
         userResponseDto.setEmail(user.getEmail());
-        userResponseDto.setRole(user.getRole());
+        userResponseDto.setRole(user.getUsersRole().getRole());
         userResponseDto.setPhoneNumber(user.getPhoneNumber());
         return userResponseDto;
     }
@@ -79,7 +79,7 @@ public class UserMapper {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
-        user.setRole(Role.USER);
+        user.getUsersRole().setRole(Role.USER);
         return user;
     }
 }

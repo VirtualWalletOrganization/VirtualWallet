@@ -17,6 +17,8 @@ public class Messages {
     public static final String USER_HAS_BEEN_BLOCKED_OR_DELETED = "User has been blocked or deleted.";
     public static final String UPDATE_USER_MESSAGE_ERROR = "Only user creator is able to update.";
     public static final String MODIFY_CARD_ERROR_MESSAGE = "“Only the owner of this card has permission to delete or update it.";
+    public static final String CARD_ERROR_MESSAGE = "“Only admin can review all cards.";
+    public static  final String SEARCH_CARD_ERROR_MESSAGE="Only the owner of this card has permission to review it.";
     public static final String ADD_USER_TO_WALLET = "You are not authorized to add users to this wallet.";
     public static final String REMOVE_USER_FROM_WALLET = "You are not authorized to remove users from this wallet.";
     public static final String ALREADY_APPROVED = "has already been approved.";

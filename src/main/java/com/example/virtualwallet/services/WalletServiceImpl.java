@@ -70,7 +70,7 @@ public class WalletServiceImpl implements WalletService {
     public Wallet create(Wallet wallet) {
         if (wallet.getWalletType().equals(WalletType.JOINT)) {
             User userCreator = wallet.getCreator();
-            userCreator.setWalletRole(WalletRole.ADMIN);
+            userCreator.getWalletRole().setWalletRole(WalletRole.ADMIN);
             wallet.setCreator(userCreator);
         }
 

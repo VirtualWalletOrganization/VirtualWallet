@@ -103,12 +103,12 @@ public class UserServiceImpl implements UserService{
 
         User userToBeVerified = userToBeVerifiedOptional.get();
 
-        if (user.getIdentityVerified().equals(Identity.APPROVED)) {
+        if (user.getIdentityStatus().getIdentity().equals(Identity.APPROVED)) {
             throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
         } else if (userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
-            userToBeVerified.setIdentityVerified(Identity.REJECTED);
+            userToBeVerified.getIdentityStatus().setIdentity(Identity.REJECTED);
         } else {
-            user.setIdentityVerified(Identity.APPROVED);
+            user.getIdentityStatus().setIdentity(Identity.APPROVED);
             userRepository.updateUser(user);
 
             if (referralRepository.getReferralEmail(user.getEmail()).isPresent()) {
@@ -185,19 +185,19 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void updateToAdmin(User targetUser, User executingUser) {
-        if (targetUser.getRole() == Role.ADMIN) {
+        if (targetUser.getUsersRole().getRole() == Role.ADMIN) {
             throw new DuplicateEntityException(
                     "User", "id", String.valueOf(targetUser.getId()), " is already an admin.");
         }
 
         checkAccessPermissionsAdmin(executingUser, UPDATE_TO_ADMIN_ERROR_MESSAGE);
-        targetUser.setRole(Role.ADMIN);
+        targetUser.getUsersRole().setRole(Role.ADMIN);
         userRepository.updateUser(targetUser);
     }
 
     @Override
     public void updateToUser(User targetUser, User executingUser) {
-        if (targetUser.getRole() == Role.USER) {
+        if (targetUser.getUsersRole().getRole()== Role.USER) {
             throw new DuplicateEntityException(
                     "User", "id", String.valueOf(targetUser.getId()), " is already an user.");
         }
@@ -208,7 +208,7 @@ public class UserServiceImpl implements UserService{
             throw new DeletionRestrictedException(MASTER_ADMIN_MESSAGE_ERROR);
         }
 
-        targetUser.setRole(Role.USER);
+        targetUser.getUsersRole().setRole(Role.USER);
         userRepository.updateUser(targetUser);
     }
 
@@ -312,7 +312,7 @@ public class UserServiceImpl implements UserService{
 
     private void setAdminRoleIfDataBaseEmpty(User user) {
         if (userRepository.isDataBaseEmpty()) {
-            user.setRole(Role.ADMIN);
+            user.getUsersRole().setRole(Role.ADMIN);
         }
     }
 }

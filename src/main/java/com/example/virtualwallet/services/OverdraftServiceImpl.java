@@ -60,9 +60,10 @@ public class OverdraftServiceImpl implements OverdraftService {
     @Override
     public void enableOverdraft(int userId, boolean enable) {
         List<Wallet> wallets = walletService.getByCreatorId(userId);
+        User user=userService.getById(userId);
         for (Wallet wallet : wallets) {
             wallet.setOverdraftEnabled(enable);
-            walletService.update(wallet);
+            walletService.update(wallet,user);
         }
     }
 
@@ -79,11 +80,11 @@ public class OverdraftServiceImpl implements OverdraftService {
             LocalDate dueDate = LocalDate.parse(overdraft.getDueDate().toString());
 
             if (currentDate.isAfter(dueDate)) {
-                BigDecimal balance = walletService.getWalletById(overdraft.getWallet().getId()).getBalance();
-                BigDecimal interest = balance.multiply(BigDecimal.valueOf(overdraft.getOverdraftType().getInterestRate()));
-                balance = balance.add(interest);
-                walletService.updateBalance(overdraft.getWallet().getId(), balance);
-                overdraft.setPaid(true);
+//                BigDecimal balance = walletService.getWalletById(overdraft.getWallet().getId()).getBalance();
+//                BigDecimal interest = balance.multiply(BigDecimal.valueOf(overdraft.getOverdraftType().getInterestRate()));
+//                balance = balance.add(interest);
+//                walletService.updateBalance(overdraft.getWallet().getId(), balance);
+//                overdraft.setPaid(true);
                 overdraftRepository.update(overdraft);
             }
         }
