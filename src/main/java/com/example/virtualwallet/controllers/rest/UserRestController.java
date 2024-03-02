@@ -13,6 +13,7 @@ import com.example.virtualwallet.models.dtos.UserResponseDto;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.Status;
+import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import jakarta.validation.Valid;
@@ -50,7 +51,7 @@ public class UserRestController {
                                         @RequestParam(required = false) String lastName,
                                         @RequestParam(required = false) String email,
                                         @RequestParam(required = false) Role role,
-                                        @RequestParam(required = false) Status status,
+                                        @RequestParam(required = false) UserStatus status,
                                         @RequestParam(required = false) String sortBy,
                                         @RequestParam(required = false) String sortOrder) {
         try {

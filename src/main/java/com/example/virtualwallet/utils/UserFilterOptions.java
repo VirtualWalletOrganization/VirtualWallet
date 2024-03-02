@@ -2,6 +2,7 @@ package com.example.virtualwallet.utils;
 
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.Status;
+import com.example.virtualwallet.models.enums.UserStatus;
 
 import java.util.Optional;
 
@@ -13,7 +14,7 @@ public class UserFilterOptions {
 
     private Optional<String> email;
     private Optional<Role> role;
-    private Optional<Status> status;
+    private Optional<UserStatus> status;
     private Optional<String> sortBy;
     private Optional<String> sortOrder;
 
@@ -23,7 +24,7 @@ public class UserFilterOptions {
             String lastName,
             String email,
             Role role,
-            Status status,
+            UserStatus status,
             String sortBy,
             String sortOrder) {
         this.username = Optional.ofNullable(username);
@@ -56,7 +57,7 @@ public class UserFilterOptions {
         return role;
     }
 
-    public Optional<Status> getStatus() {
+    public Optional<UserStatus> getStatus() {
         return status;
     }
 
