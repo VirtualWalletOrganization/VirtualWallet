@@ -18,7 +18,7 @@ public interface WalletService {
 
     List<Wallet> getByCreatorId(int creatorId);
 
-    Wallet create(Wallet wallet);
+    Wallet create(Wallet wallet, User user);
 
     void update(Wallet wallet, User user);
 

@@ -1,6 +1,5 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.WalletType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -28,7 +27,7 @@ public class Wallet {
 
     @ManyToOne
     @JoinColumn(name = "wallet_type_id")
-    private WalletsType walletType;
+    private WalletsType walletsType;
 
     @Column(name = "is_default")
     private Boolean isDefault = Boolean.FALSE;
@@ -91,12 +90,12 @@ public class Wallet {
         this.currency = currency;
     }
 
-    public WalletsType getWalletType() {
-        return walletType;
+    public WalletsType getWalletsType() {
+        return walletsType;
     }
 
-    public void setWalletType(WalletsType walletType) {
-        this.walletType = walletType;
+    public void setWalletsType(WalletsType walletsType) {
+        this.walletsType = walletsType;
     }
 
     public Boolean getDefault() {

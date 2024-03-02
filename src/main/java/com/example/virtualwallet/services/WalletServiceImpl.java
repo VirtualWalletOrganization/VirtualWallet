@@ -66,13 +66,16 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Wallet create(Wallet wallet) {
-        if (wallet.getWalletType().equals(WalletType.JOINT)) {
-            User userCreator = wallet.getCreator();
-            userCreator.getWalletRole().setWalletRole(WalletRole.ADMIN);
-            wallet.setCreator(userCreator);
-        }
+    public Wallet create(Wallet wallet, User user) {
+        wallet.setCreator(user);
 
+        if (wallet.getWalletsType().getId() == 1) {
+            if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
+                User userCreator = wallet.getCreator();
+                userCreator.getWalletsRole().setWalletRole(WalletRole.ADMIN);
+                wallet.setCreator(userCreator);
+            }
+        }
         return walletRepository.create(wallet);
     }
 

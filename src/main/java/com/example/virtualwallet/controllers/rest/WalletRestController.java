@@ -3,8 +3,10 @@ package com.example.virtualwallet.controllers.rest;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
+import com.example.virtualwallet.helpers.WalletMapper;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,11 +23,13 @@ public class WalletRestController {
 
     private final WalletService walletService;
     private final AuthenticationHelper authenticationHelper;
+    private final WalletMapper walletMapper;
 
     @Autowired
-    public WalletRestController(WalletService walletService, AuthenticationHelper authenticationHelper) {
+    public WalletRestController(WalletService walletService, AuthenticationHelper authenticationHelper, WalletMapper walletMapper) {
         this.walletService = walletService;
         this.authenticationHelper = authenticationHelper;
+        this.walletMapper = walletMapper;
     }
 
     @GetMapping
@@ -68,18 +72,19 @@ public class WalletRestController {
 //        }
 //    }
 
-//    @PostMapping
-//    public ResponseEntity<Wallet> create(@RequestHeader HttpHeaders headers, @RequestBody WalletDto walletDto) {
-//        try {
-//            authenticationHelper.tryGetUser(headers);
-//            Wallet createdWallet = walletService.create(walletDto);
-//            return new ResponseEntity<>(createdWallet, HttpStatus.CREATED);
-//        } catch (EntityNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        } catch (AuthorizationException e) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//        }
-//    }
+    @PostMapping
+    public ResponseEntity<Wallet> create(@RequestHeader HttpHeaders headers, @RequestBody WalletDto walletDto) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Wallet createdWallet = walletMapper.fromDtoRegister(walletDto);
+            walletService.create(createdWallet, user);
+            return new ResponseEntity<>(createdWallet, HttpStatus.CREATED);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (AuthorizationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody Wallet wallet) {

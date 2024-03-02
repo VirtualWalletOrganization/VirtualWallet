@@ -1,11 +1,11 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
 import jakarta.persistence.*;
 @Entity
 @Table(name = "wallets_types")
 public class WalletsType {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "wallet_type_id")
@@ -31,6 +31,6 @@ public class WalletsType {
     }
 
     public void setWalletType(WalletType walletType) {
-        this.walletType = walletType;
+        this.walletType = WalletType.valueOf(walletType.name());
     }
 }

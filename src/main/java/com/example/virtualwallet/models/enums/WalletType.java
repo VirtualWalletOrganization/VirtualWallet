@@ -2,16 +2,16 @@ package com.example.virtualwallet.models.enums;
 
 public enum WalletType {
 
-    JOINT(1),
-    REGULAR(2);
+    JOINT("JOINT"),
+    REGULAR("REGULAR");
 
-    private final Integer id;
+    private final String name;
 
-    WalletType(Integer id) {
-        this.id = id;
+    WalletType(String name) {
+        this.name = name;
     }
 
-    public Integer getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 }

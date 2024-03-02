@@ -73,8 +73,8 @@ public class CardRestController {
     @PostMapping
     public ResponseEntity<Wallet> create(@RequestHeader HttpHeaders headers, @RequestBody Wallet wallet) {
         try {
-            authenticationHelper.tryGetUser(headers);
-            Wallet createdWallet = walletService.create(wallet);
+            User user = authenticationHelper.tryGetUser(headers);
+            Wallet createdWallet = walletService.create(wallet, user);
             return new ResponseEntity<>(createdWallet, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

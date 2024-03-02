@@ -64,7 +64,7 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "wallet_role_id")
-    private WalletsRole walletRole;
+    private WalletsRole walletsRole;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -197,12 +197,12 @@ public class User {
         this.status = status;
     }
 
-    public WalletsRole getWalletRole() {
-        return walletRole;
+    public WalletsRole getWalletsRole() {
+        return walletsRole;
     }
 
-    public void setWalletRole(WalletsRole walletRole) {
-        this.walletRole = walletRole;
+    public void setWalletsRole(WalletsRole walletsRole) {
+        this.walletsRole = walletsRole;
     }
 
     public Set<Wallet> getWallets() {

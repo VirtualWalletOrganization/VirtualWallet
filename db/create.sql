@@ -92,8 +92,8 @@ CREATE TABLE wallets_types
 create table wallets
 (
     wallet_id         int auto_increment primary key,
-    creator_id        int null,
-    balance           decimal default 0 null,
+    creator_id        int                   not null,
+    balance           decimal default 0.00     not null,
     currency          varchar(3)            not null,
     wallet_type_id    int                   not null,
     is_default        boolean default false not null,
