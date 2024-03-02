@@ -40,6 +40,17 @@ public class WalletRepositoryImpl implements WalletRepository {
 //        }
 //    }
 
+//    @Override
+//    public Optional<User> existsUserWithWallet(int userId, int walletId) {
+//        try (Session session = sessionFactory.openSession()) {
+//            Query<User> query = session.createQuery(
+//                    "SELECT u FROM User u JOIN u.wallets w WHERE u.id = :userId AND w.id = :walletId", User.class);
+//            query.setParameter("userId", userId);
+//            query.setParameter("walletId", walletId);
+//            return Optional.ofNullable(query.uniqueResult());
+//        }
+//    }
+
     @Override
     public Optional<User> existsUserWithWallet(int userId, int walletId) {
         try (Session session = sessionFactory.openSession()) {

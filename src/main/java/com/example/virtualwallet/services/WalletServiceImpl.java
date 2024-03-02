@@ -43,11 +43,29 @@ public class WalletServiceImpl implements WalletService {
 //                .orElseThrow(() -> new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId)));
 //    }
 
+//    @Override
+//    public Wallet getWalletById(int walletId, int userId) {
+////        if (walletRepository.existsUserWithWallet(userId, walletId).isEmpty()) {
+////            throw new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId));
+////        }
+//
+//        User user = userService.getById(userId);
+//        user.getWallets().stream()
+//                .filter(wallet -> wallet.getId() == walletId)
+//                .findFirst()
+//                .orElseThrow(() -> new EntityNotFoundException("Wallet", "creator", String.valueOf(userId)));
+//
+//        return walletRepository.getWalletById(walletId)
+//                .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
+//    }
+
     @Override
     public Wallet getWalletById(int walletId, int userId) {
-        if (walletRepository.existsUserWithWallet(userId, walletId).isEmpty()) {
-            throw new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId));
-        }
+        User user = userService.getById(userId);
+        user.getCreatedWallets().stream()
+                .filter(wallet -> wallet.getId() == walletId)
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Wallet", "creator", String.valueOf(userId)));
 
         return walletRepository.getWalletById(walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
@@ -69,13 +87,16 @@ public class WalletServiceImpl implements WalletService {
     public Wallet create(Wallet wallet, User user) {
         wallet.setCreator(user);
 
-        if (wallet.getWalletsType().getId() == 1) {
-            if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
-                User userCreator = wallet.getCreator();
-                userCreator.getWalletsRole().setWalletRole(WalletRole.ADMIN);
-                wallet.setCreator(userCreator);
-            }
+        if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
+            User userCreator = wallet.getCreator();
+            userCreator.getWalletsRole().setWalletRole(WalletRole.ADMIN);
+            wallet.setCreator(userCreator);
         }
+
+        if (user.getCreatedWallets().size() == 1) {
+            wallet.setDefault(true);
+        }
+
         return walletRepository.create(wallet);
     }
 
@@ -86,7 +107,8 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void delete(Wallet wallet, User user) {
+    public void delete(int walletId, User user) {
+        Wallet wallet = getWalletById(walletId, user.getId());
         checkAccessPermissionWalletUser(wallet, user, MODIFY_WALLET_ERROR_MESSAGE);
         walletRepository.delete(wallet);
     }

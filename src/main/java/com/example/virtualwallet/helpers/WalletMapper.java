@@ -14,6 +14,7 @@ public class WalletMapper {
 
         WalletsType walletsType = new WalletsType();
         walletsType.setId(dto.getWalletType().ordinal());
+        walletsType.setId(dto.getWalletType().ordinal());
 
         String name = dto.getWalletType().getName();
         name = walletsType.getWalletType().getName();

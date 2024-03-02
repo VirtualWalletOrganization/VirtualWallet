@@ -3,9 +3,11 @@ package com.example.virtualwallet.controllers.rest;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
+import com.example.virtualwallet.helpers.UserMapper;
 import com.example.virtualwallet.helpers.WalletMapper;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.dtos.UserDto;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,14 @@ public class WalletRestController {
     private final WalletService walletService;
     private final AuthenticationHelper authenticationHelper;
     private final WalletMapper walletMapper;
+    private final UserMapper userMapper;
 
     @Autowired
-    public WalletRestController(WalletService walletService, AuthenticationHelper authenticationHelper, WalletMapper walletMapper) {
+    public WalletRestController(WalletService walletService, AuthenticationHelper authenticationHelper, WalletMapper walletMapper, UserMapper userMapper) {
         this.walletService = walletService;
         this.authenticationHelper = authenticationHelper;
         this.walletMapper = walletMapper;
+        this.userMapper = userMapper;
     }
 
     @GetMapping
@@ -39,9 +43,9 @@ public class WalletRestController {
             List<Wallet> wallets = walletService.getAll(user);
             return new ResponseEntity<>(wallets, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
@@ -52,9 +56,8 @@ public class WalletRestController {
             Wallet wallet = walletService.getWalletById(id, user.getId());
             return new ResponseEntity<>(wallet, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
@@ -66,9 +69,9 @@ public class WalletRestController {
 //            Wallet wallet = walletService.getDefaultWallet(recipientUserId);
 //            return new ResponseEntity<>(wallet, HttpStatus.OK);
 //        } catch (EntityNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
 //        } catch (AuthorizationException e) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
 //        }
 //    }
 
@@ -80,23 +83,23 @@ public class WalletRestController {
             walletService.create(createdWallet, user);
             return new ResponseEntity<>(createdWallet, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody Wallet wallet) {
+    public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody WalletDto walletDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            wallet.setId(id);
+            Wallet wallet = walletMapper.fromDtoRegister(walletDto);
             walletService.update(wallet, user);
             return new ResponseEntity<>(wallet, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
@@ -104,26 +107,26 @@ public class WalletRestController {
     public ResponseEntity<Void> delete(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Wallet wallet = walletService.getWalletById(id, user.getId());
-            walletService.delete(wallet, user);
+            walletService.delete(id, user);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
     @PostMapping("/{walletId}/users/{userId}")
-    public ResponseEntity<Void> addUserToWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody User user) {
+    public ResponseEntity<Void> addUserToWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody UserDto userDto) {
         try {
             authenticationHelper.tryGetUser(headers);
+            User user = userMapper.fromDtoRegister(userDto);
             walletService.addUsersToWallet(walletId, userId, user);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
@@ -134,9 +137,9 @@ public class WalletRestController {
             walletService.removeUsersFromWallet(walletId, userId, user);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 }

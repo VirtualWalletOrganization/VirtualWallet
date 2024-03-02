@@ -1,9 +1,6 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.Identity;
-import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
-import com.example.virtualwallet.models.enums.WalletRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -74,6 +71,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "wallet_id")
     )
     private Set<Wallet> wallets;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)
+    private Set<Wallet> createdWallets;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
@@ -227,6 +228,14 @@ public class User {
 
     public void setContacts(Set<Contact> contacts) {
         this.contacts = contacts;
+    }
+
+    public Set<Wallet> getCreatedWallets() {
+        return createdWallets;
+    }
+
+    public void setCreatedWallets(Set<Wallet> createdWallets) {
+        this.createdWallets = createdWallets;
     }
 
     @Override

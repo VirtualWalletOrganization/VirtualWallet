@@ -22,7 +22,7 @@ public interface WalletService {
 
     void update(Wallet wallet, User user);
 
-    void delete(Wallet wallet, User user);
+    void delete(int walletId, User user);
 
     void addUsersToWallet(int walletId, int userId, User user);
 
