@@ -109,6 +109,19 @@ public class UserRestController {
         }
     }
 
+    @GetMapping(value = "/search", params = {"phoneNumber"})
+    public UserResponseDto getByPhoneNumber(@RequestHeader HttpHeaders headers, @RequestParam String phoneNumber) {
+        try {
+            authenticationHelper.tryGetUser(headers);
+            User targetUser = userService.getByPhoneNumber(phoneNumber);
+            return userMapper.toDto(targetUser);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<User> registerUser(@Valid @RequestBody UserDto userDto, @RequestBody WalletDto walletDto) {
         try {
