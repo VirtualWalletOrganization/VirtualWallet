@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 public class CardRepositoryImpl implements CardRepository {
+
     private final SessionFactory sessionFactory;
 
     @Autowired
@@ -92,7 +93,5 @@ public class CardRepositoryImpl implements CardRepository {
             query.setParameter("currentDate", currentDate);
             return query.list();
         }
-
-
     }
 }

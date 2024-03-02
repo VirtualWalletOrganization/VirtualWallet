@@ -14,9 +14,7 @@ import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.repositories.contracts.ReferralRepository;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
-import com.example.virtualwallet.services.contracts.ReferralService;
 import com.example.virtualwallet.services.contracts.UserService;
-import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,17 +26,16 @@ import static com.example.virtualwallet.utils.CheckPermissions.*;
 import static com.example.virtualwallet.utils.Messages.*;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-   private final ReferralRepository referralRepository;
+    private final ReferralRepository referralRepository;
     private final WalletRepository walletRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository) {
         this.userRepository = userRepository;
         this.referralRepository = referralRepository;
-
         this.walletRepository = walletRepository;
     }
 
@@ -69,7 +66,8 @@ public class UserServiceImpl implements UserService{
         return userRepository.getByUsername(email)
                 .orElseThrow(() -> new EntityNotFoundException("User", "email", email));
     }
-    public User getByPhoneNumber(String phoneNumber){
+
+    public User getByPhoneNumber(String phoneNumber) {
         return userRepository.getByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new EntityNotFoundException("User", "phone number", phoneNumber));
     }
@@ -197,7 +195,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void updateToUser(User targetUser, User executingUser) {
-        if (targetUser.getUsersRole().getRole()== Role.USER) {
+        if (targetUser.getUsersRole().getRole() == Role.USER) {
             throw new DuplicateEntityException(
                     "User", "id", String.valueOf(targetUser.getId()), " is already an user.");
         }

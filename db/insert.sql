@@ -15,8 +15,6 @@ INSERT INTO users (first_name, last_name, username, password, email, phone_numbe
 VALUES ('John', 'Doe', 'john_doe', 'password123', 'john@example.com', '1234567890', 2, 2, 'ACTIVE', 2),
        ('Kris', 'Kris', 'kris', 'pass1', 'kris@example.com', '1234567894', 1, 1, 'ACTIVE', 2);
 
-
-
 -- Insert data into cards_types table
 INSERT INTO cards_types (card_type_name) VALUES ('CREDIT'), ('DEBIT');
 
@@ -25,7 +23,6 @@ INSERT INTO wallets_types (wallet_type_name) VALUES ('JOINT'), ('REGULAR');
 INSERT INTO wallets (creator_id, balance, currency, wallet_type_id)
 VALUES (1, 1000.00, 'USD', 1),
        (2, 2000.00, 'USD', 2);
-
 
 -- Insert data into spending_categories table
 INSERT INTO spending_categories (category_name) VALUES ('Food'), ('Shopping'), ('Travel');

@@ -60,10 +60,10 @@ public class OverdraftServiceImpl implements OverdraftService {
     @Override
     public void enableOverdraft(int userId, boolean enable) {
         List<Wallet> wallets = walletService.getByCreatorId(userId);
-        User user=userService.getById(userId);
+        User user = userService.getById(userId);
         for (Wallet wallet : wallets) {
             wallet.setOverdraftEnabled(enable);
-            walletService.update(wallet,user);
+            walletService.update(wallet, user);
         }
     }
 

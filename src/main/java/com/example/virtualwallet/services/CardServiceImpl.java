@@ -53,7 +53,6 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(() -> new EntityNotFoundException("Cards"));
     }
 
-
     @Override
     public Card getCardByCardNumber(String cardNumber) {
        // checkAccessPermissionsCardUserByCardNumber(cardNumber, executingUser, SEARCH_CARD_ERROR_MESSAGE);

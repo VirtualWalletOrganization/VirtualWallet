@@ -23,6 +23,7 @@ public class CardRestController {
     private final CardService cardService;
     private final WalletService walletService;
     private final AuthenticationHelper authenticationHelper;
+
     @Autowired
     public CardRestController(CardService cardService, WalletService walletService, AuthenticationHelper authenticationHelper) {
         this.cardService = cardService;
@@ -33,12 +34,12 @@ public class CardRestController {
     @GetMapping
     public ResponseEntity<List<Card>> getAllCards(@RequestHeader HttpHeaders headers) {
         try {
-           User user= authenticationHelper.tryGetUser(headers);
+            User user = authenticationHelper.tryGetUser(headers);
             List<Card> cards = cardService.getAllCards();
             return new ResponseEntity<>(cards, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch (AuthorizationException e) {
+        } catch (AuthorizationException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -46,12 +47,12 @@ public class CardRestController {
     @GetMapping("/{id}")
     public ResponseEntity<Card> getCardById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
-            User user=authenticationHelper.tryGetUser(headers);
-            Card card = cardService.getCardById(id,user);
+            User user = authenticationHelper.tryGetUser(headers);
+            Card card = cardService.getCardById(id, user);
             return new ResponseEntity<>(card, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch (AuthorizationException e) {
+        } catch (AuthorizationException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -64,7 +65,7 @@ public class CardRestController {
             return new ResponseEntity<>(wallet, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch (AuthorizationException e) {
+        } catch (AuthorizationException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -85,9 +86,9 @@ public class CardRestController {
     @PutMapping("/{id}")
     public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody Wallet wallet) {
         try {
-           User user= authenticationHelper.tryGetUser(headers);
+            User user = authenticationHelper.tryGetUser(headers);
             wallet.setId(id);
-            walletService.update(wallet,user);
+            walletService.update(wallet, user);
             return new ResponseEntity<>(wallet, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -99,9 +100,9 @@ public class CardRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
-           User user= authenticationHelper.tryGetUser(headers);
+            User user = authenticationHelper.tryGetUser(headers);
             Wallet wallet = walletService.getWalletById(id, user.getId());
-            walletService.delete(wallet,user);
+            walletService.delete(wallet, user);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

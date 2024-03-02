@@ -2,7 +2,6 @@ package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.Identity;
 import jakarta.persistence.*;
-import org.hibernate.type.descriptor.java.EnumJavaType;
 
 @Entity
 @Table(name = "identity_statuses")

@@ -2,12 +2,16 @@ package com.example.virtualwallet.models.enums;
 
 public enum Role {
 
-    ADMIN("ADMIN"),
-    USER("USER");
+    ADMIN(1),
+    USER(2);
 
-    private String name;
+    private int value;
 
-    Role(String name) {
-        this.name = name;
+    Role(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

@@ -14,13 +14,13 @@ CREATE TABLE identity_statuses
 CREATE TABLE users_roles
 (
     role_id        INT AUTO_INCREMENT PRIMARY KEY,
-    user_role_name enum ('ADMIN', 'USER') null
+    user_role_name enum ('ADMIN', 'USER') NOT NULL DEFAULT 'USER'
 );
 
 CREATE TABLE wallets_roles
 (
     wallet_role_id   INT AUTO_INCREMENT PRIMARY KEY,
-    wallet_role_name enum ('ADMIN', 'USER') null
+    wallet_role_name enum ('ADMIN', 'USER') NOT NULL DEFAULT 'USER'
 );
 
 create table users
@@ -86,13 +86,13 @@ create table cards
 CREATE TABLE wallets_types
 (
     wallet_type_id   INT AUTO_INCREMENT PRIMARY KEY,
-    wallet_type_name enum ('JOINT', 'REGULAR') not null
+    wallet_type_name enum ('JOINT', 'REGULAR') not null default 'REGULAR'
 );
 
 create table wallets
 (
     wallet_id         int auto_increment primary key,
-    creator_id        int                   not null,
+    creator_id        int null,
     balance           decimal default 0 null,
     currency          varchar(3)            not null,
     wallet_type_id    int                   not null,

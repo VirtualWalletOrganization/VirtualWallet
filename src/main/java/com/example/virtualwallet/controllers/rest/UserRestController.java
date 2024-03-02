@@ -12,7 +12,6 @@ import com.example.virtualwallet.models.dtos.UserDto;
 import com.example.virtualwallet.models.dtos.UserResponseDto;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.models.enums.Role;
-import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.UserFilterOptions;

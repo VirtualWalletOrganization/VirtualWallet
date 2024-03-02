@@ -15,4 +15,22 @@ public class WalletsType {
     @Column(name = "wallet_type_name")
     private WalletType walletType;
 
+    public WalletsType() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public WalletType getWalletType() {
+        return walletType;
+    }
+
+    public void setWalletType(WalletType walletType) {
+        this.walletType = walletType;
+    }
 }

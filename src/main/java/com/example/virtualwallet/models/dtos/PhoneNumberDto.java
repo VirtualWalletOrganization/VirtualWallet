@@ -5,7 +5,6 @@ public class PhoneNumberDto {
     private String phoneNumber;
 
     public PhoneNumberDto() {
-
     }
 
     public PhoneNumberDto(String phoneNumber) {
