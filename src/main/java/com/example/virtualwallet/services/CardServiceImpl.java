@@ -1,5 +1,7 @@
 package com.example.virtualwallet.services;
 
+import com.example.virtualwallet.exceptions.AuthorizationException;
+import com.example.virtualwallet.exceptions.CardMismatchException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Card;
@@ -41,6 +43,8 @@ public class CardServiceImpl implements CardService {
     }
     @Override
     public Card getCardById(int cardId, User executingUser){
+        cardRepository.existsUserWithCard(cardId, executingUser.getId())
+                .orElseThrow(() -> new AuthorizationException(SEARCH_CARD_ERROR_MESSAGE));
       //  checkAccessPermissionsCardUserById(cardId, executingUser, SEARCH_CARD_ERROR_MESSAGE);
         return cardRepository.getCardById(cardId)
                 .orElseThrow(() -> new EntityNotFoundException("Card", "id", String.valueOf(cardId)));
@@ -61,14 +65,23 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public void addCard(Card card, int walletId, User user) {
+    public Card addCard(Card card, int walletId, User user) {
+
         throwIfCardWithSameNumberAlreadyExistsInSystem(card);
         Wallet wallet = walletService.getWalletById(walletId, user.getId());
+        //Todo only owner of admin can add cards
+        checkAccessPermissionsUser(wallet.getCreator().getId(), user, ADD_CARD_ERROR_MESSAGE);
         throwIfCardWithSameNumberAlreadyExistsInWallet(card, wallet);
-        wallet.getCards().add(card);
+        if (!(user.getFirstName() + " " + user.getLastName()).equals(card.getCardHolder())) {
+           throw new CardMismatchException(CARD_MISMATCH_ERROR);
+        } if(card.getCardNumber().length()!=16 || card.getCheckNumber().length()!=3){
+            throw new CardMismatchException(INVALID_CARD);
+        }
+
         card.setUser(user);
         card.getWallets().add(wallet);
-        cardRepository.addCard(card);
+        wallet.getCards().add(card);
+        return cardRepository.addCard(card);
     }
 
     @Override

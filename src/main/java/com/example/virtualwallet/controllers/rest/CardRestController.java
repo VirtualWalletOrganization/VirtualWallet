@@ -1,18 +1,22 @@
 package com.example.virtualwallet.controllers.rest;
 
 import com.example.virtualwallet.exceptions.AuthorizationException;
+import com.example.virtualwallet.exceptions.CardMismatchException;
+import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
+import com.example.virtualwallet.helpers.CardMapper;
 import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.dtos.CardDto;
 import com.example.virtualwallet.services.contracts.CardService;
-import com.example.virtualwallet.services.contracts.WalletService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,119 +25,102 @@ import java.util.List;
 public class CardRestController {
 
     private final CardService cardService;
-    private final WalletService walletService;
+    private final CardMapper cardMapper;
     private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public CardRestController(CardService cardService, WalletService walletService, AuthenticationHelper authenticationHelper) {
+    public CardRestController(CardService cardService, CardMapper cardMapper, AuthenticationHelper authenticationHelper) {
         this.cardService = cardService;
-        this.walletService = walletService;
+        this.cardMapper = cardMapper;
         this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping
     public ResponseEntity<List<Card>> getAllCards(@RequestHeader HttpHeaders headers) {
         try {
-            User user = authenticationHelper.tryGetUser(headers);
+            authenticationHelper.tryGetUser(headers);
             List<Card> cards = cardService.getAllCards();
             return new ResponseEntity<>(cards, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Card> getCardById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    @GetMapping("/{cardId}")
+    public ResponseEntity<Card> getCardById(@RequestHeader HttpHeaders headers, @PathVariable int cardId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Card card = cardService.getCardById(id, user);
+            Card card = cardService.getCardById(cardId, user);
             return new ResponseEntity<>(card, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
-    @GetMapping("/default/{recipientUserId}")
-    public ResponseEntity<Wallet> getDefaultWallet(@RequestHeader HttpHeaders headers, @PathVariable int recipientUserId) {
-        try {
-            authenticationHelper.tryGetUser(headers);
-            Wallet wallet = walletService.getDefaultWallet(recipientUserId);
-            return new ResponseEntity<>(wallet, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<Wallet> create(@RequestHeader HttpHeaders headers, @RequestBody Wallet wallet) {
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<Card>> getAllCardsByUserId(@RequestHeader HttpHeaders headers, @PathVariable int userId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Wallet createdWallet = walletService.create(wallet, user);
-            return new ResponseEntity<>(createdWallet, HttpStatus.CREATED);
+            List<Card> cards = cardService.getAllCardsByUserId(userId, user);
+            return new ResponseEntity<>(cards, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody Wallet wallet) {
+    @PostMapping("/wallets/{walletId}")
+    public ResponseEntity<Card> addCardToWallet(@RequestHeader HttpHeaders headers,
+                                                @PathVariable int walletId,
+                                                @Valid @RequestBody CardDto cardDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            wallet.setId(id);
-            walletService.update(wallet, user);
-            return new ResponseEntity<>(wallet, HttpStatus.OK);
+            Card cardToAdd = cardMapper.fromDto(cardDto);
+            Card card = cardService.addCard(cardToAdd, walletId, user);
+            return new ResponseEntity<>(card, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (DuplicateEntityException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }catch(CardMismatchException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    @PutMapping("/{cardId}")
+    public ResponseEntity<Card> updateCard(@RequestHeader HttpHeaders headers,
+                                           @PathVariable int cardId,
+                                           @Valid @RequestBody CardDto cardDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Wallet wallet = walletService.getWalletById(id, user.getId());
-            walletService.delete(wallet, user);
+            Card cardToUpdate = cardMapper.fromDto(cardId, cardDto);
+            cardService.updateCard(cardToUpdate, user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (DuplicateEntityException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{cardId}")
+    public ResponseEntity<Void> delete(@RequestHeader HttpHeaders headers, @PathVariable int cardId) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Card cardToDelete = cardService.getCardById(cardId, user);
+            cardService.deleteCard(cardToDelete.getId(), user);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    @PostMapping("/{walletId}/users/{userId}")
-    public ResponseEntity<Void> addUserToWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody User user) {
-        try {
-            authenticationHelper.tryGetUser(headers);
-            walletService.addUsersToWallet(walletId, userId, user);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    @DeleteMapping("/{walletId}/users/{userId}")
-    public ResponseEntity<Void> removeUserFromWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody User user) {
-        try {
-            authenticationHelper.tryGetUser(headers);
-            walletService.removeUsersFromWallet(walletId, userId, user);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 }

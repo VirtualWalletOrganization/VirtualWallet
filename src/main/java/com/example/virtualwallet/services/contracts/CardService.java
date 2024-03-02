@@ -14,7 +14,7 @@ public interface CardService {
 
     Card getCardByCardNumber(String cardNumber);
 
-    void addCard(Card card, int walletId, User user);
+    Card addCard(Card card, int walletId, User user);
 
     void updateCard(Card card, User user);
 

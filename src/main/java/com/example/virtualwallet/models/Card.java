@@ -1,7 +1,6 @@
 package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.CardStatus;
-import com.example.virtualwallet.models.enums.CardType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -18,9 +17,9 @@ public class Card {
     @Column(name = "card_id")
     private int id;
 
-//    @Enumerated(EnumType.STRING)
-    @Column(name = "card_type_id")
-    private CardType cardType;
+    @ManyToOne
+    @JoinColumn(name = "card_type_id")
+    private CardsType cardsType;
 
     @JsonIgnore
     @ManyToOne
@@ -44,11 +43,12 @@ public class Card {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private CardStatus cardStatus;
+    private CardStatus cardStatus = CardStatus.ACTIVE;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "cards")
     private Set<Wallet> wallets;
+
 
     public Card() {
     }
@@ -61,12 +61,12 @@ public class Card {
         this.id = id;
     }
 
-    public CardType getCardType() {
-        return cardType;
+    public CardsType getCardsType() {
+        return cardsType;
     }
 
-    public void setCardType(CardType cardType) {
-        this.cardType = cardType;
+    public void setCardsType(CardsType cardsType) {
+        this.cardsType = cardsType;
     }
 
     public User getUser() {
@@ -138,11 +138,13 @@ public class Card {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
-        return id == card.id && cardType == card.cardType && Objects.equals(cardNumber, card.cardNumber) && Objects.equals(expirationDate, card.expirationDate) && Objects.equals(cardHolder, card.cardHolder) && Objects.equals(checkNumber, card.checkNumber);
+        return id == card.id && cardsType == card.cardsType && Objects.equals(cardNumber, card.cardNumber)
+                && Objects.equals(expirationDate, card.expirationDate) && Objects.equals(cardHolder, card.cardHolder)
+                && Objects.equals(checkNumber, card.checkNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, cardType, cardNumber, expirationDate, cardHolder, checkNumber);
+        return Objects.hash(id, cardsType, cardNumber, expirationDate, cardHolder, checkNumber);
     }
 }

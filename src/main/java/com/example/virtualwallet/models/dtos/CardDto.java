@@ -11,12 +11,12 @@ public class CardDto {
     @NotNull(message = "Card type content can't be empty")
     private CardType cardType;
 
-    @Pattern(regexp = "([\\d]{4}-){3}[\\d]{4}",
-            message = "Invalid card number")
+   // @Pattern(regexp = "([\\d]{4}-){3}[\\d]{4}",
+     //       message = "Invalid card number")
     @NotNull(message = "Card number content can't be empty")
     private String cardNumber;
 
-    @Pattern(regexp = "(0[1-9]|1[0-2])/[0-9]{2}")
+   // @Pattern(regexp = "(0[1-9]|1[0-2])/[0-9]{2}")
     @NotNull(message = "Expiration date content can't be empty")
     private Date expirationDate;
 

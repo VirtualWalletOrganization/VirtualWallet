@@ -1,6 +1,7 @@
 package com.example.virtualwallet.repositories.contracts;
 
 import com.example.virtualwallet.models.Card;
+import com.example.virtualwallet.models.User;
 
 import java.util.Date;
 import java.util.List;
@@ -14,9 +15,11 @@ public interface CardRepository {
 
     Optional<Card> getCardById(int cardId);
 
+    Optional<User> existsUserWithCard(int cardId, int userId);
+
     Optional<Card> getByCardNumber(String cardNumber);
 
-    void addCard(Card card);
+    Card addCard(Card card);
 
     void updateCard(Card card);
 

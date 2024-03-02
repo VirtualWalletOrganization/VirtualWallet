@@ -1,6 +1,7 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.Card;
+import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.repositories.contracts.CardRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -48,6 +49,16 @@ public class CardRepositoryImpl implements CardRepository {
 
         }
     }
+    @Override
+    public Optional<User> existsUserWithCard(int cardId, int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery(
+                    "SELECT u FROM User u JOIN u.cards c WHERE u.id = :userId AND c.id = :cardId", User.class);
+            query.setParameter("userId", userId);
+            query.setParameter("cardId", cardId);
+            return Optional.ofNullable(query.uniqueResult());
+        }
+    }
 
     @Override
     public Optional<Card>getByCardNumber(String cardNumber) {
@@ -58,12 +69,14 @@ public class CardRepositoryImpl implements CardRepository {
         }
     }
 
+
     @Override
-    public void addCard(Card card) {
+    public Card addCard(Card card) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.persist(card);
             session.getTransaction().commit();
+            return card;
         }
     }
 
