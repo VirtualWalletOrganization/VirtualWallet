@@ -114,6 +114,15 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    public Optional<User>getByPhoneNumber(String phoneNumber){
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from User where phoneNumber = :phoneNumber", User.class);
+            query.setParameter("phoneNumber", phoneNumber);
+
+            return Optional.ofNullable(query.list().get(0));
+        }
+    }
+
     @Override
     public void registerUser(User user) {
         try (Session session = sessionFactory.openSession()) {

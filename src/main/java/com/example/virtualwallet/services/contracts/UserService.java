@@ -18,6 +18,8 @@ public interface UserService {
 
     User getByEmail(String email);
 
+    User getByPhoneNumber(String phoneNumber);
+
     void registerUser(User user, WalletDto walletDto);
 
     void updateUser(User executingUser, User targetUser);

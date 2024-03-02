@@ -18,6 +18,8 @@ public interface UserRepository {
 
     Optional<User> getByEmail(String email);
 
+    Optional <User> getByPhoneNumber(String phoneNumber);
+
     void registerUser(User user);
 
     void reactivated(User targetUser);

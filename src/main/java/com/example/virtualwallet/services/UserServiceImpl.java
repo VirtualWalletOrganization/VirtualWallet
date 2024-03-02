@@ -69,6 +69,10 @@ public class UserServiceImpl implements UserService{
         return userRepository.getByUsername(email)
                 .orElseThrow(() -> new EntityNotFoundException("User", "email", email));
     }
+    public User getByPhoneNumber(String phoneNumber){
+        return userRepository.getByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new EntityNotFoundException("User", "phone number", phoneNumber));
+    }
 
     @Override
     public void registerUser(User user, WalletDto walletDto) {

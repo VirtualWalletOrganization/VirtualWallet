@@ -13,6 +13,7 @@ import com.example.virtualwallet.models.dtos.UserResponseDto;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.Status;
+import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import jakarta.validation.Valid;
@@ -50,7 +51,7 @@ public class UserRestController {
                                         @RequestParam(required = false) String lastName,
                                         @RequestParam(required = false) String email,
                                         @RequestParam(required = false) Role role,
-                                        @RequestParam(required = false) Status status,
+                                        @RequestParam(required = false) UserStatus status,
                                         @RequestParam(required = false) String sortBy,
                                         @RequestParam(required = false) String sortOrder) {
         try {
@@ -101,6 +102,19 @@ public class UserRestController {
         try {
             authenticationHelper.tryGetUser(headers);
             User targetUser = userService.getByEmail(email);
+            return userMapper.toDto(targetUser);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
+        }
+    }
+
+    @GetMapping(value = "/search", params = {"phoneNumber"})
+    public UserResponseDto getByPhoneNumber(@RequestHeader HttpHeaders headers, @RequestParam String phoneNumber) {
+        try {
+            authenticationHelper.tryGetUser(headers);
+            User targetUser = userService.getByPhoneNumber(phoneNumber);
             return userMapper.toDto(targetUser);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
