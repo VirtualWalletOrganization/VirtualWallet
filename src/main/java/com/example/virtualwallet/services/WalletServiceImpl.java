@@ -1,5 +1,6 @@
 package com.example.virtualwallet.services;
 
+import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
@@ -65,7 +66,7 @@ public class WalletServiceImpl implements WalletService {
         user.getCreatedWallets().stream()
                 .filter(wallet -> wallet.getId() == walletId)
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Wallet", "creator", String.valueOf(userId)));
+                .orElseThrow(() -> new AuthorizationException(SEARCH_WALLET_ERROR_MESSAGE));
 
         return walletRepository.getWalletById(walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));

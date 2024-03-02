@@ -10,6 +10,7 @@ import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.UserDto;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.services.contracts.WalletService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -76,10 +77,11 @@ public class WalletRestController {
 //    }
 
     @PostMapping
-    public ResponseEntity<Wallet> create(@RequestHeader HttpHeaders headers, @RequestBody WalletDto walletDto) {
+    public ResponseEntity<Wallet> create(@RequestHeader HttpHeaders headers,
+                                         @Valid @RequestBody WalletDto walletDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Wallet createdWallet = walletMapper.fromDtoRegister(walletDto);
+            Wallet createdWallet = walletMapper.fromDto(walletDto);
             walletService.create(createdWallet, user);
             return new ResponseEntity<>(createdWallet, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
@@ -90,12 +92,13 @@ public class WalletRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody WalletDto walletDto) {
+    public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers,
+                                         @PathVariable int id,
+                                         @Valid @RequestBody WalletDto walletDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Wallet wallet = walletMapper.fromDtoRegister(walletDto);
-            walletService.update(wallet, user);
-            return new ResponseEntity<>(wallet, HttpStatus.OK);
+            Wallet updateWallet = walletMapper.fromDto(id,walletDto,user.getId());
+            return new ResponseEntity<>(updateWallet, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {

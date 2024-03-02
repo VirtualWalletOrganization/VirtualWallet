@@ -20,6 +20,7 @@ public class Messages {
     public static final String CARD_ERROR_MESSAGE = "“Only admin can review all cards.";
     public static  final String ADD_CARD_ERROR_MESSAGE = "Only the owner of this wallet has permission to add a card.";
     public static  final String SEARCH_CARD_ERROR_MESSAGE="Only the owner of this card has permission to review it.";
+    public static  final String SEARCH_WALLET_ERROR_MESSAGE="You are not authorize to review this wallet.";
    public static final String CARD_MISMATCH_ERROR= "Card holder name does not match user name";
    public static final String INVALID_CARD="Card number must be 16 digits and check number must be 3 digits.";
     public static final String ADD_USER_TO_WALLET = "You are not authorized to add users to this wallet.";
