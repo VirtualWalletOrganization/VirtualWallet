@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -45,9 +46,9 @@ public class Card {
     @Column(name = "status")
     private CardStatus cardStatus = CardStatus.ACTIVE;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "cards")
-    private Set<Wallet> wallets;
+//    @JsonIgnore
+//    @ManyToMany(mappedBy = "cards",fetch = FetchType.EAGER)
+//    private Set<Wallet> wallets;
 
 
     public Card() {
@@ -125,13 +126,13 @@ public class Card {
         this.cardStatus = cardStatus;
     }
 
-    public Set<Wallet> getWallets() {
-        return wallets;
-    }
-
-    public void setWallets(Set<Wallet> wallets) {
-        this.wallets = wallets;
-    }
+//    public Set<Wallet> getWallets() {
+//        return new HashSet<>();
+//    }
+//
+//    public void setWallets(Set<Wallet> wallets) {
+//        this.wallets = wallets;
+//    }
 
     @Override
     public boolean equals(Object o) {

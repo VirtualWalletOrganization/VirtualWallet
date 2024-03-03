@@ -74,19 +74,25 @@ public class CardServiceImpl implements CardService {
         throwIfCardWithSameNumberAlreadyExistsInWallet(card, wallet);
         if (!(user.getFirstName() + " " + user.getLastName()).equals(card.getCardHolder())) {
            throw new CardMismatchException(CARD_MISMATCH_ERROR);
-        } if(card.getCardNumber().length()!=16 || card.getCheckNumber().length()!=3){
+        } if(card.getCardNumber().length()!=16 && card.getCheckNumber().length()!=3){
             throw new CardMismatchException(INVALID_CARD);
+        }if(card.getExpirationDate().before(new Date())){
+            throw new CardMismatchException(CARD_IS_EXPIRED);
         }
-
         card.setUser(user);
-        card.getWallets().add(wallet);
+       // card.getWallets().add(wallet);
+
+
+        Card cardToAdd=cardRepository.addCard(card);
         wallet.getCards().add(card);
-        return cardRepository.addCard(card);
+        walletService.update(wallet,user);
+        return cardToAdd;
     }
 
     @Override
     public void updateCard(Card card, User user) {
         Card cardToUpdate = getCardById(card.getId(),user);
+        card.setUser(user);
         checkAccessPermissionsUser(cardToUpdate.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
         checkBlockOrDeleteUser(user, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(card);
@@ -99,6 +105,7 @@ public class CardServiceImpl implements CardService {
         checkAccessPermissionsUser(cardToDelete.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
         checkBlockOrDeleteUser(user, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         cardRepository.deleteCard(cardToDelete);
+       // walletService.update(wallet,user);
     }
 
     @Scheduled(cron = "0 0 0 1 * *")
