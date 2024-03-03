@@ -232,6 +232,7 @@ public class UserRestController {
         }
     }
 
+
     @PutMapping("/{id}/role/user")
     public ResponseEntity<Void> updateToUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {

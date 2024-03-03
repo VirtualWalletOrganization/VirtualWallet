@@ -188,9 +188,12 @@ public class UserServiceImpl implements UserService {
         }
 
         checkAccessPermissionsAdmin(executingUser, UPDATE_TO_ADMIN_ERROR_MESSAGE);
-        targetUser.getUsersRole().setRole(Role.ADMIN);
-        userRepository.updateUser(targetUser);
+//        UsersRole usersRole = new UsersRole();
+//        usersRole.setRole(Role.ADMIN);
+//        targetUser.setUsersRole(usersRole);
+        userRepository.updateUserToAdmin(targetUser,executingUser);
     }
+
 
     @Override
     public void updateToUser(User targetUser, User executingUser) {

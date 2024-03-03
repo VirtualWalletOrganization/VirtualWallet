@@ -29,6 +29,7 @@ public interface UserRepository {
     void deleteUser(User targetUser);
 
     boolean isDataBaseEmpty();
+    void updateUserToAdmin(User targetUser, User executingUser);
 
     boolean existsByPhoneNumber(User userPhoneNumberToBeUpdate);
 }

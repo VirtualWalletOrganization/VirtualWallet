@@ -1,6 +1,8 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.UsersRole;
+import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import org.hibernate.Session;
@@ -182,6 +184,21 @@ public class UserRepositoryImpl implements UserRepository {
             return userCount == 0;
         }
     }
+    @Override
+    public void updateUserToAdmin(User targetUser, User executingUser) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+//            UsersRole usersRole = new UsersRole();
+//            usersRole.setRole(Role.ADMIN);
+//            session.merge(usersRole);
+//            session.getTransaction().commit();
+
+            targetUser.setUsersRole(executingUser.getUsersRole());
+            session.merge(targetUser);
+            session.getTransaction().commit();
+        }
+    }
+
 
     public boolean existsByPhoneNumber(User userPhoneNumberToBeUpdate) {
         try (Session session = sessionFactory.openSession()) {
