@@ -5,6 +5,7 @@ import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.UsersRole;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.models.enums.Identity;
@@ -207,8 +208,10 @@ public class UserServiceImpl implements UserService {
         if (targetUser.getId() == 1) {
             throw new DeletionRestrictedException(MASTER_ADMIN_MESSAGE_ERROR);
         }
-
-        targetUser.getUsersRole().setRole(Role.USER);
+UsersRole usersRole = new UsersRole();
+        usersRole.setRole(Role.USER);
+        usersRole.setId(usersRole.getRole().ordinal()+1);
+        targetUser.setUsersRole(usersRole);
         userRepository.updateUser(targetUser);
     }
 
