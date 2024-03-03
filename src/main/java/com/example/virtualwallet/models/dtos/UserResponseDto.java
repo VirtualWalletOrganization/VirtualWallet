@@ -10,6 +10,8 @@ public class UserResponseDto {
 
     @JsonIgnore
     private int id;
+
+    private String username;
     private String firstName;
     private String lastName;
     private String email;
@@ -17,6 +19,14 @@ public class UserResponseDto {
     private String phoneNumber;
 
     public UserResponseDto() {
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public UserResponseDto(int id, String firstName, String lastName,
