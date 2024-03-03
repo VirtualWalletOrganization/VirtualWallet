@@ -82,4 +82,8 @@ public class UserMapper {
         user.getUsersRole().setRole(Role.USER);
         return user;
     }
+
+    public User toWallet(UserDto userDto) {
+        return userService.getByUsername(userDto.getUsername());
+    }
 }

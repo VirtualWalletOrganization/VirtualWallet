@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -52,7 +53,7 @@ public class Wallet {
     private Set<Card> cards;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "wallets")
+    @ManyToMany(mappedBy = "wallets", fetch = FetchType.EAGER)
     private Set<User> users;
 
     public Wallet() {
@@ -144,5 +145,18 @@ public class Wallet {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Wallet wallet = (Wallet) o;
+        return id == wallet.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

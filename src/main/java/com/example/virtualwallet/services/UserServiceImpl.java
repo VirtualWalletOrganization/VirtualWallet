@@ -126,8 +126,7 @@ public class UserServiceImpl implements UserService {
         checkAccessPermissionsUser(targetUser.getId(), executingUser, MODIFY_USER_MESSAGE_ERROR);
 
         if (!targetUser.getUsername().equals(executingUser.getUsername())) {
-            throw new com.example.virtualwallet.exceptions.EntityNotFoundException
-                    ("User", "username", targetUser.getUsername());
+            throw new EntityNotFoundException("User", "username", targetUser.getUsername());
         }
 
         if (!targetUser.getEmail().equals(executingUser.getEmail())) {

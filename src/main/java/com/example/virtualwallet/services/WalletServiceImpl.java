@@ -115,9 +115,14 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void addUsersToWallet(int walletId, int userId, User executingUser) {
-        Wallet wallet = getWalletById(executingUser.getId(), walletId);
-        User userToAdd = userService.getById(userId);
+    public void addUsersToWallet(int walletId, User userToAdd, User executingUser) {
+        Wallet wallet = getWalletById(walletId, executingUser.getId());
+
+        if (!wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
+            throw new EntityNotFoundException("Joint wallet", "id", String.valueOf(walletId));
+        }
+
+        userService.getById(userToAdd.getId());
 
         checkUserWalletAdmin(wallet, executingUser, ADD_USER_TO_WALLET);
 
@@ -128,19 +133,21 @@ public class WalletServiceImpl implements WalletService {
         }
 
         wallet.getUsers().add(userToAdd);
-        userToAdd.getWallets().add(wallet);
         walletRepository.update(wallet);
+        userToAdd.getWallets().add(wallet);
+        userService.updateUser(userToAdd, userToAdd);
     }
 
     @Override
     public void removeUsersFromWallet(int walletId, int userId, User executingUser) {
-        Wallet wallet = getWalletById(executingUser.getId(), walletId);
+        Wallet wallet = getWalletById(walletId, executingUser.getId());
         User userToRemove = userService.getById(userId);
 
         checkUserWalletAdmin(wallet, executingUser, REMOVE_USER_FROM_WALLET);
 
         wallet.getUsers().remove(userToRemove);
-        userToRemove.getWallets().remove(wallet);
         walletRepository.update(wallet);
+        userToRemove.getWallets().remove(wallet);
+        userService.updateUser(userToRemove, userToRemove);
     }
 }

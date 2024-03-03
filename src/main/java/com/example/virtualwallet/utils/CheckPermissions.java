@@ -34,7 +34,7 @@ public class CheckPermissions {
     }
 
     public static void checkUserWalletAdmin(Wallet wallet, User user, String message) {
-        if (!wallet.getCreator().equals(user) || !user.getWalletsRole().equals(WalletRole.ADMIN)) {
+        if (!wallet.getCreator().equals(user) || !user.getWalletsRole().getWalletRole().equals(WalletRole.ADMIN)) {
             throw new AuthorizationException(message);
         }
     }

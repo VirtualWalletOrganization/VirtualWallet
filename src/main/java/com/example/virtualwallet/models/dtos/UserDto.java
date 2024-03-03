@@ -18,6 +18,11 @@ public class UserDto {
     @Size(min = 4, max = 32, message = "Last name should be between 4 and 32 symbols.")
     private String lastName;
 
+    @NotNull(message = "Username can't be empty.")
+    @NotBlank(message = "Username can't be blank.")
+    @Size(min = 4, max = 12, message = "Username should be between 4 and 12 symbols.")
+    private String username;
+
     @NotNull(message = "Email must be unique.")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$",
             message = "Invalid email format")
@@ -53,6 +58,14 @@ public class UserDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {

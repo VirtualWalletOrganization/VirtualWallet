@@ -24,7 +24,7 @@ public interface WalletService {
 
     void delete(int walletId, User user);
 
-    void addUsersToWallet(int walletId, int userId, User user);
+    void addUsersToWallet(int walletId, User userToAdd, User user);
 
     void removeUsersFromWallet(int walletId, int userId, User user);
 }

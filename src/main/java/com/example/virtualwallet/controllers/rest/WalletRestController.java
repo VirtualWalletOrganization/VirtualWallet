@@ -122,9 +122,9 @@ public class WalletRestController {
     @PostMapping("/{walletId}/users/{userId}")
     public ResponseEntity<Void> addUserToWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody UserDto userDto) {
         try {
-            authenticationHelper.tryGetUser(headers);
-            User user = userMapper.fromDtoRegister(userDto);
-            walletService.addUsersToWallet(walletId, userId, user);
+            User user = authenticationHelper.tryGetUser(headers);
+            User userToAdd = userMapper.toWallet(userDto);
+            walletService.addUsersToWallet(walletId, userToAdd, user);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -134,9 +134,9 @@ public class WalletRestController {
     }
 
     @DeleteMapping("/{walletId}/users/{userId}")
-    public ResponseEntity<Void> removeUserFromWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody User user) {
+    public ResponseEntity<Void> removeUserFromWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId) {
         try {
-            authenticationHelper.tryGetUser(headers);
+            User user = authenticationHelper.tryGetUser(headers);
             walletService.removeUsersFromWallet(walletId, userId, user);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
