@@ -2,18 +2,18 @@ package com.example.virtualwallet.models.enums;
 
 public enum Identity {
 
-    APPROVED(1),
-    INCOMPLETE(2),
-    PENDING(3),
-    REJECTED(4);
+    APPROVED("APPROVED"),
+    INCOMPLETE("INCOMPLETE"),
+    PENDING("PENDING"),
+    REJECTED("REJECTED");
 
-    private int value;
+    private String name;
 
-    Identity(int value) {
-        this.value = value;
+    Identity(String name) {
+        this.name = name;
     }
 
-    public int getValue() {
-        return value;
+    public String getValue() {
+        return name;
     }
 }
