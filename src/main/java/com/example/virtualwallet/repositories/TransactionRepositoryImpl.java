@@ -39,6 +39,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             return Optional.ofNullable(query.list().get(0));
         }
     }
+
     @Override
     public Optional<List<Transaction>> getAllTransactionByUserId(int userId) {
         try (Session session = sessionFactory.openSession()) {

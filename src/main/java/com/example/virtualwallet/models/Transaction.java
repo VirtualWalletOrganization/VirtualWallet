@@ -1,11 +1,10 @@
 package com.example.virtualwallet.models;
 
 import com.example.virtualwallet.models.enums.Direction;
-import com.example.virtualwallet.models.enums.Status;
-import com.example.virtualwallet.models.enums.TransactionType;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "transactions")
@@ -38,16 +37,24 @@ public class Transaction {
     @Column(name = "date")
     private Date date;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_status_id")
-    private Status status;
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "transaction_status_id")
+//    private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "transaction_status_id")
+    private TransactionsStatus transactionsStatus;
 
     @Column(name = "description")
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type_id")
-    private TransactionType transactionType;
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "transaction_type_id")
+//    private TransactionType transactionType;
+
+    @ManyToOne
+    @JoinColumn(name = "transaction_type_id")
+    private TransactionsType transactionsType;
 
 //    @Column(name = "recurring_transaction_id", table = "recurring_transactions")
 //    private int recuringTransactionId;
@@ -111,12 +118,12 @@ public class Transaction {
         this.date = date;
     }
 
-    public Status getStatus() {
-        return status;
+    public TransactionsStatus getTransactionsStatus() {
+        return transactionsStatus;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setTransactionsStatus(TransactionsStatus transactionsStatus) {
+        this.transactionsStatus = transactionsStatus;
     }
 
     public String getDescription() {
@@ -127,19 +134,33 @@ public class Transaction {
         this.description = description;
     }
 
-    public TransactionType getTransactionType() {
-        return transactionType;
+    public TransactionsType getTransactionsType() {
+        return transactionsType;
     }
 
-    public void setTransactionType(TransactionType transactionType) {
-        this.transactionType = transactionType;
+    public void setTransactionsType(TransactionsType transactionsType) {
+        this.transactionsType = transactionsType;
     }
 
-//    public int getRecuringTransactionId() {
+    //    public int getRecuringTransactionId() {
 //        return recuringTransactionId;
 //    }
 //
 //    public void setRecuringTransactionId(int recuringTransactionId) {
 //        this.recuringTransactionId = recuringTransactionId;
 //    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return transactionId == that.transactionId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transactionId);
+    }
 }

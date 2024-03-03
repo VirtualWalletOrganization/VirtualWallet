@@ -10,9 +10,9 @@ public interface TransactionService {
 
     Transaction getTransactionById(int transactionId);
 
-    void createTransaction(int senderUserId, int recipientUserId, int walletId, double amount);
+    void createTransaction(Transaction transaction, int senderUserId, int recipientUserId, int walletId, double amount);
 
-    void confirmTransaction(int transactionId, int senderUserId, int recipientId, double amount);
+//    void confirmTransaction(int transactionId, int senderUserId, int recipientId, double amount);
 
     void updateTransaction(Transaction transaction);
 
