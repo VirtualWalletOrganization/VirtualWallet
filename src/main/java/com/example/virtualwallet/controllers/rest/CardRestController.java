@@ -87,8 +87,8 @@ public class CardRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        }catch(CardMismatchException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+        } catch (CardMismatchException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
