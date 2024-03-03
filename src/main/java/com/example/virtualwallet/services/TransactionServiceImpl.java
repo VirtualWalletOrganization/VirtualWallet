@@ -47,6 +47,7 @@ public class TransactionServiceImpl implements TransactionService {
         User recipient = userService.getById(recipientUserId);
         Wallet walletSender = walletService.getWalletById(senderWalletId, sender.getId());
         Wallet walletRecipient = walletService.getDefaultWallet(recipientUserId);
+       // checkBlockOrDeleteUser(user, USER_HAS_BEEN_BLOCKED_OR_DELETED);
 
 //        Wallet walletSender = sender.getWallets().stream()
 //                .filter(w -> w.getId() == walletId)

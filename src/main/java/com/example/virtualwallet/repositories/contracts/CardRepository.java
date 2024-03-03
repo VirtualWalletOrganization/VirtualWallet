@@ -11,9 +11,9 @@ public interface CardRepository {
 
     List<Card> getAllCards();
 
-    Optional<List<Card>> getAllCardsByUserId(int userId);
-
     Optional<Card> getCardById(int cardId);
+
+    Optional<List<Card>> getAllCardsByUserId(int userId);
 
     Optional<User> existsUserWithCard(int cardId, int userId);
 

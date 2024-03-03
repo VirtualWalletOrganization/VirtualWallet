@@ -3,16 +3,19 @@ package com.example.virtualwallet.services;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
+import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
+import com.example.virtualwallet.services.contracts.CardService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -37,12 +40,12 @@ public class WalletServiceImpl implements WalletService {
         return walletRepository.getAll();
     }
 
-//    @Override
-//    public List<User> getAllUsersByWalletId(int walletId) {
-//        getWalletById(walletId);
-//        return walletRepository.getAllUsersByWalletId(walletId)
-//                .orElseThrow(() -> new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId)));
-//    }
+    @Override
+    public List<User> getAllUsersByWalletId(int walletId,int userId) {
+        getWalletById(walletId,userId);
+        return walletRepository.getAllUsersByWalletId(walletId)
+                .orElseThrow(() -> new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId)));
+    }
 
 //    @Override
 //    public Wallet getWalletById(int walletId, int userId) {
@@ -71,6 +74,12 @@ public class WalletServiceImpl implements WalletService {
         return walletRepository.getWalletById(walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
     }
+    @Override
+    public Wallet getWalletByCardId(int cardId, int userId) {
+        userService.getById(userId);
+        return walletRepository.getWalletByCardId(cardId)
+                .orElseThrow(() -> new EntityNotFoundException("Wallet", " card id", String.valueOf(cardId)));
+    }
 
     @Override
     public Wallet getDefaultWallet(int recipientUserId) {
@@ -97,8 +106,11 @@ public class WalletServiceImpl implements WalletService {
         if (user.getCreatedWallets().size() == 1) {
             wallet.setDefault(true);
         }
-
-        return walletRepository.create(wallet);
+        user.getWallets().add(wallet);
+        wallet.getUsers().add(user);
+        Wallet walletToAdd=walletRepository.create(wallet);
+        userService.updateUser(user, user);
+        return walletToAdd;
     }
 
     @Override

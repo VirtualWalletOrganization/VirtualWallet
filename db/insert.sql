@@ -12,7 +12,7 @@ INSERT INTO wallets_roles (wallet_role_name) VALUES ('ADMIN'), ('USER');
 
 -- Insert data into users table
 INSERT INTO users (first_name, last_name, username, password, email, phone_number, identity_status_id, role_id, status, wallet_role_id)
-VALUES ('John', 'Doe', 'john_doe', 'password123', 'john@example.com', '1234567890', 2, 2, 'ACTIVE', 1),
+VALUES ('John', 'Doe', 'john_doe', 'password123', 'john@example.com', '1234567890', 2, 1, 'ACTIVE', 1),
        ('Kris', 'Kris', 'kris', 'pass1', 'kris@example.com', '1234567894', 1, 1, 'ACTIVE', 2);
 
 -- Insert data into cards_types table
