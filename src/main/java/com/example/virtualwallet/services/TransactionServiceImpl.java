@@ -46,6 +46,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public List<Transaction> getTransactionsByStatus(Status status) {
+        return transactionRepository.getTransactionsByStatus(status)
+                .orElseThrow(() -> new EntityNotFoundException("Transactions", "status", String.valueOf(status)));
+    }
+
+    @Override
     public void createTransaction(Transaction transaction, Wallet walletSender, User sender) {
         User recipient = userService.getByUsername(transaction.getUsernameReceiverId().getUsername());
         Wallet walletRecipient = walletService.getDefaultWallet(recipient.getId());

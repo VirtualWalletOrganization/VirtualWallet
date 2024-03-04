@@ -1,7 +1,7 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.Transaction;
-import com.example.virtualwallet.models.Transfer;
+import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -48,7 +48,18 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                     "SELECT t FROM Transaction t WHERE t.walletSender.id = :userId" +
                             " AND  t.usernameReceiverId.id= :userId", Transaction.class);
             query.setParameter("walletSender", userId);
-            query.setParameter("walletReceiver", userId);
+            query.setParameter("usernameReceiverId", userId);
+
+            return Optional.ofNullable(query.list());
+        }
+    }
+
+    @Override
+    public Optional<List<Transaction>> getTransactionsByStatus(Status status) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Transaction> query = session.createQuery(
+                    "FROM Transaction as t where t.transactionsStatus.transactionStatus = :status", Transaction.class);
+            query.setParameter("transactionsStatus", status);
 
             return Optional.ofNullable(query.list());
         }

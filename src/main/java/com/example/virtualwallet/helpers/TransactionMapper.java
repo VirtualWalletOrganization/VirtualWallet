@@ -2,6 +2,7 @@ package com.example.virtualwallet.helpers;
 
 import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.TransactionDto;
+import com.example.virtualwallet.models.dtos.TransferRequestDto;
 import com.example.virtualwallet.models.enums.Direction;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.TransactionType;
@@ -39,6 +40,12 @@ public class TransactionMapper {
         TransactionsType transactionsType = new TransactionsType();
         transactionsType.setTransactionType(TransactionType.SINGLE);
         transaction.setTransactionsType(transactionsType);
+        return transaction;
+    }
+
+    public Transaction fromDtoMoneyIn(Wallet receiverWallet, TransactionDto transactionDto, User userReceiver) {
+        Transaction transaction = fromDtoMoneyOut(receiverWallet, transactionDto, userReceiver);
+        transaction.setDirection(Direction.INCOMING);
         return transaction;
     }
 }

@@ -2,6 +2,7 @@ package com.example.virtualwallet.controllers.rest;
 
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
+import com.example.virtualwallet.exceptions.InsufficientBalanceException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.TransactionMapper;
 import com.example.virtualwallet.models.Transaction;
@@ -44,9 +45,9 @@ public class TransactionRestController {
             List<Transaction> transactions = transactionService.getAllTransactions();
             return new ResponseEntity<>(transactions, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
@@ -57,9 +58,9 @@ public class TransactionRestController {
             Transaction transaction = transactionService.getTransactionById(id);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
@@ -72,9 +73,9 @@ public class TransactionRestController {
             transactionService.updateTransaction(transaction, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
@@ -87,7 +88,7 @@ public class TransactionRestController {
             transactionService.createTransaction(transaction, walletSender, user);
             return new ResponseEntity<>(transaction, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
@@ -100,9 +101,9 @@ public class TransactionRestController {
             transactionService.updateTransaction(transaction, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
@@ -121,6 +122,19 @@ public class TransactionRestController {
         }
     }
 
-    //TODO confirmation - request
     //TODO getTransactionsStatusById
+    @PostMapping("/{walletId}/request")
+    public ResponseEntity<Transaction> requestTransaction(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @RequestBody TransactionDto transactionDto) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Wallet receiverWallet = walletService.getWalletById(walletId, user.getId());
+            Transaction transaction = transactionMapper.fromDtoMoneyIn(receiverWallet, transactionDto, user);
+            transactionService.updateTransaction(transaction, user);
+            return new ResponseEntity<>(transaction, HttpStatus.OK);
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (InsufficientBalanceException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED, e.getMessage());
+        }//Todo add check to MVC for INVALID_REQUEST
+    }
 }
