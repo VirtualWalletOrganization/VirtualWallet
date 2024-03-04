@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.example.virtualwallet.utils.CheckPermissions.checkAccessPermissionsUser;
 import static com.example.virtualwallet.utils.CheckPermissions.checkBlockOrDeleteUser;
-import static com.example.virtualwallet.utils.Messages.ERROR_INSUFFICIENT_BALANCE;
-import static com.example.virtualwallet.utils.Messages.USER_HAS_BEEN_BLOCKED_OR_DELETED;
+import static com.example.virtualwallet.utils.Messages.*;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -47,10 +47,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void createTransaction(Transaction transaction, Wallet walletSender, User sender) {
-        //TODO update/ delete / create - logged user is the same user of the transaction
         User recipient = userService.getByUsername(transaction.getUsernameReceiverId().getUsername());
         Wallet walletRecipient = walletService.getDefaultWallet(recipient.getId());
+
         checkBlockOrDeleteUser(sender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
+        checkAccessPermissionsUser(recipient.getId(), sender, ERROR_TRANSACTION);
 
         if (walletSender.getBalance().compareTo(walletSender.getBalance().subtract(transaction.getAmount())) < 0) {
             transaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
@@ -68,15 +69,15 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void updateTransaction(Transaction transaction) {
-        //TODO update/ delete / create - logged user is the same user of the transaction
+    public void updateTransaction(Transaction transaction, User sender) {
         User recipient = userService.getByUsername(transaction.getUsernameReceiverId().getUsername());
+        checkAccessPermissionsUser(recipient.getId(), sender, ERROR_TRANSACTION);
         walletService.getDefaultWallet(recipient.getId());
         transactionRepository.create(transaction);
     }
 
-    public void delete(Transaction transaction) {
-        //TODO update/ delete / create - logged user is the same user of the transaction
+    public void delete(Transaction transaction, User sender) {
+        checkAccessPermissionsUser(transaction.getUsernameReceiverId().getId(), sender, ERROR_TRANSACTION);
         transactionRepository.delete(transaction);
     }
 }

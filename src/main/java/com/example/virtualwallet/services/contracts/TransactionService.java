@@ -14,7 +14,7 @@ public interface TransactionService {
 
     void createTransaction(Transaction transaction, Wallet walletSender, User sender);
 
-    void updateTransaction(Transaction transaction);
+    void updateTransaction(Transaction transaction, User sender);
 
-    void delete(Transaction transaction);
+    void delete(Transaction transaction, User sender);
 }

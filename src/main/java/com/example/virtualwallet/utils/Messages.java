@@ -34,9 +34,9 @@ public class Messages {
     public static final String ERROR_USER_FOUND = "Only users with access could review this wallet.";
     public static final String MODIFY_WALLET_ERROR_MESSAGE = "“Only the owner of this wallet has permission to delete or update it.";
     public static final String ERROR_INSUFFICIENT_BALANCE = "Insufficient balance.";
-    public static final String SUCCESS_TRANSFER =  "Transfer successful";
-    public static final String INVALID_REQUEST =  "Invalid request data";
-
+    public static final String SUCCESS_TRANSFER = "Transfer successful";
+    public static final String INVALID_REQUEST = "Invalid request data";
+    public static final String ERROR_TRANSACTION = "Only the user who mad the transaction can modify it.";
 
 
 }

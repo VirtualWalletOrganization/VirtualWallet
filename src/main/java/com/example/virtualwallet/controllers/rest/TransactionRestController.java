@@ -69,7 +69,7 @@ public class TransactionRestController {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
             Transaction transaction = transactionMapper.fromDtoMoneyOut(walletSender, transactionDto, user);
-            transactionService.updateTransaction(transaction);
+            transactionService.updateTransaction(transaction, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -97,7 +97,7 @@ public class TransactionRestController {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
             Transaction transaction = transactionMapper.fromDtoMoneyOut(walletSender, transactionDto, user);
-            transactionService.updateTransaction(transaction);
+            transactionService.updateTransaction(transaction, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -110,9 +110,9 @@ public class TransactionRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
-            authenticationHelper.tryGetUser(headers);
+            User user = authenticationHelper.tryGetUser(headers);
             Transaction transaction = transactionService.getTransactionById(id);
-            transactionService.delete(transaction);
+            transactionService.delete(transaction, user);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
