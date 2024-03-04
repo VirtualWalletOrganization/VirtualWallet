@@ -2,8 +2,7 @@ package com.example.virtualwallet.models.dtos;
 import java.math.BigDecimal;
 
 public class TransferRequestDto {
-    private String senderAccount;
-    private String recipientAccount;
+    private String accountNumber;
     private BigDecimal amount;
     private String currency;
     private String spendingCategory;
@@ -11,20 +10,12 @@ public class TransferRequestDto {
     public TransferRequestDto() {
     }
 
-    public String getSenderAccount() {
-        return senderAccount;
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setSenderAccount(String senderAccount) {
-        this.senderAccount = senderAccount;
-    }
-
-    public String getRecipientAccount() {
-        return recipientAccount;
-    }
-
-    public void setRecipientAccount(String recipientAccount) {
-        this.recipientAccount = recipientAccount;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public BigDecimal getAmount() {

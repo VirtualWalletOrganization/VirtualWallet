@@ -13,24 +13,23 @@ import java.util.Date;
 @Component
 public class TransferMapper {
 
-    public Transfer fromDtoMoneyOut(Wallet senderWallet, TransferRequestDto transferRequestDto,
-                                    SpendingCategory spendingCategory) {
+    public Transfer fromDtoMoneyOut(Wallet senderWallet, TransferRequestDto transferRequestDto) {
         Transfer transfer = new Transfer();
         transfer.setWallet(senderWallet);
-        transfer.setAccountNumber(transferRequestDto.getRecipientAccount());
+        transfer.setAccountNumber(transferRequestDto.getAccountNumber());
         transfer.setAmount(transferRequestDto.getAmount());
         transfer.setCurrency(transferRequestDto.getCurrency());
         transfer.setDirection(Direction.OUTGOING);
         transfer.setDate(new Date());
         transfer.setStatus(Status.PENDING);
+        SpendingCategory spendingCategory = new SpendingCategory();
+        spendingCategory.setName(transferRequestDto.getSpendingCategory());
         transfer.setSpendingCategory(spendingCategory);
         return transfer;
     }
 
-    public Transfer fromDtoMoneyIn(Wallet receiverWallet, TransferRequestDto transferRequestDto,
-                                   SpendingCategory spendingCategory) {
-        Transfer transfer = fromDtoMoneyOut(receiverWallet, transferRequestDto, spendingCategory);
-        transfer.setAccountNumber(transferRequestDto.getSenderAccount());
+    public Transfer fromDtoMoneyIn(Wallet receiverWallet, TransferRequestDto transferRequestDto) {
+        Transfer transfer = fromDtoMoneyOut(receiverWallet, transferRequestDto);
         transfer.setDirection(Direction.INCOMING);
         return transfer;
     }

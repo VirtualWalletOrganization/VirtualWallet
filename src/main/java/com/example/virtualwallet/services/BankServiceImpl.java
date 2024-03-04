@@ -1,12 +1,14 @@
 package com.example.virtualwallet.services;
 
 import com.example.virtualwallet.exceptions.InsufficientBalanceException;
+import com.example.virtualwallet.models.SpendingCategory;
 import com.example.virtualwallet.models.Transfer;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransferRepository;
 import com.example.virtualwallet.services.contracts.BankService;
+import com.example.virtualwallet.services.contracts.SpendingCategoryService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,14 +22,20 @@ import static com.example.virtualwallet.utils.Messages.ERROR_INSUFFICIENT_BALANC
 public class BankServiceImpl implements BankService {
     private final WalletService walletService;
     private final TransferRepository transferRepository;
+    private final SpendingCategoryService spendingCategoryService;
+
 
     @Autowired
-    public BankServiceImpl(WalletService walletService, TransferRepository transferRepository) {
+    public BankServiceImpl(WalletService walletService, TransferRepository transferRepository, SpendingCategoryService spendingCategoryService) {
         this.walletService = walletService;
         this.transferRepository = transferRepository;
+        this.spendingCategoryService = spendingCategoryService;
     }
 
     public void transferMoneyOut(Transfer transferOut, Wallet senderWallet, User user) {
+        SpendingCategory existingSpendingCategory=spendingCategoryService
+                .getSpendingCategoryByName(transferOut.getSpendingCategory().getName());
+        transferOut.setSpendingCategory(existingSpendingCategory);
         if (!isValidRequestTransferMoneyOut(transferOut, senderWallet)) {
             transferOut.setStatus(Status.FAILED);
             transferRepository.create(transferOut);
@@ -42,6 +50,9 @@ public class BankServiceImpl implements BankService {
     }
 
     public void transferMoneyIn(Transfer transferIn, Wallet receiverWallet, User user) {
+        SpendingCategory existingSpendingCategory=spendingCategoryService
+                .getSpendingCategoryByName(transferIn.getSpendingCategory().getName());
+        transferIn.setSpendingCategory(existingSpendingCategory);
         if (!isValidRequestTransferMoneyIn(transferIn, receiverWallet)) {
             transferIn.setStatus(Status.FAILED);
             transferRepository.create(transferIn);
