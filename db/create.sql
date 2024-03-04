@@ -162,8 +162,7 @@ create table transactions
 
 create table recurring_transactions
 (
-    recurring_transaction_id int auto_increment primary key,
-    transaction_id           int  not null,
+    transaction_id           int   primary key,
     intervals                enum ('DAILY', 'MONTHLY', 'WEEKLY') not null,
     start_date               date not null,
     end_date                 date not null,

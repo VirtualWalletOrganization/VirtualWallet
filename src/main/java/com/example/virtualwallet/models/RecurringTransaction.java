@@ -7,6 +7,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "recurring_transactions")
+@PrimaryKeyJoinColumn(name = "transaction_id")
 public class RecurringTransaction extends Transaction {
 
 //    @Id

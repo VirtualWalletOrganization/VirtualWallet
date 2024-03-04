@@ -122,7 +122,7 @@ public class UserServiceImplTest {
     @Test
     public void updateToAdmin_Should_CallRepository_When_UpdatingExistingUser() {
         User targetUser = createMockUser();
-        targetUser.setRole(Role.USER);
+        targetUser.getUsersRole().setRole(Role.USER);
         User executingUser = createMockUser();
 
         userService.updateToAdmin(targetUser, executingUser);
