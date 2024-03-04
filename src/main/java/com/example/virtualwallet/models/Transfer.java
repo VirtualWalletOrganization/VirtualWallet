@@ -5,6 +5,7 @@ import com.example.virtualwallet.models.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -20,12 +21,12 @@ public class Transfer {
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    @ManyToOne
-    @JoinColumn(name = "card_id")
-    private Card card;
+
+    @Column(name = "account_number")
+    private String accountNumber;
 
     @Column(name = "amount")
-    private double amount;
+    private BigDecimal amount;
 
     @Column(name = "currency")
     private String currency;
@@ -41,8 +42,8 @@ public class Transfer {
     @Column(name = "status")
     private Status status;
 
-    @Column(name = "description")
-    private String description;
+//    @Column(name = "description")
+//    private String description;
 
     @JsonIgnore
     @ManyToOne
@@ -52,11 +53,11 @@ public class Transfer {
     public Transfer() {
     }
 
-    public int getId() {
+    public int getTransferId() {
         return transferId;
     }
 
-    public void setId(int transferId) {
+    public void setTransferId(int transferId) {
         this.transferId = transferId;
     }
 
@@ -68,19 +69,19 @@ public class Transfer {
         this.wallet = wallet;
     }
 
-    public Card getCard() {
-        return card;
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setCard(Card card) {
-        this.card = card;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -116,11 +117,19 @@ public class Transfer {
         this.status = status;
     }
 
-    public String getDescription() {
-        return description;
+//    public String getDescription() {
+//        return description;
+//    }
+//
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
+
+    public SpendingCategory getSpendingCategory() {
+        return spendingCategory;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSpendingCategory(SpendingCategory spendingCategory) {
+        this.spendingCategory = spendingCategory;
     }
 }

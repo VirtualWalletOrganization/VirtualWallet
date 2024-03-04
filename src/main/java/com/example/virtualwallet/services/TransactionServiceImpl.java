@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.example.virtualwallet.utils.Messages.ERROR_INSUFFICIENT_BALANCE;
+
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
@@ -59,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
 //                .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
 
         if ((walletSender.getBalance().compareTo(BigDecimal.valueOf(amount)) - amount) < 0) {
-            throw new InsufficientBalanceException("Insufficient balance in sender's wallet.");
+            throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
             //TODO implement check for overdraft
         }
 

@@ -1,6 +1,7 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
+import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.SpendingCategory;
 import com.example.virtualwallet.repositories.contracts.SpendingCategoryRepository;
 import org.hibernate.Session;
@@ -34,6 +35,15 @@ public class SpendingCategoryRepositoryImpl implements SpendingCategoryRepositor
     public Optional<SpendingCategory> getSpendingCategoryById(int categoryId) {
         try (Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.get(SpendingCategory.class, categoryId));
+        }
+    }
+    @Override
+    public Optional<SpendingCategory> getSpendingCategoryByName(String categoryName) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<SpendingCategory> query = session.createQuery("SELECT c FROM SpendingCategory " +
+                            "AS c WHERE c.name = :categoryName", SpendingCategory.class);
+            query.setParameter("categoryName", categoryName);
+            return Optional.ofNullable(query.uniqueResult());
         }
     }
 

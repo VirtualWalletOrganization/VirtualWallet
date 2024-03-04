@@ -11,6 +11,8 @@ public interface SpendingCategoryRepository {
 
     Optional<SpendingCategory> getSpendingCategoryById(int categoryId);
 
+    Optional<SpendingCategory> getSpendingCategoryByName(String categoryName);
+
     SpendingCategory create(SpendingCategory category);
 
     void update(SpendingCategory category);

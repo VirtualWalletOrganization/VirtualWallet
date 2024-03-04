@@ -1,64 +1,94 @@
-//package com.example.virtualwallet.controllers.rest;
-//
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//@RestController
-//@RequestMapping("/api/transfer")
-//public class BankRestController {
-//    @PostMapping
-//    public TransferResponse transferMoney(@RequestBody TransferRequest request) {
-//
-//        if (isValidRequest(request)) {
-//            // Check if sender has sufficient balance (dummy check)
-//            double senderBalance = getAccountBalance(request.getSenderAccount());
-//            if (senderBalance >= request.getAmount()) {
-//                // Deduct amount from sender's account
-//                updateAccountBalance(request.getSenderAccount(), senderBalance - request.getAmount());
-//                // Add amount to recipient's account
-//                updateAccountBalance(request.getRecipientAccount(), getAccountBalance(request.getRecipientAccount()) + request.getAmount());
-//                return new TransferResponse(true, "Transfer successful");
-//            } else {
-//                return new TransferResponse(false, "Insufficient balance");
-//            }
-//        } else {
-//            return new TransferResponse(false, "Invalid request data");
-//        }
-//    }
-//
-//    private boolean isValidRequest(TransferRequest request) {
-//        // Add validation logic here
-//        return request != null && request.getSenderAccount() != null && request.getRecipientAccount() != null && request.getAmount() > 0;
-//    }
-//
-//    private double getAccountBalance(String accountId) {
-//        // Dummy function to get account balance
-//        // Replace with actual logic to fetch balance from database or external API
-//        return 10000; // Dummy balance
-//    }
-//
-//    private void updateAccountBalance(String accountId, double newBalance) {
-//        // Dummy function to update account balance
-//        // Replace with actual logic to update balance in database or external API
-//    }
-//}
-//
-//class TransferRequest {
-//    private String senderAccount;
-//    private String recipientAccount;
-//    private double amount;
-//
-//    // Getters and setters
-//}
-//
-//class TransferResponse {
-//    private boolean success;
-//    private String message;
-//
-//    // Constructor, getters and setters
-//}
-//
-//
-//}
+package com.example.virtualwallet.controllers.rest;
+
+import com.example.virtualwallet.exceptions.AuthorizationException;
+import com.example.virtualwallet.exceptions.InsufficientBalanceException;
+import com.example.virtualwallet.helpers.AuthenticationHelper;
+import com.example.virtualwallet.helpers.TransferMapper;
+import com.example.virtualwallet.models.SpendingCategory;
+import com.example.virtualwallet.models.Transfer;
+import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.dtos.TransferRequestDto;
+import com.example.virtualwallet.services.contracts.BankService;
+import com.example.virtualwallet.services.contracts.SpendingCategoryService;
+import com.example.virtualwallet.services.contracts.WalletService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import static com.example.virtualwallet.utils.Messages.SUCCESS_TRANSFER;
+
+@RestController
+@RequestMapping("/api/transfers")
+public class BankRestController {
+
+    private final BankService bankService;
+    private final WalletService walletService;
+    private final SpendingCategoryService spendingCategoryService;
+    private final TransferMapper transferMapper;
+    private final AuthenticationHelper authenticationHelper;
+
+    @Autowired
+    public BankRestController(BankService bankService,
+                              WalletService walletService,
+                              SpendingCategoryService spendingCategoryService,
+                              TransferMapper transferMapper,
+                              AuthenticationHelper authenticationHelper) {
+        this.bankService = bankService;
+        this.walletService = walletService;
+        this.spendingCategoryService = spendingCategoryService;
+        this.transferMapper = transferMapper;
+        this.authenticationHelper = authenticationHelper;
+    }
+
+    @PostMapping("/{walletId}/out")
+    public String transferMoneyOut(@RequestHeader HttpHeaders headers,
+                                   @PathVariable int walletId,
+                                   @Valid @RequestBody TransferRequestDto requestDto) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Wallet senderWallet = walletService.getWalletById(walletId, user.getId());
+            SpendingCategory existingSpendingCategory=spendingCategoryService
+                    .getSpendingCategoryByName(requestDto.getSpendingCategory());
+            Transfer transferOut=transferMapper.fromDtoMoneyOut(senderWallet,requestDto,
+                    existingSpendingCategory);
+            bankService.transferMoneyOut( transferOut,senderWallet, user);
+            return SUCCESS_TRANSFER;
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (InsufficientBalanceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }//Todo add check to MVC for INVALID_REQUEST
+    }
+
+    @PostMapping("/{walletId}/in")
+    public String transferMoneyIn(@RequestHeader HttpHeaders headers,
+                                  @PathVariable int walletId,
+                                  @Valid @RequestBody TransferRequestDto requestDto) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Wallet receiverWallet = walletService.getWalletById(walletId, user.getId());
+            SpendingCategory existingSpendingCategory=spendingCategoryService
+                    .getSpendingCategoryByName(requestDto.getSpendingCategory());
+            Transfer transferIn=transferMapper.fromDtoMoneyIn(receiverWallet,requestDto,
+                    existingSpendingCategory);
+            bankService.transferMoneyIn( transferIn,receiverWallet, user);
+            return SUCCESS_TRANSFER;
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            // return new TransferResponse(false, "Invalid request data");
+        } catch (InsufficientBalanceException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED, e.getMessage());
+        }//Todo add check to MVC for INVALID_REQUEST
+    }
+
+}
+
+
+
+
+
+
+

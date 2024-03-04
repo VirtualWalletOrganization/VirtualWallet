@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SpendingCategoryServiceImpl implements SpendingCategoryService {
@@ -29,6 +30,19 @@ public class SpendingCategoryServiceImpl implements SpendingCategoryService {
     public SpendingCategory getSpendingCategoryById(int categoryId) {
         return categoryRepository.getSpendingCategoryById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Category", "id", String.valueOf(categoryId)));
+    }
+
+    @Override
+    public SpendingCategory getSpendingCategoryByName(String categoryName) {
+        Optional<SpendingCategory> existingSpendingCategory = categoryRepository.getSpendingCategoryByName(categoryName);
+        if (existingSpendingCategory.isEmpty()) {
+            SpendingCategory spendingCategory = new SpendingCategory();
+            spendingCategory.setName(categoryName);
+            categoryRepository.create(spendingCategory);
+            return spendingCategory;
+        } else {
+            return existingSpendingCategory.get();
+        }
     }
 
     @Override

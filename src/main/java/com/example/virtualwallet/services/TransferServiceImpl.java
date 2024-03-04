@@ -57,7 +57,7 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public void transferMoney(int senderUserId, int recipientUserId, int walletId, double amount) {
+    public void transferMoney(int senderUserId, int recipientUserId, int walletId, BigDecimal amount) {
         User sender = userService.getById(senderUserId);
         User recipient = userService.getById(recipientUserId);
         Wallet wallet = sender.getWallets().stream()
@@ -65,7 +65,7 @@ public class TransferServiceImpl implements TransferService {
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
 
-        if (wallet.getBalance().compareTo(BigDecimal.valueOf(amount)) < 0) {
+        if (wallet.getBalance().compareTo(amount) < 0) {
             throw new InsufficientBalanceException("Insufficient balance in sender's wallet.");
         }
 
@@ -77,10 +77,10 @@ public class TransferServiceImpl implements TransferService {
         transfer.setDirection(Direction.OUTGOING);
         transfer.setDate(new Date());
         transfer.setStatus(Status.PENDING);
-        transfer.setDescription("Transfer from " + sender.getUsername() + " to " + recipient.getUsername());
+       // transfer.setDescription("Transfer from " + sender.getUsername() + " to " + recipient.getUsername());
         transferRepository.create(transfer);
 
-        wallet.setBalance(wallet.getBalance().subtract(BigDecimal.valueOf(amount)));
+        wallet.setBalance(wallet.getBalance().subtract((amount)));
         userService.updateUser(sender, recipient);
     }
 
@@ -97,12 +97,12 @@ public class TransferServiceImpl implements TransferService {
                 .filter(w -> w.getId() == recipientWalletId)
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(recipientWalletId)));
-        wallet.setBalance(wallet.getBalance().add(BigDecimal.valueOf(transfer.getAmount())));
+        wallet.setBalance(wallet.getBalance().add((transfer.getAmount())));
         userService.updateUser(sender, recipient);
     }
 
     @Override
-    public void editTransfer(int transferId, double newAmount) {
+    public void editTransfer(int transferId, BigDecimal newAmount) {
         Transfer transfer = getTransferById(transferId);
         transfer.setAmount(newAmount);
         transferRepository.update(transfer);

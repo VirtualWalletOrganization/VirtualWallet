@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -71,7 +72,7 @@ public class TransferRestController {
     public ResponseEntity<Transfer> updateTransfer(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody Transfer transfer) {
         try {
             authenticationHelper.tryGetUser(headers);
-            transfer.setId(id);
+            // transfer.set(id);
             transferService.updateTransfer(transfer);
             return new ResponseEntity<>(transfer, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -96,7 +97,11 @@ public class TransferRestController {
     }
 
     @PostMapping("/transfer-money")
-    public ResponseEntity<Void> transferMoney(@RequestHeader HttpHeaders headers, @RequestParam int senderUserId, @RequestParam int recipientUserId, @RequestParam int walletId, @RequestParam double amount) {
+    public ResponseEntity<Void> transferMoney(@RequestHeader HttpHeaders headers,
+                                              @RequestParam int senderUserId,
+                                              @RequestParam int recipientUserId,
+                                              @RequestParam int walletId,
+                                              @RequestParam BigDecimal amount) {
         try {
             authenticationHelper.tryGetUser(headers);
             transferService.transferMoney(senderUserId, recipientUserId, walletId, amount);
@@ -122,7 +127,7 @@ public class TransferRestController {
     }
 
     @PostMapping("/edit-transfer")
-    public ResponseEntity<Void> editTransfer(@RequestHeader HttpHeaders headers, @RequestParam int transferId, @RequestParam double newAmount) {
+    public ResponseEntity<Void> editTransfer(@RequestHeader HttpHeaders headers, @RequestParam int transferId, @RequestParam BigDecimal newAmount) {
         try {
             authenticationHelper.tryGetUser(headers);
             transferService.editTransfer(transferId, newAmount);
