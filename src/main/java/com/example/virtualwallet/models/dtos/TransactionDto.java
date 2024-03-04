@@ -1,28 +1,31 @@
 package com.example.virtualwallet.models.dtos;
 
+import java.math.BigDecimal;
+
 public class TransactionDto {
 
-    private String senderWallet;
-    private String receiverWallet;
+    private String usernameReceiver;
+    private BigDecimal amount;
     private String currency;
+    private String description;
 
     public TransactionDto() {
     }
 
-    public String getSenderWallet() {
-        return senderWallet;
+    public String getUsernameReceiver() {
+        return usernameReceiver;
     }
 
-    public void setSenderWallet(String senderWallet) {
-        this.senderWallet = senderWallet;
+    public void setUsernameReceiver(String usernameReceiver) {
+        this.usernameReceiver = usernameReceiver;
     }
 
-    public String getReceiverWallet() {
-        return receiverWallet;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setReceiverWallet(String receiverWallet) {
-        this.receiverWallet = receiverWallet;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
     public String getCurrency() {
@@ -31,5 +34,13 @@ public class TransactionDto {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

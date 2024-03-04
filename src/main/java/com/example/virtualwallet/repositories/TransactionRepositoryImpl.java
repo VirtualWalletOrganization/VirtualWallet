@@ -1,6 +1,7 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.Transaction;
+import com.example.virtualwallet.models.Transfer;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,7 +23,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public Optional<List<Transaction>> getAllTransaction() {
+    public Optional<List<Transaction>> getAllTransactions() {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery("FROM Transaction", Transaction.class);
             return Optional.ofNullable(query.list());
@@ -45,7 +46,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery(
                     "SELECT t FROM Transaction t WHERE t.walletSender.id = :userId" +
-                            " AND  t.walletReceiver.id= :userId", Transaction.class);
+                            " AND  t.usernameReceiverId.id= :userId", Transaction.class);
             query.setParameter("walletSender", userId);
             query.setParameter("walletReceiver", userId);
 

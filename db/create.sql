@@ -26,20 +26,20 @@ CREATE TABLE wallets_roles
 create table users
 (
     user_id            int auto_increment primary key,
-    first_name         VARCHAR(32)                NOT NULL,
-    last_name          VARCHAR(32)                NOT NULL,
-    username           varchar(20) unique         not null,
-    password           varchar(50)                not null,
-    email              varchar(100) unique        not null,
-    phone_number       varchar(10) unique         not null,
-    profile_picture    varchar(255)               null,
-    email_verified     tinyint(1) default 0       null,
-    identity_status_id int                        not null,
-    photo_id           int                        null,
-    role_id            int                        not null,
-    is_deleted         tinyint(1) default 0       null,
+    first_name         VARCHAR(32)         NOT NULL,
+    last_name          VARCHAR(32)         NOT NULL,
+    username           varchar(20) unique  not null,
+    password           varchar(50)         not null,
+    email              varchar(100) unique not null,
+    phone_number       varchar(10) unique  not null,
+    profile_picture    varchar(255) null,
+    email_verified     tinyint(1) default 0 null,
+    identity_status_id int                 not null,
+    photo_id           int null,
+    role_id            int                 not null,
+    is_deleted         tinyint(1) default 0 null,
     status             enum ('ACTIVE', 'BLOCKED') null,
-    wallet_role_id     int                        null,
+    wallet_role_id     int null,
     CONSTRAINT users_identity_statuses_identity_status_id_fk
         FOREIGN KEY (identity_status_id) REFERENCES identity_statuses (identity_status_id),
     constraint users_photos_verifications_photo_id_fk
@@ -69,13 +69,13 @@ CREATE TABLE cards_types
 create table cards
 (
     card_id         int auto_increment primary key,
-    card_type_id    int                            not null,
-    user_id         int                            not null,
-    card_number     varchar(16) unique             not null,
-    expiration_date date                           not null,
-    card_holder     varchar(30)                    not null,
-    check_number    varchar(3)                     not null,
-    currency        varchar(3)                     not null,
+    card_type_id    int                not null,
+    user_id         int                not null,
+    card_number     varchar(16) unique not null,
+    expiration_date date               not null,
+    card_holder     varchar(30)        not null,
+    check_number    varchar(3)         not null,
+    currency        varchar(3)         not null,
     status          enum ('ACTIVE', 'DEACTIVATED') not null,
     constraint cards_cards_types_card_type_id_fk
         foreign key (card_type_id) references cards_types (card_type_id),
@@ -141,17 +141,17 @@ CREATE TABLE transactions_types
 create table transactions
 (
     transaction_id        int auto_increment primary key,
-    sender_wallet_id      int                           not null,
-    receiver_wallet_id    int                           not null,
-    amount                decimal                       not null,
-    currency              varchar(3)                    not null,
+    sender_wallet_id      int          not null,
+    user_id               int          not null,
+    amount                decimal      not null,
+    currency              varchar(3)   not null,
     direction             enum ('INCOMING', 'OUTGOING') not null,
-    date                  date                          not null,
-    transaction_status_id int                           not null,
-    description           varchar(255)                  not null,
-    transaction_type_id   int                           not null,
-    constraint transactions_wallets_wallet_id_fk
-        foreign key (receiver_wallet_id) references wallets (wallet_id),
+    date                  date         not null,
+    transaction_status_id int          not null,
+    description           varchar(255) not null,
+    transaction_type_id   int          not null,
+    constraint transactions_users_user_id_fk
+        foreign key (user_id) references users (user_id),
     constraint transactions_wallets_wallet_id_fk_2
         foreign key (sender_wallet_id) references wallets (wallet_id),
     constraint transactions_transactions_statuses_transaction_status_id_fk
@@ -163,10 +163,10 @@ create table transactions
 create table recurring_transactions
 (
     recurring_transaction_id int auto_increment primary key,
-    transaction_id           int                                 not null,
+    transaction_id           int  not null,
     intervals                enum ('DAILY', 'MONTHLY', 'WEEKLY') not null,
-    start_date               date                                not null,
-    end_date                 date                                not null,
+    start_date               date not null,
+    end_date                 date not null,
     constraint recurring_transactions_transactions_transaction_id_fk
         foreign key (transaction_id) references transactions (transaction_id)
 );
@@ -174,10 +174,10 @@ create table recurring_transactions
 create table referrals
 (
     referral_id     int auto_increment primary key,
-    user_id         int                                      not null,
-    referred_email  varchar(50)                              not null,
+    user_id         int         not null,
+    referred_email  varchar(50) not null,
     referral_status enum ('COMPLETED', 'EXPIRED', 'PENDING') not null,
-    bonus           decimal                                  not null,
+    bonus           decimal     not null,
     constraint referrals_users_user_id_fk
         foreign key (user_id) references users (user_id)
 );
@@ -209,15 +209,15 @@ create table savings_types
 (
     saving_type_id  int auto_increment primary key,
     saving_name     varchar(50) null,
-    saving_amount   decimal     null,
-    saving_interest int         null
+    saving_amount   decimal null,
+    saving_interest int null
 );
 
 create table savings
 (
     saving_id      int auto_increment primary key,
     wallet_id      int  not null,
-    saving_type_id int  null,
+    saving_type_id int null,
     start_date     date not null,
     due_date       date not null,
     constraint savings_savings_types_saving_type_id_fk
@@ -235,14 +235,14 @@ create table spending_categories
 create table transfers
 (
     transfer_id    int auto_increment primary key,
-    wallet_id      int                                     not null,
-    account_number varchar(16) unique                      not null,
-    amount         decimal                                 not null,
-    currency       varchar(3)                              not null,
-    direction      enum ('INCOMING', 'OUTGOING')           not null,
-    date           date                                    not null,
+    wallet_id      int                not null,
+    account_number varchar(16) unique not null,
+    amount         decimal            not null,
+    currency       varchar(3)         not null,
+    direction      enum ('INCOMING', 'OUTGOING') not null,
+    date           date               not null,
     status         enum ('COMPLETED', 'FAILED', 'PENDING') not null,
-    category_id    int                                     not null,
+    category_id    int                not null,
     constraint transfers_wallets_wallet_id_fk
         foreign key (wallet_id) references wallets (wallet_id),
     constraint transfers_spending_categories_category_id_fk

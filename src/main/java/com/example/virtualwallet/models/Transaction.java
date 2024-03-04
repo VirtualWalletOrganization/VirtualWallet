@@ -3,6 +3,7 @@ package com.example.virtualwallet.models;
 import com.example.virtualwallet.models.enums.Direction;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
@@ -20,12 +21,11 @@ public class Transaction {
     @JoinColumn(name = "sender_wallet_id")
     private Wallet walletSender;
 
-    @ManyToOne
-    @JoinColumn(name = "receiver_wallet_id")
-    private Wallet walletReceiver;
+    @Column(name = "uesername_receiver_id")
+    private User usernameReceiverId;
 
     @Column(name = "amount")
-    private double amount;
+    private BigDecimal amount;
 
     @Column(name = "currency")
     private String currency;
@@ -78,19 +78,19 @@ public class Transaction {
         this.walletSender = walletSender;
     }
 
-    public Wallet getWalletReceiver() {
-        return walletReceiver;
+    public User getUsernameReceiverId() {
+        return usernameReceiverId;
     }
 
-    public void setWalletReceiver(Wallet walletReceiver) {
-        this.walletReceiver = walletReceiver;
+    public void setUsernameReceiverId(User usernameReceiverId) {
+        this.usernameReceiverId = usernameReceiverId;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -149,7 +149,6 @@ public class Transaction {
 //    public void setRecuringTransactionId(int recuringTransactionId) {
 //        this.recuringTransactionId = recuringTransactionId;
 //    }
-
 
     @Override
     public boolean equals(Object o) {

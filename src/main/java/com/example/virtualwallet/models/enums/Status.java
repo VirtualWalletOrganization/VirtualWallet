@@ -5,7 +5,9 @@ public enum Status {
     COMPLETED("COMPLETED"),
     FAILED("FAILED"),
     EXPIRED("EXPIRED"),
-    PENDING("PENDING");
+    PENDING("PENDING"),
+    PENDING_REQUEST("PENDING_REQUEST"),
+    REJECT("REJECT");
 
     private String name;
 

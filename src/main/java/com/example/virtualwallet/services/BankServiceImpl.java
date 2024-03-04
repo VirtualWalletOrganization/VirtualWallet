@@ -20,10 +20,10 @@ import static com.example.virtualwallet.utils.Messages.ERROR_INSUFFICIENT_BALANC
 
 @Service
 public class BankServiceImpl implements BankService {
+
     private final WalletService walletService;
     private final TransferRepository transferRepository;
     private final SpendingCategoryService spendingCategoryService;
-
 
     @Autowired
     public BankServiceImpl(WalletService walletService, TransferRepository transferRepository, SpendingCategoryService spendingCategoryService) {
@@ -33,44 +33,46 @@ public class BankServiceImpl implements BankService {
     }
 
     public void transferMoneyOut(Transfer transferOut, Wallet senderWallet, User user) {
-        SpendingCategory existingSpendingCategory=spendingCategoryService
+        SpendingCategory existingSpendingCategory = spendingCategoryService
                 .getSpendingCategoryByName(transferOut.getSpendingCategory().getName());
         transferOut.setSpendingCategory(existingSpendingCategory);
+
         if (!isValidRequestTransferMoneyOut(transferOut, senderWallet)) {
             transferOut.setStatus(Status.FAILED);
             transferRepository.create(transferOut);
             throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
         }
+
         senderWallet.setBalance(senderWallet.getBalance().subtract(transferOut.getAmount()));
         walletService.update(senderWallet, user);
         updateAccountBalanceTransferIn(transferOut.getAccountNumber(), transferOut.getAmount());
         transferOut.setStatus(Status.COMPLETED);
         transferRepository.create(transferOut);
-
     }
 
     public void transferMoneyIn(Transfer transferIn, Wallet receiverWallet, User user) {
-        SpendingCategory existingSpendingCategory=spendingCategoryService
+        SpendingCategory existingSpendingCategory = spendingCategoryService
                 .getSpendingCategoryByName(transferIn.getSpendingCategory().getName());
         transferIn.setSpendingCategory(existingSpendingCategory);
+
         if (!isValidRequestTransferMoneyIn(transferIn, receiverWallet)) {
             transferIn.setStatus(Status.FAILED);
             transferRepository.create(transferIn);
             throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
         }
+
         receiverWallet.setBalance(receiverWallet.getBalance().add(transferIn.getAmount()));
         walletService.update(receiverWallet, user);
         updateAccountBalanceTransferOut(transferIn.getAccountNumber(), transferIn.getAmount());
         transferIn.setStatus(Status.COMPLETED);
         transferRepository.create(transferIn);
-
-
     }
 
     private boolean isValidRequestTransferMoneyOut(Transfer transferOut, Wallet senderWallet) {
         //transfer out wallet -
         BigDecimal balanceAfterTransfer = senderWallet.getBalance().subtract(transferOut.getAmount());
         return balanceAfterTransfer.compareTo(BigDecimal.ZERO) >= 0;
+
         //return (senderWallet.getBalance().compareTo(senderWallet.getBalance().subtract(transferOut.getAmount())) >= 0);
 //        //transfer in account +
 //        if (updateAccountBalanceTransferIn(requestDto.getSenderAccount(), requestDto.getAmount())
@@ -96,13 +98,11 @@ public class BankServiceImpl implements BankService {
 
     //BankAccounts
     private BigDecimal updateAccountBalanceTransferIn(String accountId, BigDecimal transferAmount) {
-        BigDecimal updateBalance = getAccountBalance(accountId).add(transferAmount);
-        return updateBalance;
+        return getAccountBalance(accountId).add(transferAmount);
     }
 
     private BigDecimal updateAccountBalanceTransferOut(String accountId, BigDecimal transferAmount) {
-        BigDecimal updateBalance = getAccountBalance(accountId).subtract(transferAmount);
-        return updateBalance;
+        return getAccountBalance(accountId).subtract(transferAmount);
     }
 
     private BigDecimal getAccountBalance(String accountId) {

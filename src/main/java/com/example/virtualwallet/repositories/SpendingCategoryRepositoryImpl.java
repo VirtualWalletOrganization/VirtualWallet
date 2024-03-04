@@ -37,6 +37,7 @@ public class SpendingCategoryRepositoryImpl implements SpendingCategoryRepositor
             return Optional.ofNullable(session.get(SpendingCategory.class, categoryId));
         }
     }
+
     @Override
     public Optional<SpendingCategory> getSpendingCategoryByName(String categoryName) {
         try (Session session = sessionFactory.openSession()) {

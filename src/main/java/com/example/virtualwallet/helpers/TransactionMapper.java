@@ -1,9 +1,6 @@
 package com.example.virtualwallet.helpers;
 
-import com.example.virtualwallet.models.Transaction;
-import com.example.virtualwallet.models.TransactionsStatus;
-import com.example.virtualwallet.models.TransactionsType;
-import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.models.enums.Direction;
 import com.example.virtualwallet.models.enums.Status;
@@ -22,26 +19,26 @@ public class TransactionMapper {
         this.userService = userService;
     }
 
-    public Transaction toDto(TransactionDto dto, int senderUserId, int recipientUserId) {
-        User sender = userService.getById(senderUserId);
-        User recipient = userService.getById(recipientUserId);
-
+    public Transaction fromDtoMoneyOut(Wallet senderWallet, TransactionDto transactionDto, User userSender) {
         Transaction transaction = new Transaction();
-//        transaction.setWalletSender(dto.getSenderWallet());
-//        transaction.setWalletReceiver(dto.getReceiverWallet());
-        transaction.setCurrency(dto.getCurrency());
+        transaction.setWalletSender(senderWallet);
+
+        User userReceiver = userService.getByUsername(transactionDto.getUsernameReceiver());
+        transaction.getUsernameReceiverId().setUsername(userReceiver.getUsername());
+
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setCurrency(transactionDto.getCurrency());
         transaction.setDirection(Direction.OUTGOING);
         transaction.setDate(new Date());
 
         TransactionsStatus transactionsStatus = new TransactionsStatus();
         transactionsStatus.setTransactionStatus(Status.PENDING);
         transaction.setTransactionsStatus(transactionsStatus);
-        transaction.setDescription("Transaction from " + sender.getUsername() + " to " + recipient.getUsername());
+        transaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
         TransactionsType transactionsType = new TransactionsType();
         transactionsType.setTransactionType(TransactionType.SINGLE);
         transaction.setTransactionsType(transactionsType);
-
         return transaction;
     }
 }

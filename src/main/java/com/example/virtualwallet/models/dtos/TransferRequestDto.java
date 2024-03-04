@@ -1,7 +1,9 @@
 package com.example.virtualwallet.models.dtos;
+
 import java.math.BigDecimal;
 
 public class TransferRequestDto {
+
     private String accountNumber;
     private BigDecimal amount;
     private String currency;

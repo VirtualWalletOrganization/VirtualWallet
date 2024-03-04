@@ -63,7 +63,6 @@ public class BankRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet receiverWallet = walletService.getWalletById(walletId, user.getId());
-
             Transfer transferIn = transferMapper.fromDtoMoneyIn(receiverWallet, requestDto);
             bankService.transferMoneyIn(transferIn, receiverWallet, user);
             return SUCCESS_TRANSFER;
@@ -73,12 +72,4 @@ public class BankRestController {
             throw new ResponseStatusException(HttpStatus.NOT_MODIFIED, e.getMessage());
         }//Todo add check to MVC for INVALID_REQUEST
     }
-
 }
-
-
-
-
-
-
-

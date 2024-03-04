@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface TransactionRepository {
 
-    Optional<List<Transaction>> getAllTransaction();
+    Optional<List<Transaction>> getAllTransactions();
 
     Optional<Transaction> getTransactionById(int transactionId);
 

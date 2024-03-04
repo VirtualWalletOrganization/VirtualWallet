@@ -35,6 +35,7 @@ public class SpendingCategoryServiceImpl implements SpendingCategoryService {
     @Override
     public SpendingCategory getSpendingCategoryByName(String categoryName) {
         Optional<SpendingCategory> existingSpendingCategory = categoryRepository.getSpendingCategoryByName(categoryName);
+
         if (existingSpendingCategory.isEmpty()) {
             SpendingCategory spendingCategory = new SpendingCategory();
             spendingCategory.setName(categoryName);

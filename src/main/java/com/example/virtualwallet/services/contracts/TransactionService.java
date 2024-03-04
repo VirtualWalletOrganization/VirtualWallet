@@ -1,20 +1,20 @@
 package com.example.virtualwallet.services.contracts;
 
 import com.example.virtualwallet.models.Transaction;
+import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
 
 import java.util.List;
 
 public interface TransactionService {
 
-    List<Transaction> getAllTransfers();
+    List<Transaction> getAllTransactions();
 
     Transaction getTransactionById(int transactionId);
 
-    void createTransaction(Transaction transaction, int senderUserId, int recipientUserId, int walletId, double amount);
-
-//    void confirmTransaction(int transactionId, int senderUserId, int recipientId, double amount);
+    void createTransaction(Transaction transaction, Wallet walletSender, User sender);
 
     void updateTransaction(Transaction transaction);
 
-    void deleteTransaction(Transaction transaction);
+    void delete(Transaction transaction);
 }
