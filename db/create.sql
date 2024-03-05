@@ -129,7 +129,7 @@ create table users_wallets
 CREATE TABLE transactions_statuses
 (
     transaction_status_id INT AUTO_INCREMENT PRIMARY KEY,
-    status_name           enum ('COMPLETED', 'FAILED', 'PENDING') not null
+    status_name           enum ('EXPIRED', 'COMPLETED', 'FAILED', 'PENDING', 'PENDING_REQUEST', 'REJECT') not null
 );
 
 CREATE TABLE transactions_types
@@ -142,7 +142,7 @@ create table transactions
 (
     transaction_id        int auto_increment primary key,
     sender_wallet_id      int          not null,
-    user_id               int          not null,
+    receiver_wallet_id               int          not null,
     amount                decimal      not null,
     currency              varchar(3)   not null,
     direction             enum ('INCOMING', 'OUTGOING') not null,
@@ -150,8 +150,8 @@ create table transactions
     transaction_status_id int          not null,
     description           varchar(255) not null,
     transaction_type_id   int          not null,
-    constraint transactions_users_user_id_fk
-        foreign key (user_id) references users (user_id),
+    constraint transactions_wallets_wallet_id_fk
+        foreign key (receiver_wallet_id) references wallets (wallet_id),
     constraint transactions_wallets_wallet_id_fk_2
         foreign key (sender_wallet_id) references wallets (wallet_id),
     constraint transactions_transactions_statuses_transaction_status_id_fk
@@ -162,10 +162,10 @@ create table transactions
 
 create table recurring_transactions
 (
-    transaction_id           int   primary key,
-    intervals                enum ('DAILY', 'MONTHLY', 'WEEKLY') not null,
-    start_date               date not null,
-    end_date                 date not null,
+    transaction_id int primary key,
+    intervals      enum ('DAILY', 'MONTHLY', 'WEEKLY') not null,
+    start_date     date not null,
+    end_date       date not null,
     constraint recurring_transactions_transactions_transaction_id_fk
         foreign key (transaction_id) references transactions (transaction_id)
 );

@@ -22,8 +22,9 @@ public class Transaction {
     @JoinColumn(name = "sender_wallet_id")
     private Wallet walletSender;
 
-    @Column(name = "uesername_receiver_id")
-    private User usernameReceiverId;
+    @ManyToOne
+    @JoinColumn(name = "receiver_wallet_id")
+    private Wallet walletReceiver;
 
     @Column(name = "amount")
     private BigDecimal amount;
@@ -38,20 +39,12 @@ public class Transaction {
     @Column(name = "date")
     private Date date;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "transaction_status_id")
-//    private Status status;
-
     @ManyToOne
     @JoinColumn(name = "transaction_status_id")
     private TransactionsStatus transactionsStatus;
 
     @Column(name = "description")
     private String description;
-
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "transaction_type_id")
-//    private TransactionType transactionType;
 
     @ManyToOne
     @JoinColumn(name = "transaction_type_id")
@@ -79,12 +72,12 @@ public class Transaction {
         this.walletSender = walletSender;
     }
 
-    public User getUsernameReceiverId() {
-        return usernameReceiverId;
+    public Wallet getWalletReceiver() {
+        return walletReceiver;
     }
 
-    public void setUsernameReceiverId(User usernameReceiverId) {
-        this.usernameReceiverId = usernameReceiverId;
+    public void setWalletReceiver(Wallet walletReceiver) {
+        this.walletReceiver = walletReceiver;
     }
 
     public BigDecimal getAmount() {
@@ -142,14 +135,6 @@ public class Transaction {
     public void setTransactionsType(TransactionsType transactionsType) {
         this.transactionsType = transactionsType;
     }
-
-    //    public int getRecuringTransactionId() {
-//        return recuringTransactionId;
-//    }
-//
-//    public void setRecuringTransactionId(int recuringTransactionId) {
-//        this.recuringTransactionId = recuringTransactionId;
-//    }
 
     @Override
     public boolean equals(Object o) {

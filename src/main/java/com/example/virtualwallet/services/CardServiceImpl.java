@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.virtualwallet.utils.CheckPermissions.checkAccessPermissionsUser;
+import static com.example.virtualwallet.utils.CheckPermissions.checkPermissionExistingUsersInWallet;
 import static com.example.virtualwallet.utils.Messages.*;
 
 @Service
@@ -64,7 +65,7 @@ public class CardServiceImpl implements CardService {
     public Card addCard(Card card, int walletId, User user) {
         throwIfCardWithSameNumberAlreadyExistsInSystem(card);
         Wallet wallet = walletService.getWalletById(walletId, user.getId());
-        checkPermissionToAddCard(walletId, user);
+        checkPermissionExistingUsersInWallet(wallet, user, ADD_CARD_ERROR_MESSAGE);
 
         // checkAccessPermissionsUser(wallet.getCreator().getId(), user, ADD_CARD_ERROR_MESSAGE);
         throwIfCardWithSameNumberAlreadyExistsInWallet(card, wallet);
@@ -103,18 +104,13 @@ public class CardServiceImpl implements CardService {
     public void deactivateExpiredCards() {
         Date currentDate = new Date();
         List<Card> expiredCards = cardRepository.findExpiredCards(currentDate);
+
         expiredCards.forEach(card -> {
             card.setCardStatus(CardStatus.DEACTIVATED);
             cardRepository.updateCard(card);
         });
     }
 
-    private void checkPermissionToAddCard(int walletId, User user) {
-        List<User> allUsersInWallet=walletService.getAllUsersByWalletId(walletId, user.getId());
-        allUsersInWallet.stream()
-                .filter(u->u.getId()== user.getId())
-                .findFirst().orElseThrow(()->new AuthorizationException(ADD_CARD_ERROR_MESSAGE));
-    }
     private void throwIfCardWithSameNumberAlreadyExistsInSystem(Card card) {
         if (cardRepository.getByCardNumber(card.getCardNumber()).isPresent()) {
             throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
@@ -125,6 +121,7 @@ public class CardServiceImpl implements CardService {
         Optional<Card> existingCardOptional = getAllCards().stream()
                 .filter(c -> c.getCardNumber().equals(card.getCardNumber()))
                 .findFirst();
+
         existingCardOptional.ifPresent(existingCard -> {
             if (existingCard.getId() != card.getId()) {
                 throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
@@ -155,7 +152,7 @@ public class CardServiceImpl implements CardService {
     }
 
     private static void throwIfCardExpired(Card card) {
-        if (card.getExpirationDate().before(new Date())||card.getCardStatus().equals(CardStatus.DEACTIVATED)) {
+        if (card.getExpirationDate().before(new Date()) || card.getCardStatus().equals(CardStatus.DEACTIVATED)) {
             throw new CardMismatchException(CARD_IS_EXPIRED_OR_DEACTIVATED);
         }
     }

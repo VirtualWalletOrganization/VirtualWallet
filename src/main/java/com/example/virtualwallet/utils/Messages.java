@@ -36,7 +36,7 @@ public class Messages {
     public static final String ERROR_INSUFFICIENT_BALANCE = "Insufficient balance.";
     public static final String SUCCESS_TRANSFER = "Transfer successful";
     public static final String INVALID_REQUEST = "Invalid request data";
-    public static final String ERROR_TRANSACTION = "Only the user who mad the transaction can modify it.";
+    public static final String ERROR_TRANSACTION = "Only the user who made the transaction can modify it.";
 
 
 }

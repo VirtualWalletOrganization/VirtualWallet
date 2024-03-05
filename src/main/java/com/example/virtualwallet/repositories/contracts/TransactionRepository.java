@@ -12,7 +12,7 @@ public interface TransactionRepository {
 
     Optional<Transaction> getTransactionById(int transactionId);
 
-    Optional<List<Transaction>> getAllTransactionByUserId(int userId);
+    Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId);
 
     Optional<List<Transaction>> getTransactionsByStatus(Status status);
 

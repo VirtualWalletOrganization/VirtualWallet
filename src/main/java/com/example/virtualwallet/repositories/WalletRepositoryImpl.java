@@ -91,7 +91,7 @@ public class WalletRepositoryImpl implements WalletRepository {
             Query<Wallet> query = session.createQuery(
                     "FROM Wallet as w where w.creator.id = :recipientUserId" +
                             " AND w.isDefault=true", Wallet.class);
-            query.setParameter("creatorId", recipientUserId);
+            query.setParameter("recipientUserId", recipientUserId);
             List<Wallet> wallets = query.list();
 
             return Optional.ofNullable(wallets.get(0));

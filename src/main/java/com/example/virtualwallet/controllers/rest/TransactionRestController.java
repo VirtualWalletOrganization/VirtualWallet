@@ -64,27 +64,27 @@ public class TransactionRestController {
         }
     }
 
-    @PostMapping("/{walletId}")
-    public ResponseEntity<Transaction> confirmTransaction(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @RequestBody TransactionDto transactionDto) {
-        try {
-            User user = authenticationHelper.tryGetUser(headers);
-            Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            Transaction transaction = transactionMapper.fromDtoMoneyOut(walletSender, transactionDto, user);
-            transactionService.updateTransaction(transaction, user);
-            return new ResponseEntity<>(transaction, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (AuthorizationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-    }
+//    @PostMapping("/{walletId}")
+//    public ResponseEntity<Transaction> confirmTransaction(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @RequestBody TransactionDto transactionDto) {
+//        try {
+//            User user = authenticationHelper.tryGetUser(headers);
+//            Wallet walletSender = walletService.getWalletById(walletId, user.getId());
+//            Transaction transaction = transactionMapper.fromDtoMoneyOut(walletSender, transactionDto, user);
+//            transactionService.updateTransaction(transaction, user);
+//            return new ResponseEntity<>(transaction, HttpStatus.OK);
+//        } catch (EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+//        } catch (AuthorizationException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//        }
+//    }
 
     @PostMapping("/{walletId}/send")
     public ResponseEntity<Transaction> createTransaction(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @RequestBody TransactionDto transactionDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            Transaction transaction = transactionMapper.fromDtoMoneyOut(walletSender, transactionDto, user);
+            Transaction transaction = transactionMapper.fromDtoMoney(walletSender, transactionDto, user);
             transactionService.createTransaction(transaction, walletSender, user);
             return new ResponseEntity<>(transaction, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
@@ -97,8 +97,8 @@ public class TransactionRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            Transaction transaction = transactionMapper.fromDtoMoneyOut(walletSender, transactionDto, user);
-            transactionService.updateTransaction(transaction, user);
+            Transaction transaction = transactionMapper.fromDto(id, walletSender, transactionDto, user);
+            transactionService.updateTransaction(transaction, walletSender, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -128,8 +128,8 @@ public class TransactionRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet receiverWallet = walletService.getWalletById(walletId, user.getId());
-            Transaction transaction = transactionMapper.fromDtoMoneyIn(receiverWallet, transactionDto, user);
-            transactionService.updateTransaction(transaction, user);
+            Transaction transaction = transactionMapper.fromDtoMoney(receiverWallet, transactionDto, user);
+            transactionService.requestMoney(transaction, receiverWallet, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());

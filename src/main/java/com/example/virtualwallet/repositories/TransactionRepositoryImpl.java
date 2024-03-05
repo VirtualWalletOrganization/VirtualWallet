@@ -42,13 +42,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public Optional<List<Transaction>> getAllTransactionByUserId(int userId) {
+    public Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery(
-                    "SELECT t FROM Transaction t WHERE t.walletSender.id = :userId" +
-                            " AND  t.usernameReceiverId.id= :userId", Transaction.class);
-            query.setParameter("walletSender", userId);
-            query.setParameter("usernameReceiverId", userId);
+                    "SELECT t FROM Transaction t WHERE t.walletSender.id = :walletId" +
+                            " AND  t.walletReceiver.id= :walletId", Transaction.class);
+//            query.setParameter("walletSender", userId);
+//            query.setParameter("usernameReceiverId", userId);
+            query.setParameter("walletId", walletId);
 
             return Optional.ofNullable(query.list());
         }
@@ -59,7 +60,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery(
                     "FROM Transaction as t where t.transactionsStatus.transactionStatus = :status", Transaction.class);
-            query.setParameter("transactionsStatus", status);
+            query.setParameter("status", status);
 
             return Optional.ofNullable(query.list());
         }

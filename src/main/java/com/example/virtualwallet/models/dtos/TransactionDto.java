@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class TransactionDto {
 
-    private String usernameReceiver;
+    private String receiver;
     private BigDecimal amount;
     private String currency;
     private String description;
@@ -12,12 +12,12 @@ public class TransactionDto {
     public TransactionDto() {
     }
 
-    public String getUsernameReceiver() {
-        return usernameReceiver;
+    public String getReceiver() {
+        return receiver;
     }
 
-    public void setUsernameReceiver(String usernameReceiver) {
-        this.usernameReceiver = usernameReceiver;
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
     }
 
     public BigDecimal getAmount() {

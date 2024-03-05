@@ -11,19 +11,18 @@ import org.springframework.stereotype.Component;
 public class CardMapper {
 
     public Card fromDto(int id, CardDto dto, User user) {
-        Card card = fromDto(dto,user);
+        Card card = fromDto(dto, user);
         card.setId(id);
-
 
         return card;
     }
 
-    public Card fromDto(CardDto dto,User user) {
+    public Card fromDto(CardDto dto, User user) {
         Card card = new Card();
 
-        CardsType cardsType=new CardsType();
+        CardsType cardsType = new CardsType();
         cardsType.setCardType(CardType.valueOf(dto.getCardType().name()));
-        cardsType.setId(dto.getCardType().ordinal()+1);
+        cardsType.setId(dto.getCardType().ordinal() + 1);
 
         card.setCardsType(cardsType);
         card.setCardNumber(dto.getCardNumber());
@@ -34,6 +33,5 @@ public class CardMapper {
         card.setUser(user);
 
         return card;
-
     }
 }
