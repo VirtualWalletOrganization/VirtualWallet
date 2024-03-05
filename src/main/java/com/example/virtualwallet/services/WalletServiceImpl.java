@@ -114,6 +114,27 @@ public class WalletServiceImpl implements WalletService {
         userService.updateUser(user, user);
         return walletToAdd;
     }
+@Override
+    public void createWhenRegistering(Wallet wallet, User user) {
+        User user1 = userService.getByUsername(user.getUsername());
+        wallet.setCreator(user1);
+
+//        if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
+//            User userCreator = wallet.getCreator();
+//            userCreator.getWalletsRole().setWalletRole(WalletRole.ADMIN);
+//            wallet.setCreator(userCreator);
+//        }
+//
+//        if (user.getCreatedWallets().size() == 1) {
+//            wallet.setDefault(true);
+//        }
+
+        wallet.getUsers().add(user);
+        Wallet walletToAdd=walletRepository.create(wallet);
+        Wallet walletReady= walletRepository.getByCreatorIdWhenRegistering(user1.getId());
+        user.getWallets().add(walletReady);
+        userService.updateUser(user, user);
+    }
 
     @Override
     public void update(Wallet wallet, User user) {

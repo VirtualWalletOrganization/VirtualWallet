@@ -4,6 +4,7 @@ import com.example.virtualwallet.models.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -83,7 +84,7 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Contact> contacts;
 
-    public User() {
+    public User() {this.wallets = new HashSet<>();
     }
 
     public int getId() {

@@ -23,6 +23,8 @@ public interface WalletService {
 
     Wallet create(Wallet wallet, User user);
 
+    void createWhenRegistering(Wallet wallet, User user);
+
     void update(Wallet wallet, User user);
 
     void delete(int walletId, User user);

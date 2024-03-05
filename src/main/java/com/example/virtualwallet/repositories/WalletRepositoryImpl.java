@@ -1,7 +1,6 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -109,7 +108,23 @@ public class WalletRepositoryImpl implements WalletRepository {
     }
 
     @Override
+    public Wallet getByCreatorIdWhenRegistering(int creatorId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Wallet> query = session.createQuery(
+                    "SELECT w FROM Wallet w WHERE w.creator.id = :creatorId", Wallet.class);
+            query.setParameter("creatorId", creatorId);
+            return query.list().get(0);
+        }
+    }
+
+    @Override
     public Wallet create(Wallet wallet) {
+        WalletsType walletsType = new WalletsType();
+        try (Session session = sessionFactory.openSession()) {
+            walletsType = session.get(WalletsType.class, 1);
+        }
+
+        wallet.setWalletsType(walletsType);
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.persist(wallet);

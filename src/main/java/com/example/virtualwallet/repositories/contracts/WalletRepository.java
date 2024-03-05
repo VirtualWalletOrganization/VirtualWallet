@@ -20,6 +20,8 @@ public interface WalletRepository {
 
     Optional<List<Wallet>> getByCreatorId(int creatorId);
 
+    Wallet getByCreatorIdWhenRegistering(int creatorId);
+
     Wallet create(Wallet wallet);
 
     void update(Wallet wallet);

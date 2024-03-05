@@ -7,9 +7,12 @@ import com.example.virtualwallet.models.dtos.RegisterDto;
 import com.example.virtualwallet.models.dtos.UserDto;
 import com.example.virtualwallet.models.dtos.UserResponseDto;
 import com.example.virtualwallet.models.enums.Role;
+import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 @Component
 public class UserMapper {
@@ -36,8 +39,10 @@ public class UserMapper {
     public Wallet fromDtoCreateWallet(RegisterDto registerDto){
         Wallet wallet = new Wallet();
         wallet.setDefault(true);
+        wallet.setBalance(BigDecimal.ONE);
         wallet.setCurrency(registerDto.getCurrency());
-
+//        wallet.getWalletsType().setId(1);
+//        wallet.getWalletsType().setWalletType(WalletType.REGULAR);
         return wallet;
     }
 
