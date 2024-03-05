@@ -17,6 +17,9 @@ import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.UserFilterOptions;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,12 +35,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ReferralRepository referralRepository;
     private final WalletRepository walletRepository;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository) {
+    public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository, SessionFactory sessionFactory) {
         this.userRepository = userRepository;
         this.referralRepository = referralRepository;
         this.walletRepository = walletRepository;
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
@@ -62,6 +67,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User", "username", username));
     }
 
+
+
     @Override
     public User getByEmail(String email) {
         return userRepository.getByEmail(email)
@@ -74,23 +81,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(User user, WalletDto walletDto) {
+    public void registerUser(User user) {
         setAdminRoleIfDataBaseEmpty(user);
-        User existingUser = getByUsername(user.getUsername());
+        User existingUser = getByUsername2(user.getUsername());
 
-        if (isSameUser(existingUser, user) && existingUser.isDeleted()) {
+        if (existingUser != null && isSameUser(existingUser, user) && existingUser.isDeleted()) {
             existingUser.setDeleted(false);
             userRepository.updateUser(existingUser);
         } else {
             checkDuplicateEntity(user);
             userRepository.registerUser(user);
-            Wallet wallet = new Wallet();
-            wallet.setCurrency(walletDto.getCurrency());
-            wallet.setDefault(true);
-            walletRepository.create(wallet);
         }
     }
+    @Override
+    public User getByUsername2(String username) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from User where username = :username", User.class);
+            query.setParameter("username", username);
 
+            List<User> result = query.list();
+
+            return result.isEmpty() ? null : result.get(0);
+        }
+    }
     @Override
     public User confirmUserRegistration(User currentUser, User user) {
         checkAccessPermissionsAdmin(currentUser, VERIFY_USER);

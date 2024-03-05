@@ -2,7 +2,9 @@ package com.example.virtualwallet.models.dtos;
 
 import jakarta.validation.constraints.*;
 
-public class RegisterDto extends LoginDto {
+public class RegisterDto {
+    @NotEmpty(message = "Username can't be empty")
+    private String username;
 
     @NotNull(message = "First name can't be empty.")
     @NotBlank(message = "First name can't be blank.")
@@ -19,13 +21,24 @@ public class RegisterDto extends LoginDto {
     @NotBlank(message = "Email can't be blank.")
     private String email;
 
-    @NotEmpty(message = "Password confirmation can't be empty")
-    @NotBlank(message = "Password can't be blank.")
-    private String passwordConfirm;
+//    @NotEmpty(message = "Password confirmation can't be empty")
+
+    @NotNull(message = "Password can't be empty.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@_$!%*?&])[A-Za-z\\d@_$!%*?&]+$",
+            message = "Password must contains at least one uppercase letter, one lowercase letter, one digit, and one special character")
+    private String password;
 
     @NotEmpty(message = "Phone number can't be empty")
     @NotBlank(message = "Phone number can't be blank.")
     private String phoneNumber;
+
+    @NotEmpty(message = "Currency can't be empty")
+    @NotBlank(message = "Currency can't be blank.")
+    private String currency;
+
+    @NotEmpty(message = "Profile picture can't be empty")
+    @NotBlank(message = "Profile picture can't be blank.")
+    private String profilePicture;
 
     public RegisterDto() {
     }
@@ -62,11 +75,35 @@ public class RegisterDto extends LoginDto {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getPasswordConfirm() {
-        return passwordConfirm;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordConfirm(String passwordConfirm) {
-        this.passwordConfirm = passwordConfirm;
+    public void setPassword(String passwordConfirm) {
+        this.password = passwordConfirm;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

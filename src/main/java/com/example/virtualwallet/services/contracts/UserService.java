@@ -16,11 +16,13 @@ public interface UserService {
 
     User getByUsername(String username);
 
+    User getByUsername2(String username);
+
     User getByEmail(String email);
 
     User getByPhoneNumber(String phoneNumber);
 
-    void registerUser(User user, WalletDto walletDto);
+    void registerUser(User user);
 
     void updateUser(User executingUser, User targetUser);
 

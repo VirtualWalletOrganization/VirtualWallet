@@ -1,7 +1,7 @@
 package com.example.virtualwallet.helpers;
 
 
-import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.PhoneNumberDto;
 import com.example.virtualwallet.models.dtos.RegisterDto;
 import com.example.virtualwallet.models.dtos.UserDto;
@@ -21,14 +21,31 @@ public class UserMapper {
         this.userService = userService;
     }
 
-    public User fromDtoRegister(UserDto dto) {
+    public User fromDtoRegister(RegisterDto dto) {
         User user = new User();
+        user.setUsername(dto.getUsername());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setProfilePicture(dto.getProfilePicture());
         return user;
     }
+
+    public Wallet fromDtoCreateWallet(RegisterDto registerDto){
+        Wallet wallet = new Wallet();
+        wallet.setDefault(true);
+        wallet.setCurrency(registerDto.getCurrency());
+
+        return wallet;
+    }
+
+//    public Photo fromDtoCreatePhoto(RegisterDto registerDto){
+//        Photo photo = new Photo();
+//        photo.setSelfie(registerDto.getSelfie());
+//        return photo;
+//    }
 
     public User fromDtoUpdate(int id, UserDto dto) {
         User updatedUser = userService.getById(id);
@@ -75,7 +92,7 @@ public class UserMapper {
 
     public User fromDto(RegisterDto dto) {
         User user = new User();
-        user.setUsername(dto.getUsername());
+//        user.setUsername(dto.getUsername());
         user.setPassword(dto.getPassword());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());

@@ -6,14 +6,14 @@ import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.UserMapper;
+import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.dtos.PhoneNumberDto;
-import com.example.virtualwallet.models.dtos.UserDto;
-import com.example.virtualwallet.models.dtos.UserResponseDto;
-import com.example.virtualwallet.models.dtos.WalletDto;
+import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.dtos.*;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.services.contracts.UserService;
+import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +35,14 @@ public class UserRestController {
     private final UserService userService;
     private final AuthenticationHelper authenticationHelper;
     private final UserMapper userMapper;
+    private final WalletService walletService;
 
     @Autowired
-    public UserRestController(UserService userService, AuthenticationHelper authenticationHelper, UserMapper userMapper) {
+    public UserRestController(UserService userService, AuthenticationHelper authenticationHelper, UserMapper userMapper, WalletService walletService) {
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
         this.userMapper = userMapper;
+        this.walletService = walletService;
     }
 
     @GetMapping
@@ -123,12 +125,15 @@ public class UserRestController {
     }
 
     @PostMapping
-    public ResponseEntity<User> registerUser(@Valid @RequestBody UserDto userDto, @RequestBody WalletDto walletDto) {
+    public UserResponseDto registerUser(@Valid @RequestBody RegisterDto userDto) {
         try {
             User user = userMapper.fromDtoRegister(userDto);
-            userService.registerUser(user, walletDto);
+            Wallet wallet = userMapper.fromDtoCreateWallet(userDto);
+            userService.registerUser(user);
+            walletService.create(wallet, user);
             userMapper.toDtoRegisterAndUpdateUser(user);
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
+            return userMapper.toDtoRegisterAndUpdateUser(user);
+//            return new UserResponseDto(user, HttpStatus.CREATED);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (EntityNotFoundException e) {

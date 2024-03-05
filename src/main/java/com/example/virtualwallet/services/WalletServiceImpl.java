@@ -96,7 +96,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet create(Wallet wallet, User user) {
-        wallet.setCreator(user);
+        User user1 = userService.getByUsername(user.getUsername());
+        wallet.setCreator(user1);
 
         if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
             User userCreator = wallet.getCreator();
