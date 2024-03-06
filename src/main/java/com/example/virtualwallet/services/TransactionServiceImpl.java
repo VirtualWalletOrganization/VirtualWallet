@@ -2,10 +2,7 @@ package com.example.virtualwallet.services;
 
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.exceptions.InsufficientBalanceException;
-import com.example.virtualwallet.models.Transaction;
-import com.example.virtualwallet.models.TransactionsStatus;
-import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import com.example.virtualwallet.services.contracts.TransactionService;
@@ -14,7 +11,9 @@ import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.virtualwallet.utils.CheckPermissions.checkBlockOrDeleteUser;
 import static com.example.virtualwallet.utils.CheckPermissions.checkPermissionExistingUsersInWallet;
@@ -47,10 +46,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getTransactionsByStatus(Status status) {
-        return transactionRepository.getTransactionsByStatus(status)
+    public List<Transaction> getAllTransactionsByStatus(Status status, int walletId) {
+        return transactionRepository.getAllTransactionsByStatus(status,walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Transactions", "status", String.valueOf(status)));
     }
+
     @Override
     public void confirmTransaction(Transaction transaction, Wallet walletSender, User sender) {
         checkBlockOrDeleteUser(sender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
@@ -58,70 +58,68 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void createTransaction(Transaction transaction, Wallet walletSender, User sender) {
-        //we already check this in the mapper
-//        User recipient = userService.getByUsername(transaction.getReceiver().getUsername());
-//        Wallet walletRecipient = walletService.getDefaultWallet(recipient.getId());
+    public void createTransaction(Transaction transaction, Wallet walletSender, User userSender,
+                                  Wallet walletReceiver, User userReceiver) {
+        checkBlockOrDeleteUser(userSender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
+        checkPermissionExistingUsersInWallet(walletSender, userSender, ERROR_TRANSACTION);
 
-        checkBlockOrDeleteUser(sender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
-        checkPermissionExistingUsersInWallet(walletSender, sender, ERROR_TRANSACTION);
-
-        if (transaction.getTransactionsStatus().equals(Status.FAILED)) {
-            transactionRepository.update(transaction);
+        if (!isValidRequestTransferMoney(transaction, walletSender)) {
+            transaction.getTransactionsStatus().setId(Status.FAILED.ordinal());
+            transaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
             throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
             //TODO implement check for overdraft
+        } else {
+            transaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal());
+            transaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);
         }
-        walletSender.setBalance(walletSender.getBalance().subtract(transaction.getAmount()));
-        transaction.getWalletReceiver().setBalance(transaction.getWalletReceiver().getBalance().add(transaction.getAmount()));
         transactionRepository.create(transaction);
-        walletService.update(walletSender, sender);
-        walletService.update(transaction.getWalletReceiver(), transaction.getWalletReceiver().getCreator());
+
+        walletSender.setBalance(walletSender.getBalance().subtract(transaction.getAmount()));
+        walletReceiver.setBalance(walletSender.getBalance().add(transaction.getAmount()));
+        walletService.update(walletSender, userSender);
+        walletService.update(transaction.getWalletReceiver(), userReceiver);
     }
 
     @Override
-    public void updateTransaction(Transaction transaction, Wallet walletSender, User sender) {
-//        User recipient = userService.getByUsername(transaction.getReceiver().getUsername());
-//        Wallet walletRecipient = walletService.getDefaultWallet(recipient.getId());
-
-        checkBlockOrDeleteUser(sender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
-        checkPermissionExistingUsersInWallet(walletSender, sender, ERROR_TRANSACTION);
-
-//        if (walletSender.getBalance().compareTo(walletSender.getBalance().subtract(transaction.getAmount())) < 0) {
-//            TransactionsStatus transactionsStatus = new TransactionsStatus();
-//            transactionsStatus.setId(Status.FAILED.ordinal());
-//            transactionsStatus.setTransactionStatus(Status.FAILED);
-//            transactionRepository.update(transaction);
-//            throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
-//            //TODO implement check for overdraft
-//        }
-
-        if (transaction.getTransactionsStatus().equals(Status.FAILED)) {
+    public void updateTransaction(Transaction transaction,User userSender) {
+        checkBlockOrDeleteUser(userSender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
+        checkPermissionExistingUsersInWallet(transaction.getWalletSender(), userSender, ERROR_TRANSACTION);
+        if (transaction.getTransactionsStatus().getTransactionStatus() == (Status.PENDING)) {
+            if (!isValidRequestTransferMoney(transaction, transaction.getWalletSender())) {
+                transaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
+                throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
+                //TODO implement check for overdraft
+            } else {
+                transaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal());
+                transaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);
+            }
             transactionRepository.update(transaction);
-            throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
-            //TODO implement check for overdraft
+        } else {
+            throw new EntityNotFoundException("Request transaction");
+
+        }
+        List<User> users=walletService.getAllUsersByWalletId(transaction.getWalletReceiver().getId());
+
+        transaction.getWalletSender().setBalance(transaction.getWalletSender().getBalance().subtract(transaction.getAmount()));
+            transaction.getWalletReceiver().setBalance(transaction.getWalletReceiver().getBalance().add(transaction.getAmount()));
+            walletService.update(transaction.getWalletSender(), userSender);
+           // walletService.update(transaction.getWalletReceiver());
         }
 
-        TransactionsStatus transactionsStatus = new TransactionsStatus();
-        transactionsStatus.setId(Status.COMPLETED.ordinal());
-        transactionsStatus.setTransactionStatus(Status.COMPLETED);
-        transaction.setTransactionsStatus(transactionsStatus);
-        transactionRepository.update(transaction);
+        public void delete (Transaction transaction, User sender){
+            checkPermissionExistingUsersInWallet(transaction.getWalletSender(), sender, ERROR_TRANSACTION);
+            transactionRepository.delete(transaction);
+        }
 
-        walletSender.setBalance(walletSender.getBalance().subtract(transaction.getAmount()));
-        transaction.getWalletReceiver().setBalance(transaction.getWalletReceiver().getBalance().add(transaction.getAmount()));
-        walletService.update(walletSender, sender);
-        //it will always be the creator of the wallet because we will always transfer to default wallet
-        walletService.update(transaction.getWalletReceiver(), transaction.getWalletReceiver().getCreator());
-    }
+        public void requestMoney (Transaction transaction, Wallet walletSender, User sender){
+            checkBlockOrDeleteUser(sender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
+            checkPermissionExistingUsersInWallet(walletSender, sender, ERROR_TRANSACTION);
+            transactionRepository.create(transaction);
+        }
 
-    public void delete(Transaction transaction, User sender) {
-        checkPermissionExistingUsersInWallet(transaction.getWalletSender(), sender, ERROR_TRANSACTION);
-        transactionRepository.delete(transaction);
-    }
+        private boolean isValidRequestTransferMoney (Transaction transaction, Wallet walletSender){
 
-    public void requestMoney(Transaction transaction, Wallet walletSender, User sender) {
-        checkBlockOrDeleteUser(sender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
-        checkPermissionExistingUsersInWallet(walletSender, sender, ERROR_TRANSACTION);
-        transactionRepository.create(transaction);
+            BigDecimal balanceAfterTransfer = walletSender.getBalance().subtract(transaction.getAmount());
+            return balanceAfterTransfer.compareTo(BigDecimal.ZERO) >= 0;
+        }
     }
-}

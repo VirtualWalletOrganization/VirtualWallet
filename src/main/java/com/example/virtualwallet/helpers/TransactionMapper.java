@@ -22,35 +22,42 @@ public class TransactionMapper {
         this.userService = userService;
     }
 
-    public Transaction fromDtoMoney(Wallet walletSender, TransactionDto transactionDto, User userSender) {
+    public Transaction fromDtoMoney(TransactionDto transactionDto,
+                                    Wallet walletSender,
+                                    User userSender,
+                                    Wallet walletReceiver,
+                                    User userReceiver) {
         Transaction transaction = new Transaction();
         transaction.setWalletSender(walletSender);
 
-        User userReceiver = userService.getByUsername(transactionDto.getReceiver());
-        Wallet walletReceiver = userReceiver.getCreatedWallets().stream()
-                .filter(Wallet::getDefault)
-                .findFirst()
-                .get();
+//        User userReceiver = userService.getByUsername(transactionDto.getReceiver());
+//        Wallet walletReceiver = userReceiver.getCreatedWallets().stream()
+//                .filter(Wallet::getDefault)
+//                .findFirst()
+//                .get();
         transaction.setWalletReceiver(walletReceiver);
-
         transaction.setAmount(transactionDto.getAmount());
         transaction.setCurrency(transactionDto.getCurrency());
         transaction.setDirection(Direction.OUTGOING);
         transaction.setDate(new Date());
+        TransactionsStatus transactionsStatus = new TransactionsStatus();
+        transactionsStatus.setId(Status.PENDING.ordinal());
+       transactionsStatus.setTransactionStatus(Status.PENDING);
+       transaction.setTransactionsStatus(transactionsStatus);
 
-        BigDecimal newBalance = walletSender.getBalance().subtract(transaction.getAmount());
-        if (walletSender.getBalance().compareTo(newBalance) < 0) {
-            // Condition logic
-//        } if (walletSender.getBalance().compareTo(walletSender.getBalance().subtract(transaction.getAmount())) < 0) {
-            TransactionsStatus transactionsStatus = new TransactionsStatus();
-            transactionsStatus.setId(Status.FAILED.ordinal());
-            transactionsStatus.setTransactionStatus(Status.FAILED);
-        } else {
-            TransactionsStatus transactionsStatus = new TransactionsStatus();
-            transactionsStatus.setId(Status.COMPLETED.ordinal());
-            transactionsStatus.setTransactionStatus(Status.COMPLETED);
-            transaction.setTransactionsStatus(transactionsStatus);
-        }
+//        BigDecimal newBalance = walletSender.getBalance().subtract(transaction.getAmount());
+//        if (walletSender.getBalance().compareTo(newBalance) < 0) {
+//            // Condition logic
+////        } if (walletSender.getBalance().compareTo(walletSender.getBalance().subtract(transaction.getAmount())) < 0) {
+//            TransactionsStatus transactionsStatus = new TransactionsStatus();
+//            transactionsStatus.setId(Status.FAILED.ordinal());
+//            transactionsStatus.setTransactionStatus(Status.FAILED);
+//        } else {
+//            TransactionsStatus transactionsStatus = new TransactionsStatus();
+//            transactionsStatus.setId(Status.COMPLETED.ordinal());
+//            transactionsStatus.setTransactionStatus(Status.COMPLETED);
+//            transaction.setTransactionsStatus(transactionsStatus);
+//        }
 
         transaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
@@ -62,22 +69,29 @@ public class TransactionMapper {
         return transaction;
     }
 
-    public Transaction fromDto(int transactionId, Wallet senderWallet, TransactionDto transactionDto, User userSender) {
-        Transaction transaction = fromDtoMoney(senderWallet, transactionDto, userSender);
+    public Transaction fromDto(int transactionId,TransactionDto transactionDto, Wallet senderWallet, User userSender,
+                               Wallet walletReceiver,User userReceiver) {
+        Transaction transaction = fromDtoMoney(transactionDto, senderWallet,userSender,walletReceiver,userReceiver);
         transaction.setTransactionId(transactionId);
-        TransactionsStatus transactionsStatus = new TransactionsStatus();
-        transactionsStatus.setId(Status.PENDING.ordinal());
-        transactionsStatus.setTransactionStatus(Status.PENDING);
-        transaction.setTransactionsStatus(transactionsStatus);
 
         return transaction;
     }
+//    public Transaction fromDtoRequestMoney(TransactionDto transactionDto,
+//                                    Wallet walletReceiver,
+//                                    User userReceiver,
+//                                    Wallet walletSender,
+//                                    User userSender){
+//        Transaction transaction = fromDtoMoney(transactionDto,walletReceiver,userReceiver,walletSender,userSender);
+//
+//
+//    }
 
-    public RecurringTransaction fromDto(Wallet senderWallet, RecurringTransactionDto recurringTransactionDto,
-                                        User userSender) {
+    public RecurringTransaction fromDto(RecurringTransactionDto recurringTransactionDto,Wallet senderWallet,
+                                        User userSender,Wallet walletReceiver, User userReceiver) {
         RecurringTransaction recurringTransaction = new RecurringTransaction();
 
-        Transaction transaction = fromDtoMoney(senderWallet, recurringTransactionDto, userSender);
+        Transaction transaction = fromDtoMoney(recurringTransactionDto,senderWallet, userSender,
+                walletReceiver,userReceiver);
         recurringTransaction.setWalletSender(transaction.getWalletSender());
         recurringTransaction.setWalletReceiver(transaction.getWalletReceiver());
         recurringTransaction.setAmount(transaction.getAmount());

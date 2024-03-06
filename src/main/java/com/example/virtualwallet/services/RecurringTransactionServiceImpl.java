@@ -23,9 +23,10 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
     }
 
 
-    public void createRecurringTransaction(RecurringTransaction recurringTransaction, Wallet walletSender, User user) {
+    public void createRecurringTransaction(RecurringTransaction recurringTransaction, Wallet walletSender, User user,
+                                           Wallet walletReceiver,User userReceiver) {
         recurringTransactionRepository.create(recurringTransaction);
-        transactionService.createTransaction(recurringTransaction,walletSender,user);
+        transactionService.createTransaction(recurringTransaction,walletSender,user,walletReceiver,userReceiver);
     }
 
 //    private Date parseDate(String dateString) {

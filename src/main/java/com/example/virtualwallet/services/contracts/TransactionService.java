@@ -13,13 +13,14 @@ public interface TransactionService {
 
     Transaction getTransactionById(int transactionId);
 
-    List<Transaction> getTransactionsByStatus(Status status);
+    List<Transaction> getAllTransactionsByStatus(Status status,int walletId);
 
     void confirmTransaction(Transaction transaction, Wallet walletSender, User sender);
 
-    void createTransaction(Transaction transaction, Wallet walletSender, User sender);
+    void createTransaction(Transaction transaction, Wallet walletSender, User userSender,
+                           Wallet walletReceiver, User userReceiver);
 
-    void updateTransaction(Transaction transaction, Wallet walletSender, User sender);
+    void updateTransaction(Transaction transaction, User userSender);
 
     void delete(Transaction transaction, User sender);
 

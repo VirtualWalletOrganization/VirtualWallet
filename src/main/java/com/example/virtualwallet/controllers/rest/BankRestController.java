@@ -69,7 +69,7 @@ public class BankRestController {
         } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (InsufficientBalanceException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }//Todo add check to MVC for INVALID_REQUEST
     }
 }

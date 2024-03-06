@@ -6,6 +6,7 @@ import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 
 public interface RecurringTransactionService  {
-    void createRecurringTransaction(RecurringTransaction recurringTransaction, Wallet walletSender, User user);
+    void createRecurringTransaction(RecurringTransaction recurringTransaction, Wallet walletSender, User user,
+                                    Wallet walletReceiver,User userReceiver);
 
 }

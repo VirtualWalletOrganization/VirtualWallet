@@ -11,7 +11,7 @@ public interface WalletService {
 
     List<Wallet> getAll(User user);
 
-    List<User> getAllUsersByWalletId(int walletId,int userId);
+    List<User> getAllUsersByWalletId(int walletId);
 
     Wallet getWalletById(int walletId, int userId);
 
