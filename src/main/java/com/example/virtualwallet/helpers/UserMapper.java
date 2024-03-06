@@ -4,10 +4,7 @@ package com.example.virtualwallet.helpers;
 import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.dtos.PhoneNumberDto;
-import com.example.virtualwallet.models.dtos.RegisterDto;
-import com.example.virtualwallet.models.dtos.UserDto;
-import com.example.virtualwallet.models.dtos.UserResponseDto;
+import com.example.virtualwallet.models.dtos.*;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,15 +48,17 @@ public class UserMapper {
         return photo;
     }
 
-    public User fromDtoUpdate(int id, UserDto dto) {
-        User updatedUser = userService.getById(id);
-        updatedUser.setId(id);
-        updatedUser.setUsername(userService.getById(id).getUsername());
-        updatedUser.setFirstName(dto.getFirstName());
-        updatedUser.setLastName(dto.getLastName());
-        updatedUser.setEmail(dto.getEmail());
-        updatedUser.setPassword(dto.getPassword());
-        return updatedUser;
+    public User fromDtoUpdate(int id, UpdateUserDto dto) {
+        User user = userService.getById(id);
+        user.setId(id);
+        user.setUsername(userService.getById(id).getUsername());
+        user.setUsername(dto.getUsername());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        return user;
     }
 
     public UserResponseDto toDto(User user) {
@@ -88,7 +87,7 @@ public class UserMapper {
         return userResponseDto;
     }
 
-    public User fromDtoUpdatePhoneNumber(int id, PhoneNumberDto dto, UserDto userDto) {
+    public User fromDtoUpdatePhoneNumber(int id, PhoneNumberDto dto, UpdateUserDto userDto) {
         User updatedUser = fromDtoUpdate(id, userDto);
         updatedUser.setPhoneNumber(dto.getPhoneNumber());
         return updatedUser;
