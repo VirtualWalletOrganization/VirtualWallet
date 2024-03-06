@@ -15,6 +15,8 @@ public interface TransactionService {
 
     List<Transaction> getTransactionsByStatus(Status status);
 
+    void confirmTransaction(Transaction transaction, Wallet walletSender, User sender);
+
     void createTransaction(Transaction transaction, Wallet walletSender, User sender);
 
     void updateTransaction(Transaction transaction, Wallet walletSender, User sender);

@@ -39,12 +39,20 @@ public class Transaction {
     @Column(name = "date")
     private Date date;
 
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "transaction_status_id")
+//    private Status status;
+
     @ManyToOne
     @JoinColumn(name = "transaction_status_id")
     private TransactionsStatus transactionsStatus;
 
     @Column(name = "description")
     private String description;
+
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "transaction_type_id")
+//    private TransactionType transactionType;
 
     @ManyToOne
     @JoinColumn(name = "transaction_type_id")
@@ -135,6 +143,14 @@ public class Transaction {
     public void setTransactionsType(TransactionsType transactionsType) {
         this.transactionsType = transactionsType;
     }
+
+    //    public int getRecuringTransactionId() {
+//        return recuringTransactionId;
+//    }
+//
+//    public void setRecuringTransactionId(int recuringTransactionId) {
+//        this.recuringTransactionId = recuringTransactionId;
+//    }
 
     @Override
     public boolean equals(Object o) {

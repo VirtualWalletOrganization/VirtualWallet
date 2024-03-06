@@ -14,14 +14,14 @@ java {
 repositories {
     mavenCentral()
 }
-repositories {
-    mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-}
-repositories {
-    mavenCentral()
-    maven { url 'https://repo.spring.io/release' }
-}
+//repositories {
+//    mavenCentral()
+//    maven { url 'https://repo.spring.io/milestone' }
+//}
+//repositories {
+//    mavenCentral()
+//    maven { url 'https://repo.spring.io/release' }
+//}
 configurations {
     testImplementation.exclude group: 'org.springframework.boot', module: 'spring-security-test'
 }

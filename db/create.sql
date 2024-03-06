@@ -135,7 +135,7 @@ CREATE TABLE transactions_statuses
 CREATE TABLE transactions_types
 (
     transaction_type_id   INT AUTO_INCREMENT PRIMARY KEY,
-    transaction_type_name enum ('SINGLE', 'RECURRING') not null
+    transaction_type_name enum ('DUMMY','SINGLE', 'RECURRING') not null
 );
 
 create table transactions

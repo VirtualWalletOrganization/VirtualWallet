@@ -51,6 +51,11 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.getTransactionsByStatus(status)
                 .orElseThrow(() -> new EntityNotFoundException("Transactions", "status", String.valueOf(status)));
     }
+    @Override
+    public void confirmTransaction(Transaction transaction, Wallet walletSender, User sender) {
+        checkBlockOrDeleteUser(sender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
+        checkPermissionExistingUsersInWallet(walletSender, sender, ERROR_TRANSACTION);
+    }
 
     @Override
     public void createTransaction(Transaction transaction, Wallet walletSender, User sender) {
@@ -60,6 +65,14 @@ public class TransactionServiceImpl implements TransactionService {
 
         checkBlockOrDeleteUser(sender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         checkPermissionExistingUsersInWallet(walletSender, sender, ERROR_TRANSACTION);
+
+        if (transaction.getTransactionsStatus().equals(Status.FAILED)) {
+            transactionRepository.update(transaction);
+            throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
+            //TODO implement check for overdraft
+        }
+        walletSender.setBalance(walletSender.getBalance().subtract(transaction.getAmount()));
+        transaction.getWalletReceiver().setBalance(transaction.getWalletReceiver().getBalance().add(transaction.getAmount()));
         transactionRepository.create(transaction);
         walletService.update(walletSender, sender);
         walletService.update(transaction.getWalletReceiver(), transaction.getWalletReceiver().getCreator());

@@ -3,6 +3,7 @@ package com.example.virtualwallet.models.dtos;
 import com.example.virtualwallet.models.enums.CardType;
 import jakarta.validation.constraints.Pattern;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -11,16 +12,17 @@ public class CardDto {
     @NotNull(message = "Card type content can't be empty")
     private CardType cardType;
 
-   // @Pattern(regexp = "([\\d]{4}-){3}[\\d]{4}",
-     //       message = "Invalid card number")
+    @Pattern(regexp = "\\d{16}",
+            message = "Invalid card number")
     @NotNull(message = "Card number content can't be empty")
     private String cardNumber;
 
    // @Pattern(regexp = "(0[1-9]|1[0-2])/[0-9]{2}")
+    @Future
     @NotNull(message = "Expiration date content can't be empty")
     private Date expirationDate;
 
-    @Pattern(regexp = "[A-Za-z ]{2,30}",
+    @Pattern(regexp = ".{2,30}",
             message = "Invalid card holder name")
     @NotNull(message = "Card holder content can't be empty")
     private String cardHolder;
@@ -29,8 +31,8 @@ public class CardDto {
     @NotNull(message = "Check number content can't be empty")
     private String checkNumber;
 
-    @Pattern(regexp = "^[A-Za-z]{3,}$",
-            message = "Invalid email format")
+    @Pattern(regexp = ".{3,}",
+            message = "Invalid currency format")
     private String currency;
 
     public CardDto() {

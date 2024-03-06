@@ -5,10 +5,13 @@ import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.exceptions.InsufficientBalanceException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.TransactionMapper;
+import com.example.virtualwallet.models.RecurringTransaction;
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
+import com.example.virtualwallet.services.contracts.RecurringTransactionService;
 import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +30,16 @@ public class TransactionRestController {
     private final TransactionService transactionService;
     private final AuthenticationHelper authenticationHelper;
     private final TransactionMapper transactionMapper;
+    private final RecurringTransactionService recurringTransactionService;
     private final WalletService walletService;
 
     @Autowired
     public TransactionRestController(TransactionService transferService,
-                                     AuthenticationHelper authenticationHelper, TransactionMapper transactionMapper, WalletService walletService) {
+                                     AuthenticationHelper authenticationHelper, TransactionMapper transactionMapper, RecurringTransactionService recurringTransactionService, WalletService walletService) {
         this.transactionService = transferService;
         this.authenticationHelper = authenticationHelper;
         this.transactionMapper = transactionMapper;
+        this.recurringTransactionService = recurringTransactionService;
         this.walletService = walletService;
     }
 
@@ -64,20 +69,20 @@ public class TransactionRestController {
         }
     }
 
-//    @PostMapping("/{walletId}")
-//    public ResponseEntity<Transaction> confirmTransaction(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @RequestBody TransactionDto transactionDto) {
-//        try {
-//            User user = authenticationHelper.tryGetUser(headers);
-//            Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-//            Transaction transaction = transactionMapper.fromDtoMoneyOut(walletSender, transactionDto, user);
-//            transactionService.updateTransaction(transaction, user);
-//            return new ResponseEntity<>(transaction, HttpStatus.OK);
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        }
-//    }
+    @PostMapping("/{walletId}")
+    public ResponseEntity<Transaction> confirmTransaction(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @RequestBody TransactionDto transactionDto) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Wallet walletSender = walletService.getWalletById(walletId, user.getId());
+            Transaction transaction = transactionMapper.fromDtoMoney(walletSender, transactionDto, user);
+            transactionService.confirmTransaction(transaction,walletSender, user);
+            return new ResponseEntity<>(transaction, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
 
     @PostMapping("/{walletId}/send")
     public ResponseEntity<Transaction> createTransaction(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @RequestBody TransactionDto transactionDto) {
@@ -136,5 +141,21 @@ public class TransactionRestController {
         } catch (InsufficientBalanceException e) {
             throw new ResponseStatusException(HttpStatus.NOT_MODIFIED, e.getMessage());
         }//Todo add check to MVC for INVALID_REQUEST
+    }
+    @PostMapping("/{walletId}/recurring")
+    public ResponseEntity<RecurringTransaction> createRecurringTransaction(@RequestHeader HttpHeaders headers,
+                                                                                  @PathVariable int walletId,
+                                                                                  @RequestBody RecurringTransactionDto
+                                                                                              recurringTransactionDto) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Wallet walletSender = walletService.getWalletById(walletId, user.getId());
+            RecurringTransaction recurringTransaction = transactionMapper.fromDto(walletSender,
+                    recurringTransactionDto, user);
+            recurringTransactionService.createRecurringTransaction(recurringTransaction, walletSender, user);
+            return new ResponseEntity<>(recurringTransaction, HttpStatus.CREATED);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }

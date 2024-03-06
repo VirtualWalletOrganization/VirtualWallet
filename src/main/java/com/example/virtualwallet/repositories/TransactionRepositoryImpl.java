@@ -60,7 +60,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery(
                     "FROM Transaction as t where t.transactionsStatus.transactionStatus = :status", Transaction.class);
-            query.setParameter("status", status);
+            query.setParameter("transactionsStatus", status);
 
             return Optional.ofNullable(query.list());
         }
