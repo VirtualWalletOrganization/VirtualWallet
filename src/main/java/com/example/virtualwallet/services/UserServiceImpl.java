@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerUser(User user) {
         setAdminRoleIfDataBaseEmpty(user);
-        User existingUser = getByUsername2(user.getUsername());
+        User existingUser = getByUsernameWhenRegistering(user.getUsername());
 
         if (existingUser != null && isSameUser(existingUser, user) && existingUser.isDeleted()) {
             existingUser.setDeleted(false);
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public User getByUsername2(String username) {
+    public User getByUsernameWhenRegistering(String username) {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);

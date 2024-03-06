@@ -16,7 +16,7 @@ public interface UserService {
 
     User getByUsername(String username);
 
-    User getByUsername2(String username);
+    User getByUsernameWhenRegistering(String username);
 
     User getByEmail(String email);
 
