@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transfers")
@@ -36,7 +36,7 @@ public class Transfer {
     private Direction direction;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDateTime date;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -101,11 +101,11 @@ public class Transfer {
         this.direction = direction;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

@@ -19,7 +19,9 @@ public interface WalletService {
 
     Wallet getDefaultWallet(int recipientUserId);
 
-    List<Wallet> getByCreatorId(int creatorId);
+    List<Wallet> getAllWalletsByCreatorId(int creatorId);
+
+    List<Wallet> getAllWalletsByUserId(int userId);
 
     Wallet create(Wallet wallet, User user);
 
@@ -29,7 +31,7 @@ public interface WalletService {
 
     void delete(int walletId, User user);
 
-    void addUsersToWallet(int walletId, User userToAdd, User user);
+    void addUsersToWallet(int walletId, int userId, User user);
 
     void removeUsersFromWallet(int walletId, int userId, User user);
 }

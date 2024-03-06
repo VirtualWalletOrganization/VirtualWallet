@@ -3,24 +3,17 @@ package com.example.virtualwallet.helpers;
 import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
-import com.example.virtualwallet.models.enums.Direction;
 import com.example.virtualwallet.models.enums.Interval;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.TransactionType;
-import com.example.virtualwallet.services.contracts.UserService;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Component
 public class TransactionMapper {
-
-    private final UserService userService;
-
-    public TransactionMapper(UserService userService) {
-        this.userService = userService;
-    }
 
     public Transaction fromDtoMoney(TransactionDto transactionDto,
                                     Wallet walletSender,
@@ -29,36 +22,15 @@ public class TransactionMapper {
                                     User userReceiver) {
         Transaction transaction = new Transaction();
         transaction.setWalletSender(walletSender);
-
-//        User userReceiver = userService.getByUsername(transactionDto.getReceiver());
-//        Wallet walletReceiver = userReceiver.getCreatedWallets().stream()
-//                .filter(Wallet::getDefault)
-//                .findFirst()
-//                .get();
         transaction.setWalletReceiver(walletReceiver);
         transaction.setAmount(transactionDto.getAmount());
         transaction.setCurrency(transactionDto.getCurrency());
-        transaction.setDirection(Direction.OUTGOING);
-        transaction.setDate(new Date());
+        // transaction.setDirection(Direction.OUTGOING);
+        transaction.setDate(LocalDateTime.now());
         TransactionsStatus transactionsStatus = new TransactionsStatus();
         transactionsStatus.setId(Status.PENDING.ordinal());
-       transactionsStatus.setTransactionStatus(Status.PENDING);
-       transaction.setTransactionsStatus(transactionsStatus);
-
-//        BigDecimal newBalance = walletSender.getBalance().subtract(transaction.getAmount());
-//        if (walletSender.getBalance().compareTo(newBalance) < 0) {
-//            // Condition logic
-////        } if (walletSender.getBalance().compareTo(walletSender.getBalance().subtract(transaction.getAmount())) < 0) {
-//            TransactionsStatus transactionsStatus = new TransactionsStatus();
-//            transactionsStatus.setId(Status.FAILED.ordinal());
-//            transactionsStatus.setTransactionStatus(Status.FAILED);
-//        } else {
-//            TransactionsStatus transactionsStatus = new TransactionsStatus();
-//            transactionsStatus.setId(Status.COMPLETED.ordinal());
-//            transactionsStatus.setTransactionStatus(Status.COMPLETED);
-//            transaction.setTransactionsStatus(transactionsStatus);
-//        }
-
+        transactionsStatus.setTransactionStatus(Status.PENDING);
+        transaction.setTransactionsStatus(transactionsStatus);
         transaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
         TransactionsType transactionsType = new TransactionsType();
@@ -69,34 +41,17 @@ public class TransactionMapper {
         return transaction;
     }
 
-    public Transaction fromDto(int transactionId,TransactionDto transactionDto, Wallet senderWallet, User userSender,
-                               Wallet walletReceiver,User userReceiver) {
-        Transaction transaction = fromDtoMoney(transactionDto, senderWallet,userSender,walletReceiver,userReceiver);
-        transaction.setTransactionId(transactionId);
-
-        return transaction;
-    }
-//    public Transaction fromDtoRequestMoney(TransactionDto transactionDto,
-//                                    Wallet walletReceiver,
-//                                    User userReceiver,
-//                                    Wallet walletSender,
-//                                    User userSender){
-//        Transaction transaction = fromDtoMoney(transactionDto,walletReceiver,userReceiver,walletSender,userSender);
-//
-//
-//    }
-
-    public RecurringTransaction fromDto(RecurringTransactionDto recurringTransactionDto,Wallet senderWallet,
-                                        User userSender,Wallet walletReceiver, User userReceiver) {
+    public RecurringTransaction fromDto(RecurringTransactionDto recurringTransactionDto, Wallet senderWallet,
+                                        User userSender, Wallet walletReceiver, User userReceiver) {
         RecurringTransaction recurringTransaction = new RecurringTransaction();
 
-        Transaction transaction = fromDtoMoney(recurringTransactionDto,senderWallet, userSender,
-                walletReceiver,userReceiver);
+        Transaction transaction = fromDtoMoney(recurringTransactionDto, senderWallet, userSender,
+                walletReceiver, userReceiver);
         recurringTransaction.setWalletSender(transaction.getWalletSender());
         recurringTransaction.setWalletReceiver(transaction.getWalletReceiver());
         recurringTransaction.setAmount(transaction.getAmount());
         recurringTransaction.setCurrency(transaction.getCurrency());
-        recurringTransaction.setDirection(transaction.getDirection());
+        // recurringTransaction.setDirection(transaction.getDirection());
         recurringTransaction.setDate(transaction.getDate());
         recurringTransaction.setDescription(transaction.getDescription());
         recurringTransaction.setTransactionsStatus(transaction.getTransactionsStatus());
@@ -104,6 +59,13 @@ public class TransactionMapper {
         transactionsType.setTransactionType(TransactionType.RECURRING);
         recurringTransaction.setTransactionsType(transactionsType);
         recurringTransaction.setIntervals(Interval.valueOf(recurringTransactionDto.getInterval()));
+
+//        Instant startInstant = recurringTransactionDto.getStartDate().toInstant();
+//        LocalDateTime startDateTime = LocalDateTime.ofInstant(startInstant, ZoneOffset.UTC);
+//        recurringTransaction.setStartDate(startDateTime);
+//        Instant endInstant = recurringTransactionDto.getEndDate().toInstant();
+//        LocalDateTime endDateTime = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
+//        recurringTransaction.setEndDate(endDateTime);
         recurringTransaction.setStartDate(recurringTransactionDto.getStartDate());
         recurringTransaction.setEndDate(recurringTransactionDto.getEndDate());
         return recurringTransaction;

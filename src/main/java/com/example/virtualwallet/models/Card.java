@@ -4,10 +4,8 @@ import com.example.virtualwallet.models.enums.CardStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.Date;
-import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "cards")
@@ -31,7 +29,7 @@ public class Card {
     private String cardNumber;
 
     @Column(name = "expiration_date")
-    private Date expirationDate;
+    private LocalDateTime expirationDate;
 
     @Column(name = "card_holder")
     private String cardHolder;
@@ -86,11 +84,11 @@ public class Card {
         this.cardNumber = cardNumber;
     }
 
-    public Date getExpirationDate() {
+    public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
     }
 

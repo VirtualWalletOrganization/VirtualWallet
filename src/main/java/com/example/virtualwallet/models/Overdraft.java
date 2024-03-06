@@ -3,7 +3,7 @@ package com.example.virtualwallet.models;
 import com.example.virtualwallet.models.enums.OverdraftType;
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "overdrafts")
@@ -23,10 +23,10 @@ public class Overdraft {
     private OverdraftType overdraftType;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "due_date")
-    private Date dueDate;
+    private LocalDateTime dueDate;
 
     @Column(name = "is_paid")
     private boolean isPaid;
@@ -58,19 +58,19 @@ public class Overdraft {
         this.overdraftType = overdraftType;
     }
 
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 

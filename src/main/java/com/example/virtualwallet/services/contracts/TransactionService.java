@@ -24,5 +24,5 @@ public interface TransactionService {
 
     void delete(Transaction transaction, User sender);
 
-    void requestMoney(Transaction transaction, Wallet walletSender, User sender);
+    void requestMoney(Transaction transaction, Wallet walletReceiver, User userReceiver);
 }

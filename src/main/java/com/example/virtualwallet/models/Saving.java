@@ -3,7 +3,7 @@ package com.example.virtualwallet.models;
 import com.example.virtualwallet.models.enums.SavingType;
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "savings")
@@ -26,10 +26,10 @@ public class Saving {
     private double balance;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "due_date")
-    private Date dueDate;
+    private LocalDateTime dueDate;
 
     public Saving() {
     }
@@ -66,19 +66,19 @@ public class Saving {
         this.balance = balance;
     }
 
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 }

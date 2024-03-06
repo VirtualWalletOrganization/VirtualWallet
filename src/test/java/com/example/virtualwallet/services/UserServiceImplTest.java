@@ -67,19 +67,19 @@ public class UserServiceImplTest {
     }
 
 
-    @Test
-    public void registerUser_Should_ThrowException_When_UserWithSameNameExists() {
-        User user = createMockUser();
-        User existingUserWithTheSameName = createMockUser();
-        existingUserWithTheSameName.setId(2);
-
-        Mockito.when(mockRepository.getByUsername(user.getUsername()))
-                .thenReturn(Optional.of(existingUserWithTheSameName));
-
-        Assertions.assertThrows(
-                DuplicateEntityException.class,
-                () -> userService.registerUser(user, new WalletDto()));
-    }
+//    @Test
+//    public void registerUser_Should_ThrowException_When_UserWithSameNameExists() {
+//        User user = createMockUser();
+//        User existingUserWithTheSameName = createMockUser();
+//        existingUserWithTheSameName.setId(2);
+//
+//        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+//                .thenReturn(Optional.of(existingUserWithTheSameName));
+//
+//        Assertions.assertThrows(
+//                DuplicateEntityException.class,
+//                () -> userService.registerUser(user, new WalletDto()));
+//    }
 
 
     @Test

@@ -51,9 +51,8 @@ public class WalletRepositoryImpl implements WalletRepository {
 //    }
 
     @Override
-    public Optional<List<User>> getAllUsersByWalletId( int walletId) {
+    public Optional<List<User>> getAllUsersByWalletId(int walletId) {
         try (Session session = sessionFactory.openSession()) {
-            // "SELECT w from Wallet w JOIN w.cards c where c.id = :cardId", Wallet.class);
             Query<User> query = session.createQuery(
                     "SELECT u FROM User u JOIN u.wallets w WHERE w.id = :walletId", User.class);
             query.setParameter("walletId", walletId);
@@ -72,6 +71,7 @@ public class WalletRepositoryImpl implements WalletRepository {
             return Optional.ofNullable(wallets.get(0));
         }
     }
+
     @Override
     public Optional<Wallet> getWalletByCardId(int cardId) {
         try (Session session = sessionFactory.openSession()) {
@@ -98,11 +98,20 @@ public class WalletRepositoryImpl implements WalletRepository {
     }
 
     @Override
-    public Optional<List<Wallet>> getByCreatorId(int creatorId) {
+    public Optional<List<Wallet>> getAllWalletsByCreatorId(int creatorId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Wallet> query = session.createQuery(
                     "SELECT w FROM Wallet w WHERE w.creator.id = :creatorId", Wallet.class);
             query.setParameter("creatorId", creatorId);
+            return Optional.ofNullable(query.list());
+        }
+    }
+    @Override
+    public Optional<List<Wallet>> getAllWalletsByUserId(int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Wallet> query = session.createQuery(
+                    "SELECT w from Wallet w JOIN w.users u where u.id = :userId", Wallet.class);
+            query.setParameter("userId", userId);
             return Optional.ofNullable(query.list());
         }
     }
@@ -119,12 +128,6 @@ public class WalletRepositoryImpl implements WalletRepository {
 
     @Override
     public Wallet create(Wallet wallet) {
-        WalletsType walletsType = new WalletsType();
-        try (Session session = sessionFactory.openSession()) {
-            walletsType = session.get(WalletsType.class, 1);
-        }
-
-        wallet.setWalletsType(walletsType);
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.persist(wallet);

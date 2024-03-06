@@ -12,7 +12,6 @@ import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -59,7 +58,7 @@ public class OverdraftServiceImpl implements OverdraftService {
 
     @Override
     public void enableOverdraft(int userId, boolean enable) {
-        List<Wallet> wallets = walletService.getByCreatorId(userId);
+        List<Wallet> wallets = walletService.getAllWalletsByCreatorId(userId);
         User user = userService.getById(userId);
         for (Wallet wallet : wallets) {
             wallet.setOverdraftEnabled(enable);

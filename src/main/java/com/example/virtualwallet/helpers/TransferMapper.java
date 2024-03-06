@@ -8,7 +8,7 @@ import com.example.virtualwallet.models.enums.Direction;
 import com.example.virtualwallet.models.enums.Status;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Component
 public class TransferMapper {
@@ -20,7 +20,7 @@ public class TransferMapper {
         transfer.setAmount(transferRequestDto.getAmount());
         transfer.setCurrency(transferRequestDto.getCurrency());
         transfer.setDirection(Direction.OUTGOING);
-        transfer.setDate(new Date());
+        transfer.setDate(LocalDateTime.now());
         transfer.setStatus(Status.PENDING);
         SpendingCategory spendingCategory = new SpendingCategory();
         spendingCategory.setName(transferRequestDto.getSpendingCategory());

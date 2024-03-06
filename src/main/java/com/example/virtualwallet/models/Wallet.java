@@ -57,6 +57,14 @@ public class Wallet {
     @ManyToMany(mappedBy = "wallets", fetch = FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "walletSender", fetch = FetchType.EAGER)
+    private Set<Transaction> sentTransactions;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "walletReceiver", fetch = FetchType.EAGER)
+    private Set<Transaction> receiverTransactions;
+
     public Wallet() {
     }
 
@@ -146,6 +154,22 @@ public class Wallet {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Set<Transaction> getSentTransactions() {
+        return sentTransactions;
+    }
+
+    public void setSentTransactions(Set<Transaction> sentTransactions) {
+        this.sentTransactions = sentTransactions;
+    }
+
+    public Set<Transaction> getReceiverTransactions() {
+        return receiverTransactions;
+    }
+
+    public void setReceiverTransactions(Set<Transaction> receiverTransactions) {
+        this.receiverTransactions = receiverTransactions;
     }
 
     @Override

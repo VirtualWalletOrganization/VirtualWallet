@@ -59,8 +59,8 @@ VALUES ('DUMMY'),
        ('SINGLE'),
        ('RECURRING');
 
-INSERT INTO transactions (sender_wallet_id, receiver_wallet_id, amount, currency, direction, date,
+INSERT INTO transactions (sender_wallet_id, receiver_wallet_id, amount, currency, date,
                           transaction_status_id,
                           description, transaction_type_id)
-VALUES (1, 1, 100.00, 'USD', 'OUTGOING', '2024-03-04', 1, 'Payment for goods', 2),
-       (2, 2, 50.00, 'EUR', 'INCOMING', '2024-03-04', 2, 'Refund for returned item', 2);
+VALUES (1, 1, 100.00, 'USD', '2024-03-04 00:00:00', 1, 'Payment for goods', 2),
+       (2, 2, 50.00, 'EUR', '2024-03-04 00:00:00', 2, 'Refund for returned item', 2);

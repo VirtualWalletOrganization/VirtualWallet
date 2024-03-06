@@ -3,21 +3,17 @@ package com.example.virtualwallet.services;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
-import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
-import com.example.virtualwallet.services.contracts.CardService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static com.example.virtualwallet.utils.CheckPermissions.*;
 import static com.example.virtualwallet.utils.Messages.*;
@@ -42,7 +38,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public List<User> getAllUsersByWalletId(int walletId) {
-        getWalletById(walletId);
+        //getWalletById(walletId,userId);
         return walletRepository.getAllUsersByWalletId(walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId)));
     }
@@ -89,15 +85,18 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<Wallet> getByCreatorId(int creatorId) {
-        return walletRepository.getByCreatorId(creatorId)
+    public List<Wallet> getAllWalletsByCreatorId(int creatorId) {
+        return walletRepository.getAllWalletsByCreatorId(creatorId)
+                .orElseThrow(() -> new EntityNotFoundException("Wallets"));
+    }
+    @Override
+    public List<Wallet> getAllWalletsByUserId(int userId) {
+        return walletRepository.getAllWalletsByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallets"));
     }
 
     @Override
     public Wallet create(Wallet wallet, User user) {
-        User user1 = userService.getByUsername(user.getUsername());
-        wallet.setCreator(user1);
 
         if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
             User userCreator = wallet.getCreator();
@@ -105,16 +104,17 @@ public class WalletServiceImpl implements WalletService {
             wallet.setCreator(userCreator);
         }
 
-        if (user.getCreatedWallets().size() == 1) {
+        if (user.getCreatedWallets().isEmpty()) {
             wallet.setDefault(true);
         }
         user.getWallets().add(wallet);
         wallet.getUsers().add(user);
-        Wallet walletToAdd=walletRepository.create(wallet);
+        Wallet walletToAdd = walletRepository.create(wallet);
         userService.updateUser(user, user);
         return walletToAdd;
     }
-@Override
+
+    @Override
     public void createWhenRegistering(Wallet wallet, User user) {
         User user1 = userService.getByUsername(user.getUsername());
         wallet.setCreator(user1);
@@ -130,8 +130,8 @@ public class WalletServiceImpl implements WalletService {
 //        }
 
         wallet.getUsers().add(user);
-        Wallet walletToAdd=walletRepository.create(wallet);
-        Wallet walletReady= walletRepository.getByCreatorIdWhenRegistering(user1.getId());
+        Wallet walletToAdd = walletRepository.create(wallet);
+        Wallet walletReady = walletRepository.getByCreatorIdWhenRegistering(user1.getId());
         user.getWallets().add(walletReady);
         userService.updateUser(user, user);
     }
@@ -150,20 +150,18 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void addUsersToWallet(int walletId, User userToAdd, User executingUser) {
+    public void addUsersToWallet(int walletId, int userToAddId, User executingUser) {
         Wallet wallet = getWalletById(walletId, executingUser.getId());
-
+        User userToAdd = userService.getById(userToAddId);
         if (!wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
             throw new EntityNotFoundException("Joint wallet", "id", String.valueOf(walletId));
         }
 
-        userService.getById(userToAdd.getId());
-
         checkUserWalletAdmin(wallet, executingUser, ADD_USER_TO_WALLET);
 
-        Set<User> existingUsers = wallet.getUsers();
+        // Set<User> existingUsers = wallet.getUsers();
 
-        if (existingUsers.contains(userToAdd)) {
+        if (wallet.getUsers().contains(userToAdd)) {
             throw new DuplicateEntityException("User", "id", "one of the provided user IDs");
         }
 
@@ -185,4 +183,5 @@ public class WalletServiceImpl implements WalletService {
         userToRemove.getWallets().remove(wallet);
         userService.updateUser(userToRemove, userToRemove);
     }
+
 }

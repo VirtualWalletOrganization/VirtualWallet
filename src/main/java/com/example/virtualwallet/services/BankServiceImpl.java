@@ -45,6 +45,8 @@ public class BankServiceImpl implements BankService {
 
         senderWallet.setBalance(senderWallet.getBalance().subtract(transferOut.getAmount()));
         walletService.update(senderWallet, user);
+        //todo
+       // senderWallet.getTranferSet.add(transferOut);
         updateAccountBalanceTransferIn(transferOut.getAccountNumber(), transferOut.getAmount());
         transferOut.setStatus(Status.COMPLETED);
         transferRepository.create(transferOut);

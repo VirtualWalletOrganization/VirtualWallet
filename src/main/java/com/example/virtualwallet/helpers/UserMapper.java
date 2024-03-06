@@ -1,13 +1,13 @@
 package com.example.virtualwallet.helpers;
 
 
-import com.example.virtualwallet.models.*;
+import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.PhoneNumberDto;
 import com.example.virtualwallet.models.dtos.RegisterDto;
 import com.example.virtualwallet.models.dtos.UserDto;
 import com.example.virtualwallet.models.dtos.UserResponseDto;
 import com.example.virtualwallet.models.enums.Role;
-import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ public class UserMapper {
         return user;
     }
 
-    public Wallet fromDtoCreateWallet(RegisterDto registerDto){
+    public Wallet fromDtoCreateWallet(RegisterDto registerDto) {
         Wallet wallet = new Wallet();
         wallet.setDefault(true);
         wallet.setBalance(BigDecimal.ONE);
@@ -106,7 +106,4 @@ public class UserMapper {
         return user;
     }
 
-    public User toWallet(UserDto userDto) {
-        return userService.getByUsername(userDto.getUsername());
-    }
 }

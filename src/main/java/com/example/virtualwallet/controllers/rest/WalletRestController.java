@@ -3,11 +3,9 @@ package com.example.virtualwallet.controllers.rest;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
-import com.example.virtualwallet.helpers.UserMapper;
 import com.example.virtualwallet.helpers.WalletMapper;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.dtos.UserDto;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.services.contracts.WalletService;
 import jakarta.validation.Valid;
@@ -27,14 +25,14 @@ public class WalletRestController {
     private final WalletService walletService;
     private final AuthenticationHelper authenticationHelper;
     private final WalletMapper walletMapper;
-    private final UserMapper userMapper;
 
     @Autowired
-    public WalletRestController(WalletService walletService, AuthenticationHelper authenticationHelper, WalletMapper walletMapper, UserMapper userMapper) {
+    public WalletRestController(WalletService walletService,
+                                AuthenticationHelper authenticationHelper,
+                                WalletMapper walletMapper) {
         this.walletService = walletService;
         this.authenticationHelper = authenticationHelper;
         this.walletMapper = walletMapper;
-        this.userMapper = userMapper;
     }
 
     @GetMapping
@@ -81,7 +79,7 @@ public class WalletRestController {
                                          @Valid @RequestBody WalletDto walletDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Wallet createdWallet = walletMapper.fromDto(walletDto);
+            Wallet createdWallet = walletMapper.fromDto(walletDto, user);
             walletService.create(createdWallet, user);
             return new ResponseEntity<>(createdWallet, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
@@ -97,7 +95,7 @@ public class WalletRestController {
                                          @Valid @RequestBody WalletDto walletDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Wallet updateWallet = walletMapper.fromDto(id,walletDto,user.getId());
+            Wallet updateWallet = walletMapper.fromDto(id, walletDto, user.getId());
             return new ResponseEntity<>(updateWallet, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -120,11 +118,12 @@ public class WalletRestController {
     }
 
     @PostMapping("/{walletId}/users/{userId}")
-    public ResponseEntity<Void> addUserToWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId, @RequestBody UserDto userDto) {
+    public ResponseEntity<Void> addUserToWallet(@RequestHeader HttpHeaders headers,
+                                                @PathVariable int walletId,
+                                                @PathVariable int userId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            User userToAdd = userMapper.toWallet(userDto);
-            walletService.addUsersToWallet(walletId, userToAdd, user);
+            walletService.addUsersToWallet(walletId, userId, user);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -134,7 +133,9 @@ public class WalletRestController {
     }
 
     @DeleteMapping("/{walletId}/users/{userId}")
-    public ResponseEntity<Void> removeUserFromWallet(@RequestHeader HttpHeaders headers, @PathVariable int walletId, @PathVariable int userId) {
+    public ResponseEntity<Void> removeUserFromWallet(@RequestHeader HttpHeaders headers,
+                                                     @PathVariable int walletId,
+                                                     @PathVariable int userId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             walletService.removeUsersFromWallet(walletId, userId, user);

@@ -6,6 +6,7 @@ import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.utils.UserFilterOptions;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class helpers {
@@ -43,7 +44,7 @@ public class helpers {
             mockCard.setCardsType(new CardsType());
             mockCard.setUser(createMockUser());
             mockCard.setCardNumber("1234567891234567");
-            mockCard.setExpirationDate(new Date());
+            mockCard.setExpirationDate(LocalDateTime.now());
             mockCard.setCardHolder("MockFirstName MockLastName");
             mockCard.setCheckNumber("123");
             mockCard.setCurrency("USD");

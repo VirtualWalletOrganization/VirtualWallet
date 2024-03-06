@@ -1,10 +1,9 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.Direction;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -32,12 +31,12 @@ public class Transaction {
     @Column(name = "currency")
     private String currency;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "direction")
-    private Direction direction;
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "direction")
+//    private Direction direction;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDateTime date;
 
 //    @Enumerated(EnumType.STRING)
 //    @Column(name = "transaction_status_id")
@@ -104,19 +103,19 @@ public class Transaction {
         this.currency = currency;
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
+//    public Direction getDirection() {
+//        return direction;
+//    }
+//
+//    public void setDirection(Direction direction) {
+//        this.direction = direction;
+//    }
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
-
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

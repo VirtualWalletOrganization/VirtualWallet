@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,17 +43,19 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Card getCardById(int cardId, User executingUser) {
-        cardRepository.existsUserWithCard(cardId, executingUser.getId())
-                .orElseThrow(() -> new AuthorizationException(SEARCH_CARD_ERROR_MESSAGE));
-        return cardRepository.getCardById(cardId)
+        Card card= cardRepository.getCardById(cardId)
                 .orElseThrow(() -> new EntityNotFoundException("Card", "id", String.valueOf(cardId)));
+        checkAccessPermissionsUser(card.getUser().getId(), executingUser, SEARCH_CARD_ERROR_MESSAGE);
+        return card;
     }
 
     @Override
     public List<Card> getAllCardsByUserId(int userId, User executingUser) {
-        checkAccessPermissionsUser(userId, executingUser, SEARCH_CARD_ERROR_MESSAGE);
-        return cardRepository.getAllCardsByUserId(userId)
+        List<Card> cards= cardRepository.getAllCardsByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Cards"));
+        checkAccessPermissionsUser(userId, executingUser, SEARCH_CARD_ERROR_MESSAGE);
+        return cards;
+
     }
 
     @Override
@@ -152,7 +155,7 @@ public class CardServiceImpl implements CardService {
     }
 
     private static void throwIfCardExpired(Card card) {
-        if (card.getExpirationDate().before(new Date()) || card.getCardStatus().equals(CardStatus.DEACTIVATED)) {
+        if (card.getExpirationDate().isBefore(LocalDateTime.now()) || card.getCardStatus().equals(CardStatus.DEACTIVATED)) {
             throw new CardMismatchException(CARD_IS_EXPIRED_OR_DEACTIVATED);
         }
     }

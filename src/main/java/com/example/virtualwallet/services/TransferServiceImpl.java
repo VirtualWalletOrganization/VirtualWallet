@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -75,9 +75,9 @@ public class TransferServiceImpl implements TransferService {
         transfer.setAmount(amount);
         transfer.setCurrency(wallet.getCurrency());
         transfer.setDirection(Direction.OUTGOING);
-        transfer.setDate(new Date());
+        transfer.setDate(LocalDateTime.now());
         transfer.setStatus(Status.PENDING);
-       // transfer.setDescription("Transfer from " + sender.getUsername() + " to " + recipient.getUsername());
+        // transfer.setDescription("Transfer from " + sender.getUsername() + " to " + recipient.getUsername());
         transferRepository.create(transfer);
 
         wallet.setBalance(wallet.getBalance().subtract((amount)));
