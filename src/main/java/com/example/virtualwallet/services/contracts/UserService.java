@@ -1,5 +1,6 @@
 package com.example.virtualwallet.services.contracts;
 
+import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.utils.UserFilterOptions;
@@ -23,6 +24,7 @@ public interface UserService {
     User getByPhoneNumber(String phoneNumber);
 
     void registerUser(User user);
+    void createPhoto(Photo photo, User user);
 
     void updateUser(User executingUser, User targetUser);
 

@@ -129,8 +129,10 @@ public class UserRestController {
         try {
             User user = userMapper.fromDtoRegister(userDto);
             Wallet wallet = userMapper.fromDtoCreateWallet(userDto);
+            Photo photo = userMapper.fromDtoCreatePhoto(userDto);
             userService.registerUser(user);
             walletService.createWhenRegistering(wallet, user);
+            userService.createPhoto(photo, user);
             userMapper.toDtoRegisterAndUpdateUser(user);
             return userMapper.toDtoRegisterAndUpdateUser(user);
 //            return new UserResponseDto(user, HttpStatus.CREATED);

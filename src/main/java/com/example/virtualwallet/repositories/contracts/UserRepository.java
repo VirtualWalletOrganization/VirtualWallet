@@ -1,5 +1,6 @@
 package com.example.virtualwallet.repositories.contracts;
 
+import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.utils.UserFilterOptions;
 
@@ -21,6 +22,8 @@ public interface UserRepository {
     Optional <User> getByPhoneNumber(String phoneNumber);
 
     void registerUser(User user);
+
+    Photo createPhoto(Photo photo, User user);
 
     void reactivated(User targetUser);
 

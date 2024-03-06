@@ -1,6 +1,6 @@
 -- Insert data into photos_verifications table
-INSERT INTO photos_verifications (photo_card_id, selfie)
-VALUES ('card123.jpg', 'selfie123.jpg');
+INSERT INTO photos_verifications (creator_id, photo_card_id, selfie)
+VALUES (1,'card123.jpg', 'selfie123.jpg');
 
 -- Insert data into identity_statuses table
 INSERT INTO identity_statuses (identity_verification_name)

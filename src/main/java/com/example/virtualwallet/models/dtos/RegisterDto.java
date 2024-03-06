@@ -1,5 +1,6 @@
 package com.example.virtualwallet.models.dtos;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 
 public class RegisterDto {
@@ -39,6 +40,14 @@ public class RegisterDto {
     @NotEmpty(message = "Profile picture can't be empty")
     @NotBlank(message = "Profile picture can't be blank.")
     private String profilePicture;
+
+    @NotEmpty(message = "CardId photo can`t be empty")
+    @NotBlank(message = "CardId photo can't be blank.")
+    private String cardId;
+
+    @NotEmpty(message = "Selfie can`t be empty")
+    @NotBlank(message = "Selfie can't be blank.")
+    private String selfie;
 
     public RegisterDto() {
     }
@@ -105,5 +114,21 @@ public class RegisterDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(String cardId) {
+        this.cardId = cardId;
+    }
+
+    public String getSelfie() {
+        return selfie;
+    }
+
+    public void setSelfie(String selfie) {
+        this.selfie = selfie;
     }
 }

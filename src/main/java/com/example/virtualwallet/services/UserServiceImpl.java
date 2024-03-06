@@ -4,6 +4,7 @@ import com.example.virtualwallet.exceptions.DeletionRestrictedException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
+import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.UsersRole;
 import com.example.virtualwallet.models.Wallet;
@@ -92,6 +93,13 @@ public class UserServiceImpl implements UserService {
             checkDuplicateEntity(user);
             userRepository.registerUser(user);
         }
+    }
+
+    @Override
+    public void createPhoto(Photo photo, User user){
+        User user1 = getByUsername(user.getUsername());
+        photo.setCreator(user1);
+        userRepository.createPhoto(photo, user);
     }
     @Override
     public User getByUsernameWhenRegistering(String username) {

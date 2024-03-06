@@ -11,6 +11,10 @@ public class Photo {
     @Column(name = "photo_id")
     private int id;
 
+    @OneToOne
+    @JoinColumn(name = "creator_id")
+    private User creator;
+
     @Column(name = "photo_card_id")
     private String cardId;
 
@@ -42,5 +46,13 @@ public class Photo {
 
     public void setSelfie(String selfie) {
         this.selfie = selfie;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 }

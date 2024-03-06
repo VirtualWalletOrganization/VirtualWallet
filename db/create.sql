@@ -1,6 +1,7 @@
 create table photos_verifications
 (
     photo_id      int auto_increment primary key,
+    creator_id        int                   not null,
     photo_card_id varchar(255) null,
     selfie        varchar(255) null
 );

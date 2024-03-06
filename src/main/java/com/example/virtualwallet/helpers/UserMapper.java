@@ -1,6 +1,7 @@
 package com.example.virtualwallet.helpers;
 
 
+import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.PhoneNumberDto;
@@ -41,16 +42,14 @@ public class UserMapper {
         wallet.setDefault(true);
         wallet.setBalance(BigDecimal.ONE);
         wallet.setCurrency(registerDto.getCurrency());
-//        wallet.getWalletsType().setId(1);
-//        wallet.getWalletsType().setWalletType(WalletType.REGULAR);
         return wallet;
     }
-
-//    public Photo fromDtoCreatePhoto(RegisterDto registerDto){
-//        Photo photo = new Photo();
-//        photo.setSelfie(registerDto.getSelfie());
-//        return photo;
-//    }
+    public Photo fromDtoCreatePhoto(RegisterDto registerDto) {
+        Photo photo = new Photo();
+        photo.setSelfie(registerDto.getSelfie());
+        photo.setCardId(registerDto.getCardId());
+        return photo;
+    }
 
     public User fromDtoUpdate(int id, UserDto dto) {
         User updatedUser = userService.getById(id);
