@@ -8,9 +8,7 @@ import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.TransactionType;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 @Component
 public class TransactionMapper {
@@ -27,10 +25,12 @@ public class TransactionMapper {
         transaction.setCurrency(transactionDto.getCurrency());
         // transaction.setDirection(Direction.OUTGOING);
         transaction.setDate(LocalDateTime.now());
+
         TransactionsStatus transactionsStatus = new TransactionsStatus();
         transactionsStatus.setId(Status.PENDING.ordinal());
         transactionsStatus.setTransactionStatus(Status.PENDING);
         transaction.setTransactionsStatus(transactionsStatus);
+
         transaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
         TransactionsType transactionsType = new TransactionsType();
@@ -53,10 +53,10 @@ public class TransactionMapper {
         recurringTransaction.setCurrency(transaction.getCurrency());
         // transaction.setDirection(Direction.OUTGOING);
         recurringTransaction.setDate(LocalDateTime.now());
+
         recurringTransaction.setTransactionsStatus(transaction.getTransactionsStatus());
         recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal());
         recurringTransaction.getTransactionsStatus().setTransactionStatus(Status.PENDING_RECURRING_REQUEST);
-
         recurringTransaction.setTransactionsType(transaction.getTransactionsType());
         recurringTransaction.getTransactionsType().setId(TransactionType.RECURRING.ordinal());
         recurringTransaction.getTransactionsType().setTransactionType(TransactionType.RECURRING);
@@ -75,8 +75,6 @@ public class TransactionMapper {
                                                  User userSender, Wallet walletReceiver, User userReceiver) {
 
         RecurringTransaction recurringTransaction = new RecurringTransaction();
-
-
         recurringTransaction.setIntervals(Interval.valueOf(recurringTransactionDto.getInterval()));
         recurringTransaction.setStartDate(recurringTransactionDto.getStartDate());
         recurringTransaction.setEndDate(recurringTransactionDto.getEndDate());

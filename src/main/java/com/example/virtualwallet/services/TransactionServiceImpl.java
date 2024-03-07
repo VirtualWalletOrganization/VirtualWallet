@@ -11,13 +11,12 @@ import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static com.example.virtualwallet.utils.CheckPermissions.checkBlockOrDeleteUser;
 import static com.example.virtualwallet.utils.CheckPermissions.checkPermissionExistingUsersInWallet;
@@ -35,6 +34,11 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionRepository = transactionRepository;
         this.userService = userService;
         this.walletService = walletService;
+    }
+
+    @Override
+    public Page<Transaction> getAll(Pageable pageable) {
+        return transactionRepository.getAll(pageable);
     }
 
     @Override
@@ -63,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction createTransaction(Transaction transaction, Wallet walletSender, User userSender,
-                                  Wallet walletReceiver, User userReceiver) {
+                                         Wallet walletReceiver, User userReceiver) {
 
         checkBlockOrDeleteUser(userSender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         checkPermissionExistingUsersInWallet(walletSender, userSender, ERROR_TRANSACTION);
@@ -77,7 +81,7 @@ public class TransactionServiceImpl implements TransactionService {
         walletReceiver.getReceiverTransactions().add(transaction);
         walletService.update(walletSender, userSender);
         walletService.update(transaction.getWalletReceiver(), userReceiver);
-    return transaction;
+        return transaction;
     }
 
     @Override
@@ -85,17 +89,17 @@ public class TransactionServiceImpl implements TransactionService {
         checkBlockOrDeleteUser(userSender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         checkPermissionExistingUsersInWallet(transaction.getWalletSender(), userSender, ERROR_TRANSACTION);
         //TODO implement check for overdraft
+
         if (transaction.getTransactionsStatus().getTransactionStatus() == (Status.PENDING)) {
             isValidRequestTransferMoney(transaction);
             transactionRepository.update(transaction);
         } else {
             throw new EntityNotFoundException("Request transaction");
-
         }
+
         transaction.getWalletSender().setBalance(transaction.getWalletSender().getBalance().subtract(transaction.getAmount()));
         transaction.getWalletSender().getSentTransactions().add(transaction);
         walletService.update(transaction.getWalletSender(), userSender);
-
 
         List<User> users = walletService.getAllUsersByWalletId(transaction.getWalletReceiver().getId());
         users.forEach(user -> user.getWallets().stream()
@@ -113,6 +117,7 @@ public class TransactionServiceImpl implements TransactionService {
         checkPermissionExistingUsersInWallet(transaction.getWalletSender(), sender, ERROR_TRANSACTION);
         transactionRepository.delete(transaction);
     }
+
     public void createRecurringTransaction(Transaction transaction) {
         transactionRepository.create(transaction);
     }
@@ -120,6 +125,7 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction requestMoney(Transaction transaction, Wallet walletReceiver, User userReceiver) {
         checkBlockOrDeleteUser(userReceiver, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         checkPermissionExistingUsersInWallet(walletReceiver, userReceiver, ERROR_TRANSACTION);
+
         userReceiver.getWallets().stream()
                 .filter(wallet -> wallet.getId() == walletReceiver.getId()
                         && wallet.getDefault())
@@ -129,8 +135,8 @@ public class TransactionServiceImpl implements TransactionService {
                     wallet.getReceiverTransactions().add(transaction);
                     walletService.update(wallet, userReceiver);
                 });
-       return transactionRepository.create(transaction);
-
+        return transactionRepository.
+                create(transaction);
     }
 
     private void isValidRequestTransferMoney(Transaction transaction) {
@@ -139,7 +145,6 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
             transactionRepository.update(transaction);
             throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
-
         } else {
             transaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal());
             transaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);
@@ -147,7 +152,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private boolean isValidRequestEnoughMoney(Transaction transaction, Wallet walletSender) {
-
         BigDecimal balanceAfterTransfer = walletSender.getBalance().subtract(transaction.getAmount());
         return balanceAfterTransfer.compareTo(BigDecimal.ZERO) >= 0;
     }
@@ -165,6 +169,5 @@ public class TransactionServiceImpl implements TransactionService {
 //        return allTransactions;
         return transactionRepository.getAllTransactionsByWalletId(wallet.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Transactions", "wallet id", String.valueOf(wallet.getId())));
-
     }
 }

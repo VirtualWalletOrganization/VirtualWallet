@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "recurring_transactions")
 @PrimaryKeyJoinColumn(name = "transaction_id")
 public class RecurringTransaction extends Transaction {
+
     @Enumerated(EnumType.STRING)
     @Column(name = "intervals")
     private Interval intervals;
@@ -21,9 +22,7 @@ public class RecurringTransaction extends Transaction {
     private LocalDate endDate;
 
     public RecurringTransaction() {
-
     }
-
 
     public Interval getIntervals() {
         return intervals;

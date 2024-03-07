@@ -10,7 +10,6 @@ public class UserResponseDto {
 
     @JsonIgnore
     private int id;
-
     private String username;
     private String firstName;
     private String lastName;

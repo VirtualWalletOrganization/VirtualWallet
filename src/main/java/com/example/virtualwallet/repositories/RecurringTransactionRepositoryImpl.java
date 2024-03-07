@@ -15,12 +15,11 @@ import java.util.Optional;
 public class RecurringTransactionRepositoryImpl implements RecurringTransactionRepository {
 
     private final SessionFactory sessionFactory;
+
     @Autowired
     public RecurringTransactionRepositoryImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-
-
 
     @Override
     public Optional<List<RecurringTransaction>> getAllRecurringTransactions() {

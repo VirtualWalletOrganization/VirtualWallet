@@ -41,6 +41,7 @@ public class UserMapper {
         wallet.setCurrency(registerDto.getCurrency());
         return wallet;
     }
+
     public Photo fromDtoCreatePhoto(RegisterDto registerDto) {
         Photo photo = new Photo();
         photo.setSelfie(registerDto.getSelfie());
@@ -103,5 +104,4 @@ public class UserMapper {
         user.getUsersRole().setRole(Role.USER);
         return user;
     }
-
 }

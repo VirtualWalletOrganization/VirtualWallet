@@ -9,7 +9,10 @@ import com.example.virtualwallet.helpers.UserMapper;
 import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.dtos.*;
+import com.example.virtualwallet.models.dtos.PhoneNumberDto;
+import com.example.virtualwallet.models.dtos.RegisterDto;
+import com.example.virtualwallet.models.dtos.UpdateUserDto;
+import com.example.virtualwallet.models.dtos.UserResponseDto;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.services.contracts.UserService;
@@ -238,7 +241,6 @@ public class UserRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
-
 
     @PutMapping("/{id}/role/user")
     public ResponseEntity<Void> updateToUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {

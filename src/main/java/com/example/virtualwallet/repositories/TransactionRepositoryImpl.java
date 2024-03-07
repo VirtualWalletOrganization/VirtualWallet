@@ -1,19 +1,22 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.Transaction;
-import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
+import com.example.virtualwallet.utils.Pagination;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
@@ -23,6 +26,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Autowired
     public TransactionRepositoryImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    @Override
+    public Page<Transaction> getAll(Pageable pageable) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Transaction> query = session.createQuery("SELECT t FROM Transaction AS t", Transaction.class);
+            return Pagination.pagedList(pageable, query.list());
+        }
     }
 
     @Override
@@ -67,7 +78,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             Query<Transaction> query = session.createQuery(
                     "FROM Transaction as t where t.transactionsStatus.transactionStatus = :status ", Transaction.class);
             query.setParameter("transactionsStatus", status);
-           // query.setParameter("walletId", walletId);
+            // query.setParameter("walletId", walletId);
 
             return Optional.ofNullable(query.list());
         }

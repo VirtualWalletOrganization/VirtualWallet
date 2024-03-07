@@ -78,7 +78,7 @@ public class CardRestController {
                                                 @Valid @RequestBody CardDto cardDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Card cardToAdd = cardMapper.fromDto(cardDto,user);
+            Card cardToAdd = cardMapper.fromDto(cardDto, user);
             Card card = cardService.addCard(cardToAdd, walletId, user);
             return new ResponseEntity<>(card, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
@@ -98,7 +98,7 @@ public class CardRestController {
                                            @Valid @RequestBody CardDto cardDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Card cardToUpdate = cardMapper.fromDto(cardId, cardDto,user);
+            Card cardToUpdate = cardMapper.fromDto(cardId, cardDto, user);
             cardService.updateCard(cardToUpdate, user);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {

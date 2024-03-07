@@ -23,12 +23,14 @@ public class WalletMapper {
     public Wallet fromDto(int id, WalletDto dto, int userId) {
         Wallet wallet = walletService.getWalletById(id, userId);
         Wallet currentDefaultWallet = walletService.getDefaultWallet(userId);
+
         if (currentDefaultWallet.getId() != id) {
             currentDefaultWallet.setDefault(false);
             wallet.setDefault(true);
         } else {
             throw new DuplicateEntityException("Wallet", "id", String.valueOf(id), "has already been set as default.");
         }
+
         return wallet;
     }
 

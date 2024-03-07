@@ -89,6 +89,7 @@ public class WalletServiceImpl implements WalletService {
         return walletRepository.getAllWalletsByCreatorId(creatorId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallets"));
     }
+
     @Override
     public List<Wallet> getAllWalletsByUserId(int userId) {
         return walletRepository.getAllWalletsByUserId(userId)
@@ -97,7 +98,6 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet create(Wallet wallet, User user) {
-
         if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
             User userCreator = wallet.getCreator();
             userCreator.getWalletsRole().setWalletRole(WalletRole.ADMIN);
@@ -107,6 +107,7 @@ public class WalletServiceImpl implements WalletService {
         if (user.getCreatedWallets().isEmpty()) {
             wallet.setDefault(true);
         }
+
         user.getWallets().add(wallet);
         wallet.getUsers().add(user);
         Wallet walletToAdd = walletRepository.create(wallet);
@@ -141,6 +142,7 @@ public class WalletServiceImpl implements WalletService {
         checkAccessPermissionWalletUser(wallet, user, MODIFY_WALLET_ERROR_MESSAGE);
         walletRepository.update(wallet);
     }
+
     @Override
     public void updateRecurringTransaction(Wallet wallet) {
         walletRepository.update(wallet);
@@ -187,5 +189,4 @@ public class WalletServiceImpl implements WalletService {
         userToRemove.getWallets().remove(wallet);
         userService.updateUser(userToRemove, userToRemove);
     }
-
 }

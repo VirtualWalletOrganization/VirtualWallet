@@ -1,6 +1,6 @@
 -- Insert data into photos_verifications table
 INSERT INTO photos_verifications (creator_id, photo_card_id, selfie)
-VALUES (1,'card123.jpg', 'selfie123.jpg');
+VALUES (1, 'card123.jpg', 'selfie123.jpg');
 
 -- Insert data into identity_statuses table
 INSERT INTO identity_statuses (identity_verification_name)
@@ -34,6 +34,7 @@ VALUES ('CREDIT'),
 INSERT INTO wallets_types (wallet_type_name)
 VALUES ('JOINT'),
        ('REGULAR');
+
 INSERT INTO wallets (creator_id, balance, currency, wallet_type_id, is_default)
 VALUES (1, 1000.00, 'USD', 1, true),
        (2, 2000.00, 'USD', 2, true);
@@ -46,8 +47,7 @@ VALUES ('Food'),
 
 -- Insert data into transactions_statuses table
 INSERT INTO transactions_statuses (status_name)
-VALUES
-       ('COMPLETED'),
+VALUES ('COMPLETED'),
        ('FAILED'),
        ('PENDING'),
        ('PENDING_RECURRING_REQUEST'),
@@ -55,8 +55,7 @@ VALUES
 
 -- Insert data into transactions_types table
 INSERT INTO transactions_types (transaction_type_name)
-VALUES
-       ('SINGLE'),
+VALUES ('SINGLE'),
        ('RECURRING');
 
 INSERT INTO transactions (sender_wallet_id, receiver_wallet_id, amount, currency, date,
@@ -65,4 +64,6 @@ INSERT INTO transactions (sender_wallet_id, receiver_wallet_id, amount, currency
 VALUES (1, 1, 100.00, 'USD', '2024-03-04 00:00:00', 1, 'Payment for goods', 2),
        (2, 2, 50.00, 'EUR', '2024-03-04 00:00:00', 2, 'Refund for returned item', 2);
 
-insert into  users_wallets (user_id, wallet_id) values (1, 1), (2, 2);
+insert into users_wallets (user_id, wallet_id)
+values (1, 1),
+       (2, 2);

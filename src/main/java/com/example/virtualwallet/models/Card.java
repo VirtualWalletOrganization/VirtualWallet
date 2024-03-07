@@ -48,7 +48,6 @@ public class Card {
 //    @ManyToMany(mappedBy = "cards",fetch = FetchType.EAGER)
 //    private Set<Wallet> wallets;
 
-
     public Card() {
     }
 
@@ -146,6 +145,4 @@ public class Card {
     public int hashCode() {
         return Objects.hash(id, cardsType, cardNumber, expirationDate, cardHolder, checkNumber);
     }
-
-
 }

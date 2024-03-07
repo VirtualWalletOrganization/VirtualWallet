@@ -9,7 +9,9 @@ import com.example.virtualwallet.models.Wallet;
 import java.util.List;
 
 public interface RecurringTransactionService  {
+
     List<RecurringTransaction> getAllRecurringTransactions();
+
     void createRecurringTransaction(RecurringTransaction recurringTransaction,
                                    Wallet walletSender,User user,Wallet walletReceiver,User userReceiver);
 

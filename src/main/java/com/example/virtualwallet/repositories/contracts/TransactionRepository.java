@@ -2,11 +2,15 @@ package com.example.virtualwallet.repositories.contracts;
 
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.enums.Status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TransactionRepository {
+
+    Page<Transaction> getAll(Pageable pageable);
 
     Optional<List<Transaction>> getAllTransactions();
 

@@ -4,7 +4,6 @@ import com.example.virtualwallet.models.IdentityStatus;
 import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.UsersRole;
-import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import org.hibernate.Session;
@@ -103,9 +102,9 @@ public class UserRepositoryImpl implements UserRepository {
             Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);
             List<User> userList = query.list();
-            if(!userList.isEmpty()){
+            if (!userList.isEmpty()) {
                 return Optional.ofNullable(userList.get(0));
-            }else{
+            } else {
                 return Optional.empty();
             }
         }
@@ -117,23 +116,24 @@ public class UserRepositoryImpl implements UserRepository {
             Query<User> query = session.createQuery("from User where email = :email", User.class);
             query.setParameter("email", email);
             List<User> userList = query.list();
-            if(!userList.isEmpty()){
+            if (!userList.isEmpty()) {
                 return Optional.ofNullable(userList.get(0));
-            }else{
+            } else {
                 return Optional.empty();
             }
 //            return Optional.ofNullable(query.list().get(0));
 //        }
-    }}
+        }
+    }
 
-    public Optional<User>getByPhoneNumber(String phoneNumber){
+    public Optional<User> getByPhoneNumber(String phoneNumber) {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where phoneNumber = :phoneNumber", User.class);
             query.setParameter("phoneNumber", phoneNumber);
             List<User> userList = query.list();
-            if(!userList.isEmpty()){
+            if (!userList.isEmpty()) {
                 return Optional.ofNullable(userList.get(0));
-            }else{
+            } else {
                 return Optional.empty();
             }
 //            return Optional.ofNullable(query.list().get(0));
@@ -142,8 +142,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void registerUser(User user) {
-    IdentityStatus identityStatus = new IdentityStatus();
-    UsersRole usersRole = new UsersRole();
+        IdentityStatus identityStatus = new IdentityStatus();
+        UsersRole usersRole = new UsersRole();
         try (Session session = sessionFactory.openSession()) {
             identityStatus = session.get(IdentityStatus.class, 3);
         }
@@ -160,7 +160,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Photo createPhoto(Photo photo, User user){
+    public Photo createPhoto(Photo photo, User user) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.persist(photo);
@@ -206,6 +206,7 @@ public class UserRepositoryImpl implements UserRepository {
             return userCount == 0;
         }
     }
+
     @Override
     public void updateUserToAdmin(User targetUser, User executingUser) {
         try (Session session = sessionFactory.openSession()) {

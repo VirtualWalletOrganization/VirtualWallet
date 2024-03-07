@@ -16,6 +16,7 @@ import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,17 +51,31 @@ public class TransactionRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Transaction>> getAllTransactions(@RequestHeader HttpHeaders headers) {
+    public List<Transaction> getTransactions(@RequestHeader HttpHeaders headers,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "5") int size) {
         try {
             authenticationHelper.tryGetUser(headers);
-            List<Transaction> transactions = transactionService.getAllTransactions();
-            return new ResponseEntity<>(transactions, HttpStatus.OK);
+            return transactionService.getAll(PageRequest.of(page, size)).getContent();
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+//    @GetMapping
+//    public ResponseEntity<List<Transaction>> getAllTransactions(@RequestHeader HttpHeaders headers) {
+//        try {
+//            authenticationHelper.tryGetUser(headers);
+//            List<Transaction> transactions = transactionService.getAllTransactions();
+//            return new ResponseEntity<>(transactions, HttpStatus.OK);
+//        } catch (EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+//        } catch (AuthorizationException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//        }
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@RequestHeader HttpHeaders headers, @PathVariable int id) {

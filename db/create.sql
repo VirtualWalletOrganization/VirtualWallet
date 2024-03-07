@@ -1,7 +1,7 @@
 create table photos_verifications
 (
     photo_id      int auto_increment primary key,
-    creator_id        int                   not null,
+    creator_id    int not null,
     photo_card_id varchar(255) null,
     selfie        varchar(255) null
 );
@@ -73,7 +73,7 @@ create table cards
     card_type_id    int                not null,
     user_id         int                not null,
     card_number     varchar(16) unique not null,
-    expiration_date datetime               not null,
+    expiration_date datetime           not null,
     card_holder     varchar(30)        not null,
     check_number    varchar(3)         not null,
     currency        varchar(3)         not null,
@@ -143,10 +143,10 @@ create table transactions
 (
     transaction_id        int auto_increment primary key,
     sender_wallet_id      int          not null,
-    receiver_wallet_id               int          not null,
+    receiver_wallet_id    int          not null,
     amount                decimal      not null,
     currency              varchar(3)   not null,
-    date                  datetime         not null,
+    date                  datetime     not null,
     transaction_status_id int          not null,
     description           varchar(255) not null,
     transaction_type_id   int          not null,
@@ -187,7 +187,7 @@ create table overdrafts_types
     overdraft_name     varchar(50) not null,
     overdraft_limit    decimal     not null,
     overdraft_interest int         not null,
-    duration           datetime        not null
+    duration           datetime    not null
 );
 
 create table overdrafts
@@ -195,8 +195,8 @@ create table overdrafts
     overdraft_id      int auto_increment primary key,
     wallet_id         int                   not null,
     overdraft_type_id int                   not null,
-    start_date        datetime                  not null,
-    due_date          datetime                  not null,
+    start_date        datetime              not null,
+    due_date          datetime              not null,
     is_paid           boolean default false not null,
     constraint overdrafts_overdrafts_types_overdraft_type_id_fk
         foreign key (overdraft_type_id) references overdrafts_types (overdraft_type_id),
@@ -215,7 +215,7 @@ create table savings_types
 create table savings
 (
     saving_id      int auto_increment primary key,
-    wallet_id      int  not null,
+    wallet_id      int      not null,
     saving_type_id int null,
     start_date     datetime not null,
     due_date       datetime not null,
@@ -239,7 +239,7 @@ create table transfers
     amount         decimal            not null,
     currency       varchar(3)         not null,
     direction      enum ('INCOMING', 'OUTGOING') not null,
-    date           datetime               not null,
+    date           datetime           not null,
     status         enum ('COMPLETED', 'FAILED', 'PENDING') not null,
     category_id    int                not null,
     constraint transfers_wallets_wallet_id_fk
