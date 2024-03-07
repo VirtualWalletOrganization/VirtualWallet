@@ -14,11 +14,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class WalletServiceImplTest {
@@ -76,48 +76,68 @@ class WalletServiceImplTest {
     }
 
 //    @Test
-//    void getWalletById_ValidWalletId_ReturnsWallet() {
+//    public void testGetWalletById_Success() {
 //        int walletId = 1;
 //        int userId = 1;
-//        User user = new User();
-//        user.setId(userId);
 //        Wallet expectedWallet = new Wallet();
 //        expectedWallet.setId(walletId);
+//
+//        User user = new User();
+//        user.setId(userId);
+//        user.getCreatedWallets().add(expectedWallet);
+//
 //        when(userService.getById(userId)).thenReturn(user);
 //        when(walletRepository.getWalletById(walletId)).thenReturn(Optional.of(expectedWallet));
 //
-//        Wallet actualWallet = walletService.getWalletById(walletId, userId);
+//        Wallet resultWallet = walletService.getWalletById(walletId, userId);
 //
-//        assertEquals(expectedWallet, actualWallet);
-//        verify(walletRepository, times(1)).getWalletById(walletId);
+//        assertEquals(expectedWallet, resultWallet);
 //    }
-//
+
+    @Test
+    public void testGetWalletById_UserNotFound() {
+        int walletId = 1;
+        int userId = 1;
+
+        when(userService.getById(userId)).thenThrow(EntityNotFoundException.class);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            walletService.getWalletById(walletId, userId);
+        });
+
+        verify(walletRepository, never()).getWalletById(anyInt());
+    }
+
 //    @Test
-//    void getWalletById_InvalidWalletId_ThrowsEntityNotFoundException() {
+//    public void testGetWalletById_WalletNotFound() {
 //        int walletId = 1;
 //        int userId = 1;
+//
 //        User user = new User();
 //        user.setId(userId);
+//
 //        when(userService.getById(userId)).thenReturn(user);
 //        when(walletRepository.getWalletById(walletId)).thenReturn(Optional.empty());
 //
-//        assertThrows(EntityNotFoundException.class, () -> walletService.getWalletById(walletId, userId));
-//        verify(walletRepository, times(1)).getWalletById(walletId);
+//        assertThrows(EntityNotFoundException.class, () -> {
+//            walletService.getWalletById(walletId, userId);
+//        });
 //    }
-//
+
 //    @Test
-//    void getWalletById_UnauthorizedUser_ThrowsAuthorizationException() {
+//    public void testGetWalletById_WalletNotCreatedByUser() {
 //        int walletId = 1;
 //        int userId = 1;
+//
 //        User user = new User();
 //        user.setId(userId);
-//        when(userService.getById(userId)).thenReturn(user);
-//        Wallet wallet = new Wallet();
-//        wallet.setId(walletId);
-//        when(walletRepository.getWalletById(walletId)).thenReturn(Optional.of(wallet));
 //
-//        assertThrows(AuthorizationException.class, () -> walletService.getWalletById(walletId, userId + 1));
-//        verify(walletRepository, never()).getWalletById(walletId);
+//        when(userService.getById(userId)).thenReturn(user);
+//        when(walletRepository.getWalletById(walletId)).thenReturn(Optional.of(new Wallet()));
+//
+//        assertThrows(AuthorizationException.class, () -> {
+//            walletService.getWalletById(walletId, userId);
+//        });
 //    }
 
     @Test
