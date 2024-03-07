@@ -129,8 +129,10 @@ public class UserRestController {
         try {
             User user = userMapper.fromDtoRegister(userDto);
             Wallet wallet = userMapper.fromDtoCreateWallet(userDto);
+            Photo photo = userMapper.fromDtoCreatePhoto(userDto);
             userService.registerUser(user);
             walletService.createWhenRegistering(wallet, user);
+            userService.createPhoto(photo, user);
             userMapper.toDtoRegisterAndUpdateUser(user);
             return userMapper.toDtoRegisterAndUpdateUser(user);
 //            return new UserResponseDto(user, HttpStatus.CREATED);
@@ -159,11 +161,11 @@ public class UserRestController {
 
     @PutMapping("/{id}")
     public UserResponseDto updateUser(@RequestHeader HttpHeaders headers,
-                                      @PathVariable int id, @Valid @RequestBody UserDto userDto) {
+                                      @PathVariable int id, @Valid @RequestBody UpdateUserDto userDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             User userToBeUpdated = userMapper.fromDtoUpdate(id, userDto);
-            userService.updateUser(userToBeUpdated, user);
+            userService.updateUser(user, userToBeUpdated);
             return userMapper.toDtoRegisterAndUpdateUser(userToBeUpdated);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -289,7 +291,7 @@ public class UserRestController {
     @PutMapping("/{id}/phone-number")
     public UserResponseDto updateUserPhoneNumber(@RequestHeader HttpHeaders headers,
                                                  @PathVariable int id,
-                                                 @Valid @RequestBody PhoneNumberDto phoneNumberDto, UserDto dto) {
+                                                 @Valid @RequestBody PhoneNumberDto phoneNumberDto, UpdateUserDto dto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             User userPhoneNumberToBeUpdate = userMapper.fromDtoUpdatePhoneNumber(id, phoneNumberDto, dto);

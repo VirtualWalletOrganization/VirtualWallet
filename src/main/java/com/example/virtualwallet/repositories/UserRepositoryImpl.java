@@ -1,6 +1,7 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.IdentityStatus;
+import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.UsersRole;
 import com.example.virtualwallet.models.enums.Role;
@@ -141,8 +142,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void registerUser(User user) {
-IdentityStatus identityStatus = new IdentityStatus();
-UsersRole usersRole = new UsersRole();
+    IdentityStatus identityStatus = new IdentityStatus();
+    UsersRole usersRole = new UsersRole();
         try (Session session = sessionFactory.openSession()) {
             identityStatus = session.get(IdentityStatus.class, 3);
         }
@@ -155,6 +156,16 @@ UsersRole usersRole = new UsersRole();
             session.beginTransaction();
             session.persist(user);
             session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public Photo createPhoto(Photo photo, User user){
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.persist(photo);
+            session.getTransaction().commit();
+            return photo;
         }
     }
 
