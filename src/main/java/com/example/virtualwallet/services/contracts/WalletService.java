@@ -28,6 +28,7 @@ public interface WalletService {
     void createWhenRegistering(Wallet wallet, User user);
 
     void update(Wallet wallet, User user);
+    void updateRecurringTransaction(Wallet wallet);
 
     void delete(int walletId, User user);
 

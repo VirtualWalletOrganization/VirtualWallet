@@ -14,7 +14,7 @@ public interface TransactionRepository {
 
     Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId);
 
-    Optional<List<Transaction>> getAllTransactionsByStatus(Status status, int walletId);
+    Optional<List<Transaction>> getAllTransactionsByStatus(Status status);
 
     Transaction create(Transaction transaction);
 

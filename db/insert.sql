@@ -46,16 +46,16 @@ VALUES ('Food'),
 
 -- Insert data into transactions_statuses table
 INSERT INTO transactions_statuses (status_name)
-VALUES ('EXPIRED'),
+VALUES
        ('COMPLETED'),
        ('FAILED'),
        ('PENDING'),
-       ('PENDING_REQUEST'),
+       ('PENDING_RECURRING_REQUEST'),
        ('REJECT');
 
 -- Insert data into transactions_types table
 INSERT INTO transactions_types (transaction_type_name)
-VALUES ('DUMMY'),
+VALUES
        ('SINGLE'),
        ('RECURRING');
 
@@ -64,3 +64,5 @@ INSERT INTO transactions (sender_wallet_id, receiver_wallet_id, amount, currency
                           description, transaction_type_id)
 VALUES (1, 1, 100.00, 'USD', '2024-03-04 00:00:00', 1, 'Payment for goods', 2),
        (2, 2, 50.00, 'EUR', '2024-03-04 00:00:00', 2, 'Refund for returned item', 2);
+
+insert into  users_wallets (user_id, wallet_id) values (1, 1), (2, 2);

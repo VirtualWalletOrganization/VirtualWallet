@@ -11,7 +11,7 @@ public interface RecurringTransactionRepository {
 
     Optional<RecurringTransaction> getRecurringTransactionById(int transactionId);
 
-    Transaction create(RecurringTransaction recurringTransaction);
+    RecurringTransaction create(RecurringTransaction recurringTransaction);
 
     void update(RecurringTransaction recurringTransaction);
 

@@ -75,6 +75,21 @@ public class TransactionRestController {
         }
     }
 
+    @GetMapping("/wallets/{walletId}")
+    public ResponseEntity<List<Transaction>> getAllTransactionsByWalletId(@RequestHeader HttpHeaders headers,
+                                                                          @PathVariable int walletId) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Wallet wallet = walletService.getWalletById(walletId, user.getId());
+            List<Transaction> transactions = transactionService.getAllTransactionsByWalletId(wallet);
+            return new ResponseEntity<>(transactions, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
     @PostMapping("/{walletId}")
     public ResponseEntity<Transaction> confirmTransaction(@RequestHeader HttpHeaders headers,
                                                           @PathVariable int walletId,
@@ -82,11 +97,11 @@ public class TransactionRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            User userReceiver=userService.getByUsername(transactionDto.getReceiver());
-            Wallet walletReceiver=walletService.getDefaultWallet(userReceiver.getId());
-            Transaction transaction = transactionMapper.fromDtoMoney(transactionDto,walletSender, user,
-                    walletReceiver,userReceiver);
-            transactionService.confirmTransaction(transaction,walletSender, user);
+            User userReceiver = userService.getByUsername(transactionDto.getReceiver());
+            Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
+            Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, user,
+                    walletReceiver, userReceiver);
+            transactionService.confirmTransaction(transaction, walletSender, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -95,33 +110,34 @@ public class TransactionRestController {
         }
     }
 
-    @PostMapping("/{walletId}/send")
+    @PostMapping("/wallets/{walletId}/send")
     public ResponseEntity<Transaction> createTransaction(@RequestHeader HttpHeaders headers,
                                                          @PathVariable int walletId,
                                                          @RequestBody TransactionDto transactionDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            User userReceiver=userService.getByUsername(transactionDto.getReceiver());
-            Wallet walletReceiver=walletService.getDefaultWallet(userReceiver.getId());
-            Transaction transaction = transactionMapper.fromDtoMoney(transactionDto,walletSender, user,
-                    walletReceiver,userReceiver);
-            transactionService.createTransaction(transaction, walletSender, user,walletReceiver,userReceiver);
+            User userReceiver = userService.getByUsername(transactionDto.getReceiver());
+            Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
+            Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, user,
+                    walletReceiver, userReceiver);
+            transactionService.createTransaction(transaction, walletSender, user, walletReceiver, userReceiver);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (InsufficientBalanceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
-    @PutMapping("/{transactionId}/wallets/{walletId}")
+    @PutMapping("/{transactionId}")
     public ResponseEntity<Transaction> updateTransaction(@RequestHeader HttpHeaders headers,
-                                                         @PathVariable int transactionId,
-                                                         @PathVariable int walletId) {
+                                                         @PathVariable int transactionId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Transaction transaction=transactionService.getTransactionById(transactionId);
+            Transaction transaction = transactionService.getTransactionById(transactionId);
 //            Transaction transaction = transactionMapper.fromDto(id,transactionDto,walletSender,user,
 //                    walletReceiver,userReceiver);
             transactionService.updateTransaction(transaction, user);
@@ -158,10 +174,10 @@ public class TransactionRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletReceiver = walletService.getWalletById(walletId, user.getId());
-            User userSender=userService.getByUsername(transactionDto.getReceiver());
-            Wallet walletSender=walletService.getDefaultWallet(userSender.getId());
-            Transaction transaction = transactionMapper.fromDtoMoney(transactionDto,walletSender,userSender,
-                    walletReceiver,user);
+            User userSender = userService.getByUsername(transactionDto.getReceiver());
+            Wallet walletSender = walletService.getDefaultWallet(userSender.getId());
+            Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, userSender,
+                    walletReceiver, user);
             transactionService.requestMoney(transaction, walletReceiver, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (AuthorizationException e) {
@@ -170,24 +186,25 @@ public class TransactionRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }//Todo add check to MVC for INVALID_REQUEST
     }
-    @PostMapping("/{walletId}/recurring")
+
+    @PostMapping("/wallets/{walletId}/recurring")
     public ResponseEntity<RecurringTransaction> createRecurringTransaction(@RequestHeader HttpHeaders headers,
-                                                                                  @PathVariable int walletId,
-                                                                                  @RequestBody RecurringTransactionDto
-                                                                                              recurringTransactionDto) {
+                                                                           @PathVariable int walletId,
+                                                                           @RequestBody RecurringTransactionDto
+                                                                                   recurringTransactionDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            User userReceiver=userService.getByUsername(recurringTransactionDto.getReceiver());
-            Wallet walletReceiver=walletService.getDefaultWallet(userReceiver.getId());
-            RecurringTransaction recurringTransaction = transactionMapper.fromDto(recurringTransactionDto,walletSender,
-                    user,walletReceiver,userReceiver);
-            recurringTransactionService.createRecurringTransaction(recurringTransaction, walletSender, user,
-                    walletReceiver,userReceiver);
+            User userReceiver = userService.getByUsername(recurringTransactionDto.getReceiver());
+            Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
+            RecurringTransaction recurringTransaction = transactionMapper.fromDtoTransaction(recurringTransactionDto, walletSender,
+                    user, walletReceiver, userReceiver);
+            recurringTransactionService.createRecurringTransaction(recurringTransaction,
+                    walletSender, user, walletReceiver, userReceiver);
             return new ResponseEntity<>(recurringTransaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }catch (AuthorizationException e) {
+        } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (InsufficientBalanceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

@@ -13,16 +13,18 @@ public interface TransactionService {
 
     Transaction getTransactionById(int transactionId);
 
-    List<Transaction> getAllTransactionsByStatus(Status status,int walletId);
+    List<Transaction> getAllTransactionsByStatus(Status status);
+    List<Transaction> getAllTransactionsByWalletId(Wallet wallet);
 
     void confirmTransaction(Transaction transaction, Wallet walletSender, User sender);
 
-    void createTransaction(Transaction transaction, Wallet walletSender, User userSender,
+    Transaction createTransaction(Transaction transaction, Wallet walletSender, User userSender,
                            Wallet walletReceiver, User userReceiver);
 
     void updateTransaction(Transaction transaction, User userSender);
 
     void delete(Transaction transaction, User sender);
+    void createRecurringTransaction(Transaction transaction);
 
-    void requestMoney(Transaction transaction, Wallet walletReceiver, User userReceiver);
+    Transaction requestMoney(Transaction transaction, Wallet walletReceiver, User userReceiver);
 }

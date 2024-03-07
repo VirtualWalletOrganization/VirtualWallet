@@ -10,8 +10,10 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
@@ -47,23 +49,25 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery(
                     "SELECT t FROM Transaction t WHERE t.walletSender.id = :walletId" +
-                            " AND  t.walletReceiver.id= :walletId", Transaction.class);
-//            query.setParameter("walletSender", userId);
-//            query.setParameter("usernameReceiverId", userId);
+                            " or  t.walletReceiver.id= :walletId", Transaction.class);
             query.setParameter("walletId", walletId);
+            List<Transaction> transactions = query.getResultList();
 
-            return Optional.ofNullable(query.list());
+            List<Transaction> sortedTransactions = transactions.stream()
+                    .sorted(Comparator.comparing(Transaction::getDate))
+                    .toList();
+
+            return Optional.of(sortedTransactions);
         }
     }
 
     @Override
-    public Optional<List<Transaction>> getAllTransactionsByStatus(Status status, int walletId) {
+    public Optional<List<Transaction>> getAllTransactionsByStatus(Status status) {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery(
-                    "FROM Transaction as t where t.transactionsStatus.transactionStatus = :status " +
-                            "AND t.walletSender= :walletId ", Transaction.class);
+                    "FROM Transaction as t where t.transactionsStatus.transactionStatus = :status ", Transaction.class);
             query.setParameter("transactionsStatus", status);
-            query.setParameter("walletId", walletId);
+           // query.setParameter("walletId", walletId);
 
             return Optional.ofNullable(query.list());
         }

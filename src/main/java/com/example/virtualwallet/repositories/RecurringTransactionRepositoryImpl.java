@@ -67,7 +67,7 @@ public class RecurringTransactionRepositoryImpl implements RecurringTransactionR
 //    }
 
     @Override
-    public Transaction create(RecurringTransaction recurringTransaction) {
+    public RecurringTransaction create(RecurringTransaction recurringTransaction) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.persist(recurringTransaction);

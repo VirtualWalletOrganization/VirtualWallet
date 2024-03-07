@@ -141,6 +141,10 @@ public class WalletServiceImpl implements WalletService {
         checkAccessPermissionWalletUser(wallet, user, MODIFY_WALLET_ERROR_MESSAGE);
         walletRepository.update(wallet);
     }
+    @Override
+    public void updateRecurringTransaction(Wallet wallet) {
+        walletRepository.update(wallet);
+    }
 
     @Override
     public void delete(int walletId, User user) {
