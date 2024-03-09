@@ -37,7 +37,7 @@ public class Messages {
     public static final String ERROR_INSUFFICIENT_BALANCE = "Insufficient balance.";
     public static final String SUCCESS_TRANSFER = "Transfer successful";
     public static final String INVALID_REQUEST = "Invalid request data";
-    public static final String ERROR_TRANSACTION = "You are not authorized to make this transaction.";
+    public static final String ERROR_TRANSACTION = "You are not authorized to complete this transaction.";
     public static final int PAGE_WINDOW_SIZE = 5;
     public static final Duration DAYS_IN_A_MONTH = Duration.ofDays(30);
     public static final String DEFAULT_EMPTY_VALUE = "none";

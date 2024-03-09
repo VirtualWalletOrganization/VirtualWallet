@@ -2,6 +2,7 @@ package com.example.virtualwallet.services;
 
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.exceptions.InsufficientBalanceException;
+import com.example.virtualwallet.helpers.TransactionMapper;
 import com.example.virtualwallet.models.RecurringTransaction;
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
@@ -21,7 +22,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static com.example.virtualwallet.utils.CheckPermissions.checkPermissionExistingUsersInWallet;
 import static com.example.virtualwallet.utils.Messages.ERROR_INSUFFICIENT_BALANCE;
+import static com.example.virtualwallet.utils.Messages.ERROR_TRANSACTION;
 
 @Service
 public class RecurringTransactionServiceImpl implements RecurringTransactionService {
@@ -29,19 +32,27 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
     private final RecurringTransactionRepository recurringTransactionRepository;
     private final TransactionService transactionService;
     private final WalletService walletService;
+    private final TransactionMapper transactionMapper;
 
     @Autowired
     public RecurringTransactionServiceImpl(RecurringTransactionRepository recurringTransactionRepository,
-                                           TransactionService transactionService, WalletService walletService) {
+                                           TransactionService transactionService, WalletService walletService, TransactionMapper transactionMapper) {
         this.recurringTransactionRepository = recurringTransactionRepository;
         this.transactionService = transactionService;
         this.walletService = walletService;
+        this.transactionMapper = transactionMapper;
     }
 
     @Override
     public List<RecurringTransaction> getAllRecurringTransactions() {
         return recurringTransactionRepository.getAllRecurringTransactions()
                 .orElseThrow(() -> new EntityNotFoundException("Recurring Transactions"));
+    }
+
+    @Override
+    public RecurringTransaction getRecurringTransactionById(int recurringTransactionId) {
+        return recurringTransactionRepository.getRecurringTransactionById(recurringTransactionId)
+                .orElseThrow(() -> new EntityNotFoundException("Recurring Transactions", "id", String.valueOf(recurringTransactionId)));
     }
 
 
@@ -53,11 +64,28 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
             throw new IllegalArgumentException("Start date and end date can not be in the past");
         }
 
-        transactionService.requestMoney(recurringTransaction, walletReceiver, userReceiver);
+        transactionService.createTransaction(recurringTransaction, walletSender, userSender, walletReceiver, userReceiver);
     }
 
     @Override
-    @Scheduled(cron = "0 0 0 * * *") // Execute daily at midnight
+    public void updateRecurringTransaction(RecurringTransaction recurringTransaction, User user) {
+        checkPermissionExistingUsersInWallet(recurringTransaction.getWalletSender(), user, ERROR_TRANSACTION);
+        if (recurringTransaction.getStartDate().isBefore(LocalDate.now()) && recurringTransaction.getEndDate().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Start date and end date can not be in the past");
+        }
+
+        recurringTransactionRepository.update(recurringTransaction);
+    }
+
+    @Override
+    public void cancelRecurringTransaction(RecurringTransaction recurringTransaction, User user) {
+        checkPermissionExistingUsersInWallet(recurringTransaction.getWalletSender(), user, ERROR_TRANSACTION);
+        recurringTransaction.setEndDate(LocalDate.now());
+        recurringTransactionRepository.update(recurringTransaction);
+    }
+
+    @Override
+    @Scheduled(cron = "0 * * * * *") // Execute daily at midnight
     public void executeRecurringTransaction() {
         LocalDate currentDate = LocalDate.now();
         List<RecurringTransaction> recurringTransactions = getAllRecurringTransactions();
@@ -73,54 +101,46 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
         LocalDate startDate = transaction.getStartDate();
         LocalDate endDate = transaction.getEndDate();
 
-        // Check if the current date is within the start and end date range
+        // Checking if the current date is within the start and end date range
         if (currentDate.isBefore(startDate) || currentDate.isAfter(endDate)) {
             return false;
         }
-
-        // Check if the interval is 1 day
-        if (transaction.getIntervals().equals(Interval.DAILY)) {
+        // Checking if the interval is 1 day
+        if (transaction.getIntervals() == Interval.DAILY) {
             return true;
         }
-
-        // Calculate the interval in days
-        int interval = 0;
-        switch (transaction.getIntervals()) {
-            case DAILY:
-                interval = 1;
-                break;
-            case WEEKLY:
-                interval = 7;
-                break;
-            case MONTHLY:
-                interval = 30; // This is a rough approximation, consider using java.time.Period
-                break;
-            default:
-                break;
+        // Checking if the interval is 1 week
+        if (transaction.getIntervals() == Interval.WEEKLY) {
+            long daysDifference = ChronoUnit.DAYS.between(startDate, currentDate);
+            return daysDifference % 7 == 0;
+        }
+        // Checking if the interval is 1 month
+        if (transaction.getIntervals() == Interval.MONTHLY) {
+            return startDate.getDayOfMonth() == currentDate.getDayOfMonth();
         }
 
-        long daysDifference = ChronoUnit.DAYS.between(startDate, currentDate);
-        // Check if the current date is within the interval of the transaction
-        return daysDifference % interval == 0;
+        return false;
     }
 
     private void processRecurringTransaction(int transactionId) {
         Transaction transaction = transactionService.getTransactionById(transactionId);
-        if (isValidRequestEnoughMoney(transaction, transaction.getWalletSender())) {
-            transaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal());
-            transaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);
-            transactionService.createRecurringTransaction(transaction);
+        Transaction newTransaction = transactionMapper.fromDtoRecurring(transaction);
 
-            transaction.getWalletSender().setBalance(transaction.getWalletSender().getBalance().subtract(transaction.getAmount()));
-            transaction.getWalletSender().getSentTransactions().add(transaction);
-            transaction.getWalletReceiver().setBalance(transaction.getWalletReceiver().getBalance().add(transaction.getAmount()));
-            transaction.getWalletReceiver().getReceiverTransactions().add(transaction);
-            walletService.updateRecurringTransaction(transaction.getWalletSender());
-            walletService.updateRecurringTransaction(transaction.getWalletReceiver());
+        if (isValidRequestEnoughMoney(newTransaction, newTransaction.getWalletSender())) {
+            newTransaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal());
+            newTransaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);
+            transactionService.createRecurringTransaction(newTransaction);
+
+            newTransaction.getWalletSender().setBalance(newTransaction.getWalletSender().getBalance().subtract(transaction.getAmount()));
+            newTransaction.getWalletSender().getSentTransactions().add(newTransaction);
+            newTransaction.getWalletReceiver().setBalance(newTransaction.getWalletReceiver().getBalance().add(transaction.getAmount()));
+            newTransaction.getWalletReceiver().getReceiverTransactions().add(newTransaction);
+            walletService.updateRecurringTransaction(newTransaction.getWalletSender());
+            walletService.updateRecurringTransaction(newTransaction.getWalletReceiver());
         } else {
-            transaction.getTransactionsStatus().setId(Status.FAILED.ordinal());
-            transaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
-            transactionService.createRecurringTransaction(transaction);
+            newTransaction.getTransactionsStatus().setId(Status.FAILED.ordinal());
+            newTransaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
+            transactionService.createRecurringTransaction(newTransaction);
             throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
 
         }

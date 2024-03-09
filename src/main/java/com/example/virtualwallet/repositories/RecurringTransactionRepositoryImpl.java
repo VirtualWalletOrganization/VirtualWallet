@@ -1,7 +1,6 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.RecurringTransaction;
-import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.repositories.contracts.RecurringTransactionRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
 @Repository
 public class RecurringTransactionRepositoryImpl implements RecurringTransactionRepository {
 
@@ -40,30 +40,6 @@ public class RecurringTransactionRepositoryImpl implements RecurringTransactionR
             return Optional.ofNullable(query.list().get(0));
         }
     }
-
-//    @Override
-//    public Optional<List<Transaction>> getAllTransactionByUserId(int userId) {
-//        try (Session session = sessionFactory.openSession()) {
-//            Query<Transaction> query = session.createQuery(
-//                    "SELECT t FROM Transaction t WHERE t.walletSender.id = :userId" +
-//                            " AND  t.usernameReceiverId.id= :userId", Transaction.class);
-//            query.setParameter("walletSender", userId);
-//            query.setParameter("usernameReceiverId", userId);
-//
-//            return Optional.ofNullable(query.list());
-//        }
-//    }
-
-//    @Override
-//    public Optional<List<Transaction>> getTransactionsByStatus(Status status) {
-//        try (Session session = sessionFactory.openSession()) {
-//            Query<Transaction> query = session.createQuery(
-//                    "FROM Transaction as t where t.transactionsStatus.transactionStatus = :status", Transaction.class);
-//            query.setParameter("transactionsStatus", status);
-//
-//            return Optional.ofNullable(query.list());
-//        }
-//    }
 
     @Override
     public RecurringTransaction create(RecurringTransaction recurringTransaction) {

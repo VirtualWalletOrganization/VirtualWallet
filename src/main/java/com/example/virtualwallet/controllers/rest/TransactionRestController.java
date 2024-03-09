@@ -148,13 +148,11 @@ public class TransactionRestController {
     }
 
     @PutMapping("/{transactionId}")
-    public ResponseEntity<Transaction> updateTransaction(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<Transaction> completeRequestTransaction(@RequestHeader HttpHeaders headers,
                                                          @PathVariable int transactionId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Transaction transaction = transactionService.getTransactionById(transactionId);
-//            Transaction transaction = transactionMapper.fromDto(id,transactionDto,walletSender,user,
-//                    walletReceiver,userReceiver);
             transactionService.updateTransaction(transaction, user);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -212,10 +210,48 @@ public class TransactionRestController {
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
             User userReceiver = userService.getByUsername(recurringTransactionDto.getReceiver());
             Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
-            RecurringTransaction recurringTransaction = transactionMapper.fromDtoTransaction(recurringTransactionDto, walletSender,
+            RecurringTransaction recurringTransaction = transactionMapper.fromDtoTransaction(recurringTransactionDto,
+                    walletSender,
                     user, walletReceiver, userReceiver);
             recurringTransactionService.createRecurringTransaction(recurringTransaction,
                     walletSender, user, walletReceiver, userReceiver);
+            return new ResponseEntity<>(recurringTransaction, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (InsufficientBalanceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+    @PutMapping("/recurring/{recurringId}")
+    public ResponseEntity<RecurringTransaction> updateRecurringTransaction(@RequestHeader HttpHeaders headers,
+                                                                           @PathVariable int recurringId,
+                                                                           @RequestBody RecurringTransactionDto
+                                                                                       recurringTransactionDto) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            RecurringTransaction existingRecurring=recurringTransactionService.getRecurringTransactionById(recurringId);
+            RecurringTransaction recurringTransaction = transactionMapper
+                    .fromDtoTransactionUpdate(recurringTransactionDto, existingRecurring);
+            recurringTransactionService.updateRecurringTransaction(recurringTransaction, user);
+            return new ResponseEntity<>(recurringTransaction, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (InsufficientBalanceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+    @DeleteMapping("/recurring/{recurringId}")
+    public ResponseEntity<RecurringTransaction> cancelRecurringTransaction(@RequestHeader HttpHeaders headers,
+                                                                           @PathVariable int recurringId) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            RecurringTransaction recurringTransaction=recurringTransactionService
+                    .getRecurringTransactionById(recurringId);
+            recurringTransactionService.cancelRecurringTransaction(recurringTransaction, user);
             return new ResponseEntity<>(recurringTransaction, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

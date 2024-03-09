@@ -6,6 +6,8 @@ import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.models.enums.Interval;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.TransactionType;
+import com.example.virtualwallet.services.contracts.RecurringTransactionService;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -61,7 +63,7 @@ public class TransactionMapper {
         recurringTransaction.getTransactionsType().setId(TransactionType.RECURRING.ordinal());
         recurringTransaction.getTransactionsType().setTransactionType(TransactionType.RECURRING);
 
-        recurringTransaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
+        recurringTransaction.setDescription("Recurring Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
 
         recurringTransaction.setIntervals(Interval.valueOf(recurringTransactionDto.getInterval()));
@@ -70,14 +72,29 @@ public class TransactionMapper {
 
         return recurringTransaction;
     }
+    public RecurringTransaction fromDtoTransactionUpdate(RecurringTransactionDto recurringTransactionDto,
+                                                         RecurringTransaction recurringTransaction) {
 
-    public RecurringTransaction fromDtoRecurring(RecurringTransactionDto recurringTransactionDto, Wallet senderWallet,
-                                                 User userSender, Wallet walletReceiver, User userReceiver) {
-
-        RecurringTransaction recurringTransaction = new RecurringTransaction();
         recurringTransaction.setIntervals(Interval.valueOf(recurringTransactionDto.getInterval()));
         recurringTransaction.setStartDate(recurringTransactionDto.getStartDate());
         recurringTransaction.setEndDate(recurringTransactionDto.getEndDate());
         return recurringTransaction;
+    }
+
+    public Transaction fromDtoRecurring(Transaction recurringTransaction) {
+        Transaction transaction = new Transaction();
+        transaction.setWalletSender(recurringTransaction.getWalletSender());
+        transaction.setWalletReceiver(recurringTransaction.getWalletReceiver());
+        transaction.setAmount(recurringTransaction.getAmount());
+        transaction.setCurrency(recurringTransaction.getCurrency());
+        transaction.setDate(LocalDateTime.now());
+        transaction.setTransactionsStatus(recurringTransaction.getTransactionsStatus());
+        recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal());
+        recurringTransaction.getTransactionsStatus().setTransactionStatus(Status.PENDING_RECURRING_REQUEST);
+
+        transaction.setDescription(recurringTransaction.getDescription());
+        transaction.setTransactionsType(recurringTransaction.getTransactionsType());
+
+        return transaction;
     }
 }

@@ -8,7 +8,6 @@ import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import com.example.virtualwallet.services.contracts.TransactionService;
-import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,13 +25,11 @@ import static com.example.virtualwallet.utils.Messages.*;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final UserService userService;
     private final WalletService walletService;
 
     @Autowired
-    public TransactionServiceImpl(TransactionRepository transactionRepository, UserService userService, WalletService walletService) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, WalletService walletService) {
         this.transactionRepository = transactionRepository;
-        this.userService = userService;
         this.walletService = walletService;
     }
 
