@@ -11,8 +11,6 @@ import java.util.List;
 
 public interface TransactionService {
 
-    Page<Transaction> getAll(Pageable pageable);
-
     List<Transaction> getAllTransactions();
 
     Transaction getTransactionById(int transactionId);

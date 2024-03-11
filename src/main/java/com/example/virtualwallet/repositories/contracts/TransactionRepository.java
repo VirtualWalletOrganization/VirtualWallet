@@ -10,8 +10,6 @@ import java.util.Optional;
 
 public interface TransactionRepository {
 
-    Page<Transaction> getAll(Pageable pageable);
-
     Optional<List<Transaction>> getAllTransactions();
 
     Optional<Transaction> getTransactionById(int transactionId);

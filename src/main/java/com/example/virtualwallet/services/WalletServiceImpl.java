@@ -61,14 +61,25 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet getWalletById(int walletId, int userId) {
-        User user = userService.getById(userId);
-        user.getCreatedWallets().stream()
-                .filter(wallet -> wallet.getId() == walletId)
-                .findFirst()
-                .orElseThrow(() -> new AuthorizationException(SEARCH_WALLET_ERROR_MESSAGE));
+//        User user = userService.getById(userId);
+//        user.getCreatedWallets().stream()
+//                .filter(wallet -> wallet.getId() == walletId)
+//                .findFirst()
+//                .orElseThrow(() -> new AuthorizationException(SEARCH_WALLET_ERROR_MESSAGE));
+//
+//        return walletRepository.getWalletById(walletId)
+//                .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
 
-        return walletRepository.getWalletById(walletId)
+        User user = userService.getById(userId);
+
+        Wallet wallet = walletRepository.getWalletById(walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
+
+        if (!user.getCreatedWallets().stream().anyMatch(w -> w.getId() == walletId)) {
+            throw new AuthorizationException(SEARCH_WALLET_ERROR_MESSAGE);
+        }
+
+        return wallet;
     }
 
     @Override
