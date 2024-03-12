@@ -1,12 +1,10 @@
 package com.example.virtualwallet.controllers.mvc;
 
-
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +18,6 @@ public class HomeMvcController {
     private final AuthenticationHelper authenticationHelper;
     private final UserService userService;
 
-    @Autowired
     public HomeMvcController(AuthenticationHelper authenticationHelper, UserService userService) {
         this.authenticationHelper = authenticationHelper;
         this.userService = userService;

@@ -31,14 +31,14 @@ public class AuthenticationMvcController {
     private final AuthenticationHelper authenticationHelper;
     private final UserMapper userMapper;
 
-    public AuthenticationMvcController(UserService userService, AuthenticationHelper authenticationHelper, UserMapper userMapper) {
+    @Autowired
+    public AuthenticationMvcController(UserService userService,
+                                       AuthenticationHelper authenticationHelper,
+                                       UserMapper userMapper) {
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
         this.userMapper = userMapper;
     }
-
-    @Autowired
-
 
     @ModelAttribute("isAuthenticated")
     public boolean populateIsAuthenticated(HttpSession session) {
@@ -63,7 +63,7 @@ public class AuthenticationMvcController {
         try {
             User user = authenticationHelper.verifyAuthentication(login.getUsername(), login.getPassword());
             session.setAttribute("currentUser", login.getUsername());
-            session.setAttribute("isAdmin", user.getUsersRole().getRole() == Role.ADMIN);
+            session.setAttribute("isAdmin", user.getUsersRole().getRole().equals(Role.ADMIN));
 
             if (user.isDeleted()) {
                 session.setAttribute("isDelete", user.isDeleted());

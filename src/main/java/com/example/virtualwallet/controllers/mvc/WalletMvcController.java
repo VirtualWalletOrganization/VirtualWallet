@@ -31,6 +31,7 @@ public class WalletMvcController {
     private final UserService userService;
     private final AuthenticationHelper authenticationHelper;
     private final WalletMapper walletMapper;
+
     @Autowired
     public WalletMvcController(WalletService walletService, UserService userService, AuthenticationHelper authenticationHelper, WalletMapper walletMapper) {
         this.walletService = walletService;
@@ -38,9 +39,6 @@ public class WalletMvcController {
         this.authenticationHelper = authenticationHelper;
         this.walletMapper = walletMapper;
     }
-
-
-
 
     @ModelAttribute("isAuthenticated")
     public boolean populateIsAuthenticated(HttpSession session) {
@@ -340,5 +338,4 @@ public class WalletMvcController {
             return "ErrorView";
         }
     }
-
 }

@@ -1,9 +1,9 @@
 package com.example.virtualwallet.models.dtos;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 
 public class RegisterDto {
+
     @NotEmpty(message = "Username can't be empty")
     private String username;
 
@@ -22,14 +22,13 @@ public class RegisterDto {
     @NotBlank(message = "Email can't be blank.")
     private String email;
 
-//    @NotEmpty(message = "Password confirmation can't be empty")
+    @NotEmpty(message = "Password confirmation can't be empty")
+    private String passwordConfirm;
 
     @NotNull(message = "Password can't be empty.")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@_$!%*?&])[A-Za-z\\d@_$!%*?&]+$",
             message = "Password must contains at least one uppercase letter, one lowercase letter, one digit, and one special character")
     private String password;
-    @NotEmpty(message = "Password confirmation can't be empty")
-    private String passwordConfirm;
 
     @NotEmpty(message = "Phone number can't be empty")
     @NotBlank(message = "Phone number can't be blank.")
@@ -78,6 +77,14 @@ public class RegisterDto {
         this.email = email;
     }
 
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -92,14 +99,6 @@ public class RegisterDto {
 
     public void setPassword(String passwordConfirm) {
         this.password = passwordConfirm;
-    }
-
-    public String getPasswordConfirm() {
-        return passwordConfirm;
-    }
-
-    public void setPasswordConfirm(String passwordConfirm) {
-        this.passwordConfirm = passwordConfirm;
     }
 
     public String getCurrency() {
