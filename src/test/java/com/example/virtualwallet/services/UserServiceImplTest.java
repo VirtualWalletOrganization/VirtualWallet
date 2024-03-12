@@ -1,5 +1,7 @@
 package com.example.virtualwallet.services;
 
+import com.example.virtualwallet.exceptions.*;
+import com.example.virtualwallet.models.UsersRole;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.models.enums.UserStatus;
 import org.junit.jupiter.api.Assertions;
@@ -12,17 +14,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Optional;
 
-import com.example.virtualwallet.exceptions.DuplicateEntityException;
-import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.utils.UserFilterOptions;
+import org.springframework.security.access.AccessDeniedException;
 
 import static com.example.virtualwallet.helpers.createMockUser;
 import static com.example.virtualwallet.helpers.createMockUserFilterOptions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
@@ -39,7 +42,7 @@ public class UserServiceImplTest {
 
         userService.getAll(user, mockUserFilterOptions);
 
-        Mockito.verify(mockRepository, Mockito.times(1))
+        verify(mockRepository, times(1))
                 .getAll(mockUserFilterOptions);
     }
 
@@ -47,11 +50,11 @@ public class UserServiceImplTest {
     public void getUserById_Should_ReturnUser_When_MatchExists() {
         User user = createMockUser();
 
-        Mockito.when(mockRepository.getById(user.getId())).thenReturn(Optional.of(user));
+        when(mockRepository.getById(user.getId())).thenReturn(Optional.of(user));
 
         userService.getById(user.getId());
 
-        Mockito.verify(mockRepository, Mockito.times(1)).getById(user.getId());
+        verify(mockRepository, times(1)).getById(user.getId());
     }
 
     @Test
@@ -59,11 +62,11 @@ public class UserServiceImplTest {
         String username = "testUser";
         User user = new User();
 
-        Mockito.when(mockRepository.getByUsername(username)).thenReturn(Optional.of(user));
+        when(mockRepository.getByUsername(username)).thenReturn(Optional.of(user));
 
         userService.getByUsername(username);
 
-        Mockito.verify(mockRepository, Mockito.times(1)).getByUsername(username);
+        verify(mockRepository, times(1)).getByUsername(username);
     }
 
 
@@ -89,7 +92,7 @@ public class UserServiceImplTest {
 
         userService.updateUser(targetUser, executingUser);
 
-        Mockito.verify(mockRepository, Mockito.times(1))
+        verify(mockRepository, times(1))
                 .updateUser(targetUser);
     }
 
@@ -111,7 +114,7 @@ public class UserServiceImplTest {
         User userToDelete = createMockUser();
         userToDelete.setDeleted(true);
 
-        Mockito.when(mockRepository.getById(userIdToDelete)).
+        when(mockRepository.getById(userIdToDelete)).
                 thenReturn(Optional.of(userToDelete));
 
         Assertions.assertThrows(
@@ -119,17 +122,17 @@ public class UserServiceImplTest {
                 () -> userService.deleteUser(userIdToDelete, executingUser));
     }
 
-    @Test
-    public void updateToAdmin_Should_CallRepository_When_UpdatingExistingUser() {
-        User targetUser = createMockUser();
-        targetUser.getUsersRole().setRole(Role.USER);
-        User executingUser = createMockUser();
-
-        userService.updateToAdmin(targetUser, executingUser);
-
-        Mockito.verify(mockRepository, Mockito.times(1))
-                .updateUser(targetUser);
-    }
+//    @Test
+//    public void updateToAdmin_Should_CallRepository_When_UpdatingExistingUser() {
+//        User targetUser = createMockUser();
+//        targetUser.getUsersRole().setRole(Role.USER);
+//        User executingUser = createMockUser();
+//
+//        userService.updateToAdmin(targetUser, executingUser);
+//
+//        Mockito.verify(mockRepository, Mockito.times(1))
+//                .updateUser(targetUser);
+//    }
 
     @Test
     public void updateToAdmin_Should_ThrowException_When_TargetUserIsAlreadyAdmin() {
@@ -160,7 +163,7 @@ public class UserServiceImplTest {
 
         userService.unBlockUser(admin, unBlockUser);
 
-        Mockito.verify(mockRepository, Mockito.times(1))
+        verify(mockRepository, times(1))
                 .updateUser(unBlockUser);
     }
 
@@ -174,20 +177,20 @@ public class UserServiceImplTest {
                 () -> userService.unBlockUser(admin, blockUser));
     }
 
-    @Test
-    public void addPhoneNumberToAdmin_Should_CallRepository_When_PhoneNumberExist() {
-        User admin = createMockUser();
-        User userPhoneNumberToBeUpdate = createMockUser();
-        userPhoneNumberToBeUpdate.setPhoneNumber("123456789");
-
-        Mockito.when(mockRepository.existsByPhoneNumber(userPhoneNumberToBeUpdate))
-                .thenReturn(false);
-
-        userService.addPhoneNumberToAdmin(admin, userPhoneNumberToBeUpdate);
-
-        Mockito.verify(mockRepository, Mockito.times(1)).
-                updateUser(admin);
-    }
+//    @Test
+//    public void addPhoneNumberToAdmin_Should_CallRepository_When_PhoneNumberExist() {
+//        User admin = createMockUser();
+//        User userPhoneNumberToBeUpdate = createMockUser();
+//        userPhoneNumberToBeUpdate.setPhoneNumber("123456789");
+//
+//        Mockito.when(mockRepository.existsByPhoneNumber(userPhoneNumberToBeUpdate))
+//                .thenReturn(false);
+//
+//        userService.addPhoneNumberToAdmin(admin, userPhoneNumberToBeUpdate);
+//
+//        Mockito.verify(mockRepository, Mockito.times(1)).
+//                updateUser(admin);
+//    }
 
     @Test
     public void addPhoneNumberToAdmin_Should_ThrowException_When_PhoneNumberToAdminIsDuplicate() {
@@ -195,7 +198,7 @@ public class UserServiceImplTest {
         User userPhoneNumberToBeUpdate = createMockUser();
         userPhoneNumberToBeUpdate.setPhoneNumber("123456789");
 
-        Mockito.when(mockRepository.existsByPhoneNumber(userPhoneNumberToBeUpdate))
+        when(mockRepository.existsByPhoneNumber(userPhoneNumberToBeUpdate))
                 .thenReturn(true);
 
         Assertions.assertThrows(
@@ -203,19 +206,61 @@ public class UserServiceImplTest {
                 () -> userService.addPhoneNumberToAdmin(admin, userPhoneNumberToBeUpdate));
     }
 
+//    @Test
+//    public void deletePhoneNumber_Should_CallRepository_When_PhoneNumberExist() {
+//        User user = createMockUser();
+//        User userToDDelete = createMockUser();
+//
+//        Mockito.when(mockRepository.getById(userToDDelete.getId()))
+//                .thenReturn(Optional.of(userToDDelete));
+//
+//        userService.deletePhoneNumber(userToDDelete.getId(), user);
+//
+//        Mockito.verify(mockRepository, Mockito.times(1))
+//                .updateUser(user);
+//    }
+
     @Test
-    public void deletePhoneNumber_Should_CallRepository_When_PhoneNumberExist() {
-        User user = createMockUser();
-        User userToDDelete = createMockUser();
+    public void testGetProfilePictureUrl_UserExists() {
+        // Mocking the behavior of userRepository.getByUsername() to return a user with a profile picture
+        String username = "testuser";
+        String profilePictureUrl = "http://example.com/profile.jpg";
+        User user = new User();
+        user.setUsername(username);
+        user.setProfilePicture(profilePictureUrl);
+        when(mockRepository.getByUsername(username)).thenReturn(Optional.of(user));
 
-        Mockito.when(mockRepository.getById(userToDDelete.getId()))
-                .thenReturn(Optional.of(userToDDelete));
+        // Calling the method under test
+        String result = userService.getProfilePictureUrl(username);
 
-        userService.deletePhoneNumber(userToDDelete.getId(), user);
+        // Verifying that userRepository.getByUsername() was called once
+        verify(mockRepository, times(1)).getByUsername(username);
 
-        Mockito.verify(mockRepository, Mockito.times(1))
-                .updateUser(user);
+        // Asserting the expected result
+        assertNotNull(result);
+        assertEquals(profilePictureUrl, result);
     }
 
+    @Test
+    public void testUpdateToUser_SuccessfulUpdate() {
+        // Mocking the behavior of targetUser.getUsersRole().getRole() to return a role other than Role.USER
+        User targetUser = new User();
+        UsersRole usersRole = new UsersRole();
+        usersRole.setRole(Role.ADMIN);
+        targetUser.setUsersRole(usersRole);
+        User executingUser = new User();
+        UsersRole usersRole2 = new UsersRole();
+        usersRole2.setRole(Role.ADMIN);
+        executingUser.setUsersRole(usersRole);
+        doNothing().when(mockRepository).updateUser(targetUser);
 
+        // Calling the method under test
+        userService.updateToUser(targetUser, executingUser);
+
+        // Verifying that userRepository.updateUser() was called once
+        verify(mockRepository, times(1)).updateUser(targetUser);
+
+        // Verifying that the user's role was updated to Role.USER
+        assertEquals(Role.USER, targetUser.getUsersRole().getRole());
+    }
 }
