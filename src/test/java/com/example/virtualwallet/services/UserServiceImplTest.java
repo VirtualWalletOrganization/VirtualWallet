@@ -1,6 +1,7 @@
 package com.example.virtualwallet.services;
 
 import com.example.virtualwallet.exceptions.*;
+import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.UsersRole;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.WalletDto;
@@ -340,5 +341,4 @@ public class UserServiceImplTest {
         BigDecimal expectedBalance = BigDecimal.valueOf(100).add(REFERRAL_BONUS);
         assertEquals(expectedBalance, defaultWallet.getBalance());
     }
-
 }
