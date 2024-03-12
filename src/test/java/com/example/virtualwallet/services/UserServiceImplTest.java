@@ -2,8 +2,10 @@ package com.example.virtualwallet.services;
 
 import com.example.virtualwallet.exceptions.*;
 import com.example.virtualwallet.models.UsersRole;
+import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.models.enums.UserStatus;
+import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,8 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.Collections;
-import java.util.Optional;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Role;
@@ -30,9 +33,12 @@ import static org.mockito.Mockito.*;
 public class UserServiceImplTest {
     @Mock
     UserRepository mockRepository;
-
+    @Mock
+    WalletRepository walletRepository;
     @InjectMocks
     UserServiceImpl userService;
+
+    public static final BigDecimal REFERRAL_BONUS = BigDecimal.valueOf(20);
 
     @Test
     public void get_Should_CallRepository() {
@@ -67,21 +73,6 @@ public class UserServiceImplTest {
 
         verify(mockRepository, times(1)).getByUsername(username);
     }
-
-
-//    @Test
-//    public void registerUser_Should_ThrowException_When_UserWithSameNameExists() {
-//        User user = createMockUser();
-//        User existingUserWithTheSameName = createMockUser();
-//        existingUserWithTheSameName.setId(2);
-//
-//        Mockito.when(mockRepository.getByUsername(user.getUsername()))
-//                .thenReturn(Optional.of(existingUserWithTheSameName));
-//
-//        Assertions.assertThrows(
-//                DuplicateEntityException.class,
-//                () -> userService.registerUser(user, new WalletDto()));
-//    }
 
 
     @Test
@@ -121,17 +112,6 @@ public class UserServiceImplTest {
                 () -> userService.deleteUser(userIdToDelete, executingUser));
     }
 
-//    @Test
-//    public void updateToAdmin_Should_CallRepository_When_UpdatingExistingUser() {
-//        User targetUser = createMockUser();
-//        targetUser.getUsersRole().setRole(Role.USER);
-//        User executingUser = createMockUser();
-//
-//        userService.updateToAdmin(targetUser, executingUser);
-//
-//        Mockito.verify(mockRepository, Mockito.times(1))
-//                .updateUser(targetUser);
-//    }
 
     @Test
     public void updateToAdmin_Should_ThrowException_When_TargetUserIsAlreadyAdmin() {
@@ -176,21 +156,6 @@ public class UserServiceImplTest {
                 () -> userService.unBlockUser(admin, blockUser));
     }
 
-//    @Test
-//    public void addPhoneNumberToAdmin_Should_CallRepository_When_PhoneNumberExist() {
-//        User admin = createMockUser();
-//        User userPhoneNumberToBeUpdate = createMockUser();
-//        userPhoneNumberToBeUpdate.setPhoneNumber("123456789");
-//
-//        Mockito.when(mockRepository.existsByPhoneNumber(userPhoneNumberToBeUpdate))
-//                .thenReturn(false);
-//
-//        userService.addPhoneNumberToAdmin(admin, userPhoneNumberToBeUpdate);
-//
-//        Mockito.verify(mockRepository, Mockito.times(1)).
-//                updateUser(admin);
-//    }
-
     @Test
     public void addPhoneNumberToAdmin_Should_ThrowException_When_PhoneNumberToAdminIsDuplicate() {
         User admin = createMockUser();
@@ -205,23 +170,10 @@ public class UserServiceImplTest {
                 () -> userService.addPhoneNumberToAdmin(admin, userPhoneNumberToBeUpdate));
     }
 
-//    @Test
-//    public void deletePhoneNumber_Should_CallRepository_When_PhoneNumberExist() {
-//        User user = createMockUser();
-//        User userToDDelete = createMockUser();
-//
-//        Mockito.when(mockRepository.getById(userToDDelete.getId()))
-//                .thenReturn(Optional.of(userToDDelete));
-//
-//        userService.deletePhoneNumber(userToDDelete.getId(), user);
-//
-//        Mockito.verify(mockRepository, Mockito.times(1))
-//                .updateUser(user);
-//    }
 
     @Test
     public void testGetProfilePictureUrl_UserExists() {
-        // Mocking the behavior of userRepository.getByUsername() to return a user with a profile picture
+
         String username = "testuser";
         String profilePictureUrl = "http://example.com/profile.jpg";
         User user = new User();
@@ -229,20 +181,16 @@ public class UserServiceImplTest {
         user.setProfilePicture(profilePictureUrl);
         when(mockRepository.getByUsername(username)).thenReturn(Optional.of(user));
 
-        // Calling the method under test
         String result = userService.getProfilePictureUrl(username);
 
-        // Verifying that userRepository.getByUsername() was called once
         verify(mockRepository, times(1)).getByUsername(username);
-
-        // Asserting the expected result
         assertNotNull(result);
         assertEquals(profilePictureUrl, result);
     }
 
     @Test
     public void testUpdateToUser_SuccessfulUpdate() {
-        // Mocking the behavior of targetUser.getUsersRole().getRole() to return a role other than Role.USER
+
         User targetUser = new User();
         UsersRole usersRole = new UsersRole();
         usersRole.setRole(Role.ADMIN);
@@ -253,61 +201,50 @@ public class UserServiceImplTest {
         executingUser.setUsersRole(usersRole);
         doNothing().when(mockRepository).updateUser(targetUser);
 
-        // Calling the method under test
         userService.updateToUser(targetUser, executingUser);
 
-        // Verifying that userRepository.updateUser() was called once
         verify(mockRepository, times(1)).updateUser(targetUser);
 
-        // Verifying that the user's role was updated to Role.USER
         assertEquals(Role.USER, targetUser.getUsersRole().getRole());
     }
 
     @Test
     public void testSetAdminRoleIfDataBaseEmpty_DatabaseNotEmpty() {
-        // Mocking the behavior of userRepository.isDataBaseEmpty() to return false
+
         when(mockRepository.isDataBaseEmpty()).thenReturn(false);
 
-        // Creating a user
         User user = new User();
         UsersRole usersRole = new UsersRole();
         usersRole.setRole(Role.USER);
         user.setUsersRole(usersRole);
 
-        // Calling the method under test
         userService.setAdminRoleIfDataBaseEmpty(user);
 
-        // Verifying that userRepository.isDataBaseEmpty() was called once
         verify(mockRepository, times(1)).isDataBaseEmpty();
 
-        // Verifying that the user's role was not changed to admin
         assertEquals(Role.USER, user.getUsersRole().getRole());
     }
 
     @Test
     public void testSetAdminRoleIfDataBaseEmpty_DatabaseEmpty() {
-        // Mocking the behavior of userRepository.isDataBaseEmpty() to return true
+
         when(mockRepository.isDataBaseEmpty()).thenReturn(true);
 
-        // Creating a user
         User user = new User();
         UsersRole usersRole = new UsersRole();
         usersRole.setRole(Role.USER);
         user.setUsersRole(usersRole);
 
-        // Calling the method under test
         userService.setAdminRoleIfDataBaseEmpty(user);
 
-        // Verifying that userRepository.isDataBaseEmpty() was called once
         verify(mockRepository, times(1)).isDataBaseEmpty();
 
-        // Verifying that the user's role was changed to admin
         assertEquals(Role.ADMIN, user.getUsersRole().getRole());
     }
 
     @Test
     public void testIsSameUser_IdenticalUsers() {
-        // Creating two identical users
+
         User user1 = new User();
         user1.setUsername("testuser");
         user1.setPhoneNumber("123456789");
@@ -320,16 +257,15 @@ public class UserServiceImplTest {
         user2.setEmail("test@example.com");
         user2.setPassword("password123");
 
-        // Calling the method under test
+
         boolean result = userService.isSameUser(user1, user2);
 
-        // Verifying that the method returns true
         assertTrue(result);
     }
 
     @Test
     public void testIsSameUser_DifferentUsers() {
-        // Creating two different users
+
         User user1 = new User();
         user1.setUsername("testuser1");
         user1.setPhoneNumber("123456789");
@@ -342,16 +278,14 @@ public class UserServiceImplTest {
         user2.setEmail("test2@example.com");
         user2.setPassword("password456");
 
-        // Calling the method under test
         boolean result = userService.isSameUser(user1, user2);
 
-        // Verifying that the method returns false
         assertFalse(result);
     }
 
     @Test
     public void testIsSameUser_PartiallyIdenticalUsers() {
-        // Creating two partially identical users
+
         User user1 = new User();
         user1.setUsername("testuser");
         user1.setPhoneNumber("123456789");
@@ -364,10 +298,47 @@ public class UserServiceImplTest {
         user2.setEmail("test2@example.com");
         user2.setPassword("password123");
 
-        // Calling the method under test
         boolean result = userService.isSameUser(user1, user2);
 
-        // Verifying that the method returns false
         assertFalse(result);
     }
+
+    @Test
+    public void testCheckDuplicateEntity_NonExistingEntities() {
+
+        when(mockRepository.getByUsername(anyString())).thenReturn(Optional.empty());
+        when(mockRepository.getByEmail(anyString())).thenReturn(Optional.empty());
+
+        User user = new User();
+        user.setUsername("newuser");
+        user.setEmail("new@example.com");
+
+        try {
+            userService.checkDuplicateEntity(user);
+        } catch (DuplicateEntityException e) {
+            fail("Unexpected DuplicateEntityException thrown");
+        }
+    }
+
+    @Test
+    public void testAddBonus_UserWithDefaultWallet() {
+
+        User user = new User();
+        Wallet defaultWallet = new Wallet();
+        defaultWallet.setDefault(true);
+        defaultWallet.setBalance(BigDecimal.valueOf(100)); // Initial balance
+        Set<Wallet> wallets = new HashSet<>();
+        wallets.add(defaultWallet);
+        user.setWallets(wallets);
+
+        doNothing().when(walletRepository).update(defaultWallet);
+
+        userService.addBonus(user);
+
+        verify(walletRepository, times(1)).update(defaultWallet);
+
+        BigDecimal expectedBalance = BigDecimal.valueOf(100).add(REFERRAL_BONUS);
+        assertEquals(expectedBalance, defaultWallet.getBalance());
+    }
+
 }

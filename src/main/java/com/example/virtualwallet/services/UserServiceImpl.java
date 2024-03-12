@@ -309,7 +309,7 @@ UsersRole usersRole = new UsersRole();
         userRepository.updateUser(userToDelete);
     }
 
-    private void addBonus(User user) {
+    public void addBonus(User user) {
         Wallet userWallet = user.getWallets().stream()
                 .filter(Wallet::getDefault)
                 .findFirst().get();
