@@ -15,7 +15,7 @@ public interface WalletService {
 
     Wallet getWalletById(int walletId, int userId);
 
-    Wallet getWalletByCardId(int cardId, int userId);
+    List<Wallet> getWalletsByCardId(int cardId, int userId);
 
     Wallet getDefaultWallet(int recipientUserId);
 

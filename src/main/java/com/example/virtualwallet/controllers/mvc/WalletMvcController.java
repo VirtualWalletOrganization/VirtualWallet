@@ -31,7 +31,7 @@ public class WalletMvcController {
     private final UserService userService;
     private final AuthenticationHelper authenticationHelper;
     private final WalletMapper walletMapper;
-
+    @Autowired
     public WalletMvcController(WalletService walletService, UserService userService, AuthenticationHelper authenticationHelper, WalletMapper walletMapper) {
         this.walletService = walletService;
         this.userService = userService;
@@ -39,7 +39,7 @@ public class WalletMvcController {
         this.walletMapper = walletMapper;
     }
 
-    @Autowired
+
 
 
     @ModelAttribute("isAuthenticated")

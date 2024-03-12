@@ -73,14 +73,14 @@ public class WalletRepositoryImpl implements WalletRepository {
     }
 
     @Override
-    public Optional<Wallet> getWalletByCardId(int cardId) {
+    public Optional<List<Wallet>> getWalletsByCardId(int cardId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Wallet> query = session.createQuery(
                     "SELECT w from Wallet w JOIN w.cards c where c.id = :cardId", Wallet.class);
             query.setParameter("cardId", cardId);
             List<Wallet> wallets = query.list();
 
-            return Optional.ofNullable(wallets.get(0));
+            return Optional.ofNullable(wallets);
         }
     }
 

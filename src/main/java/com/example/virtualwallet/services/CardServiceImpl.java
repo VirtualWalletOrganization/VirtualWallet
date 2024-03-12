@@ -86,9 +86,9 @@ public class CardServiceImpl implements CardService {
         throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(cardToUpdate);
         getCardById(cardToUpdate.getId(), user);
         checkAccessPermissionsUser(cardToUpdate.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
-        Wallet wallet = walletService.getWalletByCardId(cardToUpdate.getId(), user.getId());
+        List<Wallet> wallets = walletService.getWalletsByCardId(cardToUpdate.getId(), user.getId());
         validateCard(cardToUpdate, user);
-        updateCardInWallet(cardToUpdate, user, wallet);
+        updateCardInWallets(cardToUpdate, user, wallets);
         cardRepository.updateCard(cardToUpdate);
     }
 
@@ -96,9 +96,9 @@ public class CardServiceImpl implements CardService {
     public void deleteCard(int cardId, User user) {
         Card cardToDelete = getCardById(cardId, user);
         checkAccessPermissionsUser(cardToDelete.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
-        Wallet wallet = walletService.getWalletByCardId(cardToDelete.getId(), user.getId());
-        wallet.getCards().removeIf(c -> c.getId() == cardToDelete.getId());
-        walletService.update(wallet, user);
+        List<Wallet> wallets = walletService.getWalletsByCardId(cardToDelete.getId(), user.getId());
+        wallets.forEach(wallet -> wallet.getCards().removeIf(c -> c.getId() == cardToDelete.getId()));
+        wallets.forEach(wallet -> walletService.update(wallet,user));
         cardRepository.deleteCard(cardToDelete);
     }
 
@@ -160,20 +160,23 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private void updateCardInWallet(Card cardToUpdate, User user, Wallet wallet) {
-        for (Card cardInWallet : wallet.getCards()) {
-            if (cardInWallet.getId() == cardToUpdate.getId()) {
-                cardToUpdate.setCardsType(cardToUpdate.getCardsType());
-                cardToUpdate.setUser(cardToUpdate.getUser());
-                cardToUpdate.setCardNumber(cardToUpdate.getCardNumber());
-                cardToUpdate.setExpirationDate(cardToUpdate.getExpirationDate());
-                cardToUpdate.setCardHolder(cardToUpdate.getCardHolder());
-                cardToUpdate.setCheckNumber(cardToUpdate.getCheckNumber());
-                cardToUpdate.setCurrency(cardToUpdate.getCurrency());
-                cardToUpdate.setCardStatus(cardToUpdate.getCardStatus());
-            }
+    private void updateCardInWallets(Card cardToUpdate, User user,List<Wallet>  wallets) {
+        for(Wallet wallet:wallets){
+            for (Card cardInWallet : wallet.getCards()) {
+                if (cardInWallet.getId() == cardToUpdate.getId()) {
+                    cardToUpdate.setCardsType(cardToUpdate.getCardsType());
+                    cardToUpdate.setUser(cardToUpdate.getUser());
+                    cardToUpdate.setCardNumber(cardToUpdate.getCardNumber());
+                    cardToUpdate.setExpirationDate(cardToUpdate.getExpirationDate());
+                    cardToUpdate.setCardHolder(cardToUpdate.getCardHolder());
+                    cardToUpdate.setCheckNumber(cardToUpdate.getCheckNumber());
+                    cardToUpdate.setCurrency(cardToUpdate.getCurrency());
+                    cardToUpdate.setCardStatus(cardToUpdate.getCardStatus());
+                }
+                walletService.update(wallet, user);}
+
         }
 
-        walletService.update(wallet, user);
+
     }
 }

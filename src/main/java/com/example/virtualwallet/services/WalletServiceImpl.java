@@ -83,9 +83,9 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Wallet getWalletByCardId(int cardId, int userId) {
+    public List<Wallet> getWalletsByCardId(int cardId, int userId) {
         userService.getById(userId);
-        return walletRepository.getWalletByCardId(cardId)
+        return walletRepository.getWalletsByCardId(cardId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", " card id", String.valueOf(cardId)));
     }
 

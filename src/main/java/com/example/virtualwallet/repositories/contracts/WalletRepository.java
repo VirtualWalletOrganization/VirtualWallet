@@ -14,7 +14,7 @@ public interface WalletRepository {
 
     Optional<Wallet> getWalletById(int walletId);
 
-    Optional<Wallet> getWalletByCardId(int cardId);
+    Optional<List<Wallet>> getWalletsByCardId(int cardId);
 
     Optional<Wallet> getDefaultWallet(int recipientUserId);
 
