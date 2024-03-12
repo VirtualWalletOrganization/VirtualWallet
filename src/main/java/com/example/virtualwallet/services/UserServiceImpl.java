@@ -317,7 +317,7 @@ UsersRole usersRole = new UsersRole();
         walletRepository.update(userWallet);
     }
 
-    private void checkDuplicateEntity(User user) {
+    public void checkDuplicateEntity(User user) {
         if (userRepository.getByUsername(user.getUsername()).isPresent()) {
             throw new DuplicateEntityException("User", "username", user.getUsername());
         }
@@ -327,7 +327,7 @@ UsersRole usersRole = new UsersRole();
         }
     }
 
-    private static boolean isSameUser(User existingUser, User user) {
+    public static boolean isSameUser(User existingUser, User user) {
         return existingUser.getUsername().equals(user.getUsername())
                 && existingUser.getPhoneNumber().equals(user.getPhoneNumber())
                 && existingUser.getEmail().equals(user.getEmail())

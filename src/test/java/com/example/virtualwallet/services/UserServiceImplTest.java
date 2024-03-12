@@ -23,8 +23,7 @@ import org.springframework.security.access.AccessDeniedException;
 
 import static com.example.virtualwallet.helpers.createMockUser;
 import static com.example.virtualwallet.helpers.createMockUserFilterOptions;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -304,5 +303,71 @@ public class UserServiceImplTest {
 
         // Verifying that the user's role was changed to admin
         assertEquals(Role.ADMIN, user.getUsersRole().getRole());
+    }
+
+    @Test
+    public void testIsSameUser_IdenticalUsers() {
+        // Creating two identical users
+        User user1 = new User();
+        user1.setUsername("testuser");
+        user1.setPhoneNumber("123456789");
+        user1.setEmail("test@example.com");
+        user1.setPassword("password123");
+
+        User user2 = new User();
+        user2.setUsername("testuser");
+        user2.setPhoneNumber("123456789");
+        user2.setEmail("test@example.com");
+        user2.setPassword("password123");
+
+        // Calling the method under test
+        boolean result = userService.isSameUser(user1, user2);
+
+        // Verifying that the method returns true
+        assertTrue(result);
+    }
+
+    @Test
+    public void testIsSameUser_DifferentUsers() {
+        // Creating two different users
+        User user1 = new User();
+        user1.setUsername("testuser1");
+        user1.setPhoneNumber("123456789");
+        user1.setEmail("test1@example.com");
+        user1.setPassword("password123");
+
+        User user2 = new User();
+        user2.setUsername("testuser2");
+        user2.setPhoneNumber("987654321");
+        user2.setEmail("test2@example.com");
+        user2.setPassword("password456");
+
+        // Calling the method under test
+        boolean result = userService.isSameUser(user1, user2);
+
+        // Verifying that the method returns false
+        assertFalse(result);
+    }
+
+    @Test
+    public void testIsSameUser_PartiallyIdenticalUsers() {
+        // Creating two partially identical users
+        User user1 = new User();
+        user1.setUsername("testuser");
+        user1.setPhoneNumber("123456789");
+        user1.setEmail("test1@example.com");
+        user1.setPassword("password123");
+
+        User user2 = new User();
+        user2.setUsername("testuser");
+        user2.setPhoneNumber("987654321");
+        user2.setEmail("test2@example.com");
+        user2.setPassword("password123");
+
+        // Calling the method under test
+        boolean result = userService.isSameUser(user1, user2);
+
+        // Verifying that the method returns false
+        assertFalse(result);
     }
 }
