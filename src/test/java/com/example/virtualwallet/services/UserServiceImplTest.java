@@ -263,4 +263,46 @@ public class UserServiceImplTest {
         // Verifying that the user's role was updated to Role.USER
         assertEquals(Role.USER, targetUser.getUsersRole().getRole());
     }
+
+    @Test
+    public void testSetAdminRoleIfDataBaseEmpty_DatabaseNotEmpty() {
+        // Mocking the behavior of userRepository.isDataBaseEmpty() to return false
+        when(mockRepository.isDataBaseEmpty()).thenReturn(false);
+
+        // Creating a user
+        User user = new User();
+        UsersRole usersRole = new UsersRole();
+        usersRole.setRole(Role.USER);
+        user.setUsersRole(usersRole);
+
+        // Calling the method under test
+        userService.setAdminRoleIfDataBaseEmpty(user);
+
+        // Verifying that userRepository.isDataBaseEmpty() was called once
+        verify(mockRepository, times(1)).isDataBaseEmpty();
+
+        // Verifying that the user's role was not changed to admin
+        assertEquals(Role.USER, user.getUsersRole().getRole());
+    }
+
+    @Test
+    public void testSetAdminRoleIfDataBaseEmpty_DatabaseEmpty() {
+        // Mocking the behavior of userRepository.isDataBaseEmpty() to return true
+        when(mockRepository.isDataBaseEmpty()).thenReturn(true);
+
+        // Creating a user
+        User user = new User();
+        UsersRole usersRole = new UsersRole();
+        usersRole.setRole(Role.USER);
+        user.setUsersRole(usersRole);
+
+        // Calling the method under test
+        userService.setAdminRoleIfDataBaseEmpty(user);
+
+        // Verifying that userRepository.isDataBaseEmpty() was called once
+        verify(mockRepository, times(1)).isDataBaseEmpty();
+
+        // Verifying that the user's role was changed to admin
+        assertEquals(Role.ADMIN, user.getUsersRole().getRole());
+    }
 }

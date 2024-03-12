@@ -334,7 +334,7 @@ UsersRole usersRole = new UsersRole();
                 && existingUser.getPassword().equals(user.getPassword());
     }
 
-    private void setAdminRoleIfDataBaseEmpty(User user) {
+    public void setAdminRoleIfDataBaseEmpty(User user) {
         if (userRepository.isDataBaseEmpty()) {
             user.getUsersRole().setRole(Role.ADMIN);
         }
