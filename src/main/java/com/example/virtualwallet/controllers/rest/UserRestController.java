@@ -167,7 +167,8 @@ public class UserRestController {
                                       @PathVariable int id, @Valid @RequestBody UpdateUserDto userDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            User userToBeUpdated = userMapper.fromDtoUpdate(id, userDto);
+            User userToBeUpdated = userService.getById(id);
+            userToBeUpdated = userMapper.fromDtoUpdate(id, userDto);
             userService.updateUser(user, userToBeUpdated);
             return userMapper.toDtoRegisterAndUpdateUser(userToBeUpdated);
         } catch (EntityNotFoundException e) {
