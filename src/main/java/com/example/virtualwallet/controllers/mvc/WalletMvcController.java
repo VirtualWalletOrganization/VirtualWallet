@@ -93,7 +93,7 @@ public class WalletMvcController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/new")
     public String showNewWalletPage(Model model, HttpSession session) {
         User user;
         try {
@@ -107,7 +107,7 @@ public class WalletMvcController {
         return "WalletCreateView";
     }
 
-    @PostMapping
+    @PostMapping("/new")
     public String createWallet(@Valid @ModelAttribute("wallet") WalletDto walletDto,
                                BindingResult bindingResult,
                                Model model,
@@ -143,7 +143,7 @@ public class WalletMvcController {
         }
     }
 
-    @GetMapping("/{walletId}")
+    @GetMapping("/{walletId}/update")
     public String showEditWalletPage(@PathVariable int walletId,
                                      Model model, HttpSession session) {
         User user;
@@ -169,7 +169,7 @@ public class WalletMvcController {
         }
     }
 
-    @PostMapping("/{walletId}")
+    @PostMapping("/{walletId}/update")
     public String updateWallet(@PathVariable int walletId,
                                @Valid @ModelAttribute("wallet") WalletDto walletDto,
                                BindingResult bindingResult,

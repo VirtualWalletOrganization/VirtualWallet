@@ -3,9 +3,7 @@ package com.example.virtualwallet.services.contracts;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface WalletService {
 

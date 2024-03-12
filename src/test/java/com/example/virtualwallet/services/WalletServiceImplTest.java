@@ -5,9 +5,7 @@ import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.UsersRole;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.WalletsType;
 import com.example.virtualwallet.models.enums.Role;
-import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +15,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class WalletServiceImplTest {
@@ -103,9 +102,7 @@ class WalletServiceImplTest {
 
         when(userService.getById(userId)).thenThrow(EntityNotFoundException.class);
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            walletService.getWalletById(walletId, userId);
-        });
+        assertThrows(EntityNotFoundException.class, () -> walletService.getWalletById(walletId, userId));
 
         verify(walletRepository, never()).getWalletById(anyInt());
     }
@@ -121,9 +118,7 @@ class WalletServiceImplTest {
         when(userService.getById(userId)).thenReturn(user);
         when(walletRepository.getWalletById(walletId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            walletService.getWalletById(walletId, userId);
-        });
+        assertThrows(EntityNotFoundException.class, () -> walletService.getWalletById(walletId, userId));
     }
 
     @Test
@@ -138,9 +133,7 @@ class WalletServiceImplTest {
         when(userService.getById(userId)).thenReturn(user);
         when(walletRepository.getWalletById(walletId)).thenReturn(Optional.of(new Wallet()));
 
-        assertThrows(AuthorizationException.class, () -> {
-            walletService.getWalletById(walletId, userId);
-        });
+        assertThrows(AuthorizationException.class, () -> walletService.getWalletById(walletId, userId));
     }
 
     @Test
@@ -151,12 +144,12 @@ class WalletServiceImplTest {
         user.setId(userId);
         Wallet expectedWallet = new Wallet();
         when(userService.getById(userId)).thenReturn(user);
-        when(walletRepository.getWalletByCardId(cardId)).thenReturn(Optional.of(expectedWallet));
+        when(walletRepository.getWalletsByCardId(cardId)).thenReturn(Optional.of(Collections.singletonList(expectedWallet)));
 
-        Wallet actualWallet = walletService.getWalletByCardId(cardId, userId);
+        List<Wallet> actualWallet = walletService.getWalletsByCardId(cardId, userId);
 
         assertEquals(expectedWallet, actualWallet);
-        verify(walletRepository, times(1)).getWalletByCardId(cardId);
+        verify(walletRepository, times(1)).getWalletsByCardId(cardId);
     }
 
     @Test
@@ -166,10 +159,10 @@ class WalletServiceImplTest {
         User user = new User();
         user.setId(userId);
         when(userService.getById(userId)).thenReturn(user);
-        when(walletRepository.getWalletByCardId(cardId)).thenReturn(Optional.empty());
+        when(walletRepository.getWalletsByCardId(cardId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> walletService.getWalletByCardId(cardId, userId));
-        verify(walletRepository, times(1)).getWalletByCardId(cardId);
+        assertThrows(EntityNotFoundException.class, () -> walletService.getWalletsByCardId(cardId, userId));
+        verify(walletRepository, times(1)).getWalletsByCardId(cardId);
     }
 
     @Test
