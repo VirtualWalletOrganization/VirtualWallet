@@ -341,4 +341,30 @@ public class UserServiceImplTest {
         BigDecimal expectedBalance = BigDecimal.valueOf(100).add(REFERRAL_BONUS);
         assertEquals(expectedBalance, defaultWallet.getBalance());
     }
+    @Test
+    public void testGetAllNumber_Successful() {
+
+        long expectedNumber = 10;
+        when(mockRepository.getAllNumber()).thenReturn(expectedNumber);
+
+        long result = userService.getAllNumber();
+
+        verify(mockRepository, times(1)).getAllNumber();
+
+        assertEquals(expectedNumber, result);
+    }
+
+    @Test
+    public void testGetByEmail_Successful() {
+
+        String email = "test@example.com";
+        User user = new User();
+        when(mockRepository.getByEmail(email)).thenReturn(Optional.of(user));
+        User result = userService.getByEmail(email);
+
+        verify(mockRepository, times(1)).getByEmail(email);
+
+        assertSame(user, result);
+    }
+
 }
