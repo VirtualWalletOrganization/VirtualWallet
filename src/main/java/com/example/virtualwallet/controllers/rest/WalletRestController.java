@@ -1,6 +1,7 @@
 package com.example.virtualwallet.controllers.rest;
 
 import com.example.virtualwallet.exceptions.AuthorizationException;
+import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.WalletMapper;
@@ -96,6 +97,7 @@ public class WalletRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet updateWallet = walletMapper.fromDto(id, walletDto, user.getId());
+            walletService.update(updateWallet, user);
             return new ResponseEntity<>(updateWallet, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -129,6 +131,8 @@ public class WalletRestController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }catch (DuplicateEntityException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
 

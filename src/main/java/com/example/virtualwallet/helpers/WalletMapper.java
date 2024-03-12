@@ -47,4 +47,13 @@ public class WalletMapper {
         wallet.setCreator(user);
         return wallet;
     }
+
+    public WalletDto toDto(Wallet wallet) {
+        WalletDto walletDto = new WalletDto();
+        walletDto.setCurrency(wallet.getCurrency());
+        walletDto.setWalletType(WalletType.valueOf(wallet.getWalletsType().getWalletType().name()));
+        walletDto.setDefault(wallet.getDefault());
+
+        return walletDto;
+    }
 }

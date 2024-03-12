@@ -1,11 +1,10 @@
 package com.example.virtualwallet;
 import com.example.virtualwallet.models.*;
-import com.example.virtualwallet.models.enums.CardStatus;
-import com.example.virtualwallet.models.enums.Role;
-import com.example.virtualwallet.models.enums.UserStatus;
+import com.example.virtualwallet.models.enums.*;
 import com.example.virtualwallet.utils.UserFilterOptions;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -65,6 +64,29 @@ public class helpers {
         mockWallet.setOverdraftEnabled(true);
         mockWallet.setSavingEnabled(true);
         return mockWallet;
+    }
+
+    public static RecurringTransaction createMockRecurringTransaction() {
+        RecurringTransaction mockTransaction = new RecurringTransaction();
+        mockTransaction.setTransactionId(1);
+        mockTransaction.setWalletSender(createMockWallet());
+        Wallet wallet=createMockWallet();
+        wallet.setId(2);
+        mockTransaction.setWalletReceiver(wallet);
+        mockTransaction.setAmount(BigDecimal.TEN);
+        mockTransaction.setCurrency("USD");
+        mockTransaction.setDate(LocalDateTime.now());
+        mockTransaction.setTransactionsStatus(new TransactionsStatus());
+        mockTransaction.getTransactionsStatus().setId(1);
+        mockTransaction.getTransactionsStatus().setTransactionStatus(Status.PENDING_RECURRING_REQUEST);
+        mockTransaction.setDescription("Mock Recurring Transaction");
+        mockTransaction.setTransactionsType(new TransactionsType());
+        mockTransaction.getTransactionsType().setId(2);
+        mockTransaction.getTransactionsType().setTransactionType(TransactionType.RECURRING);
+        mockTransaction.setIntervals(Interval.DAILY);
+        mockTransaction.setStartDate(LocalDate.now());
+        mockTransaction.setEndDate(LocalDate.now().plusMonths(6));
+        return mockTransaction;
     }
     }
 

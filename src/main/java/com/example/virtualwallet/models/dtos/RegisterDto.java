@@ -28,6 +28,8 @@ public class RegisterDto {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@_$!%*?&])[A-Za-z\\d@_$!%*?&]+$",
             message = "Password must contains at least one uppercase letter, one lowercase letter, one digit, and one special character")
     private String password;
+    @NotEmpty(message = "Password confirmation can't be empty")
+    private String passwordConfirm;
 
     @NotEmpty(message = "Phone number can't be empty")
     @NotBlank(message = "Phone number can't be blank.")
@@ -90,6 +92,14 @@ public class RegisterDto {
 
     public void setPassword(String passwordConfirm) {
         this.password = passwordConfirm;
+    }
+
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
     }
 
     public String getCurrency() {
