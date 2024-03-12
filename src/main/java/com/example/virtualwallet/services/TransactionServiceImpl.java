@@ -34,11 +34,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Page<Transaction> getAll(Pageable pageable) {
-        return transactionRepository.getAll(pageable);
-    }
-
-    @Override
     public List<Transaction> getAllTransactions() {
         return transactionRepository.getAllTransactions()
                 .orElseThrow(() -> new EntityNotFoundException("Transactions"));

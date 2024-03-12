@@ -53,12 +53,12 @@ public class UserMapper {
         User user = userService.getById(id);
         user.setId(id);
         user.setUsername(userService.getById(id).getUsername());
-        user.setUsername(dto.getUsername());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
         user.setPhoneNumber(dto.getPhoneNumber());
+        user.setProfilePicture(dto.getProfilePicture());
         return user;
     }
 

@@ -196,7 +196,7 @@ public class UserServiceImpl implements UserService {
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            return user.getPhoto().getSelfie();
+            return user.getProfilePicture();
         } else {
             throw new EntityNotFoundException("User", "username", username);
         }

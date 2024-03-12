@@ -16,7 +16,6 @@ import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,31 +50,17 @@ public class TransactionRestController {
     }
 
     @GetMapping
-    public List<Transaction> getTransactions(@RequestHeader HttpHeaders headers,
-                                             @RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "5") int size) {
+    public ResponseEntity<List<Transaction>> getAllTransactions(@RequestHeader HttpHeaders headers) {
         try {
             authenticationHelper.tryGetUser(headers);
-            return transactionService.getAll(PageRequest.of(page, size)).getContent();
+            List<Transaction> transactions = transactionService.getAllTransactions();
+            return new ResponseEntity<>(transactions, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
-
-//    @GetMapping
-//    public ResponseEntity<List<Transaction>> getAllTransactions(@RequestHeader HttpHeaders headers) {
-//        try {
-//            authenticationHelper.tryGetUser(headers);
-//            List<Transaction> transactions = transactionService.getAllTransactions();
-//            return new ResponseEntity<>(transactions, HttpStatus.OK);
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        }
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
@@ -149,7 +134,7 @@ public class TransactionRestController {
 
     @PutMapping("/{transactionId}")
     public ResponseEntity<Transaction> completeRequestTransaction(@RequestHeader HttpHeaders headers,
-                                                         @PathVariable int transactionId) {
+                                                                  @PathVariable int transactionId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Transaction transaction = transactionService.getTransactionById(transactionId);
@@ -224,14 +209,15 @@ public class TransactionRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
+
     @PutMapping("/recurring/{recurringId}")
     public ResponseEntity<RecurringTransaction> updateRecurringTransaction(@RequestHeader HttpHeaders headers,
                                                                            @PathVariable int recurringId,
                                                                            @RequestBody RecurringTransactionDto
-                                                                                       recurringTransactionDto) {
+                                                                                   recurringTransactionDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            RecurringTransaction existingRecurring=recurringTransactionService.getRecurringTransactionById(recurringId);
+            RecurringTransaction existingRecurring = recurringTransactionService.getRecurringTransactionById(recurringId);
             RecurringTransaction recurringTransaction = transactionMapper
                     .fromDtoTransactionUpdate(recurringTransactionDto, existingRecurring);
             recurringTransactionService.updateRecurringTransaction(recurringTransaction, user);
@@ -244,12 +230,13 @@ public class TransactionRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
+
     @DeleteMapping("/recurring/{recurringId}")
     public ResponseEntity<RecurringTransaction> cancelRecurringTransaction(@RequestHeader HttpHeaders headers,
                                                                            @PathVariable int recurringId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            RecurringTransaction recurringTransaction=recurringTransactionService
+            RecurringTransaction recurringTransaction = recurringTransactionService
                     .getRecurringTransactionById(recurringId);
             recurringTransactionService.cancelRecurringTransaction(recurringTransaction, user);
             return new ResponseEntity<>(recurringTransaction, HttpStatus.OK);

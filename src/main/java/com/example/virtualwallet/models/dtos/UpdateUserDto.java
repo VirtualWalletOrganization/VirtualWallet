@@ -3,8 +3,6 @@ package com.example.virtualwallet.models.dtos;
 import jakarta.validation.constraints.*;
 
 public class UpdateUserDto {
-    @NotEmpty(message = "Username can't be empty")
-    private String username;
 
     @NotNull(message = "First name can't be empty.")
     @NotBlank(message = "First name can't be blank.")
@@ -31,6 +29,9 @@ public class UpdateUserDto {
     @NotEmpty(message = "Phone number can't be empty")
     @NotBlank(message = "Phone number can't be blank.")
     private String phoneNumber;
+
+    @NotEmpty(message = "Profile picture can't be empty")
+    private String profilePicture;
 
     public UpdateUserDto() {
     }
@@ -75,12 +76,11 @@ public class UpdateUserDto {
         this.password = passwordConfirm;
     }
 
-    public String getUsername() {
-        return username;
+    public String getProfilePicture() {
+        return profilePicture;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
-
 }

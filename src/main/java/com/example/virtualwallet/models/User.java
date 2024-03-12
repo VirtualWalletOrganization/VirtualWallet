@@ -75,7 +75,7 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)
-    private Set<Wallet> createdWallets;
+    private Set<Wallet> createdWallets = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
