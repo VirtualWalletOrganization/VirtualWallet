@@ -195,21 +195,21 @@ public class UserRestController {
         }
     }
 
-    @PutMapping("/{id}/profile-picture")
-    public ResponseEntity<Void> saveProfilePictureUrl(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestParam String profilePictureUrl) {
-        try {
-            authenticationHelper.tryGetUser(headers);
-            User currentUser = userService.getById(id);
-            userService.saveProfilePictureUrl(currentUser.getUsername(), profilePictureUrl);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (DuplicateEntityException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        } catch (AuthorizationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-    }
+//    @PutMapping("/{id}/profile-picture")
+//    public ResponseEntity<Void> saveProfilePictureUrl(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestParam String profilePictureUrl) {
+//        try {
+//            authenticationHelper.tryGetUser(headers);
+//            User currentUser = userService.getById(id);
+//            userService.saveProfilePictureUrl(currentUser.getUsername(), profilePictureUrl);
+//            return new ResponseEntity<>(HttpStatus.OK);
+//        } catch (EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+//        } catch (DuplicateEntityException e) {
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+//        } catch (AuthorizationException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//        }
+//    }
 
     @GetMapping("/{id}/profile-picture")
     public ResponseEntity<String> getProfilePictureUrl(@RequestHeader HttpHeaders headers, @PathVariable int id) {
