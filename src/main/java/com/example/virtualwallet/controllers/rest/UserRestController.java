@@ -136,6 +136,8 @@ public class UserRestController {
             userService.registerUser(user);
             walletService.createWhenRegistering(wallet, user);
             userService.createPhoto(photo, user);
+            user.setPhoto(photo);
+            userService.updateUser(user, user);
             userMapper.toDtoRegisterAndUpdateUser(user);
             return userMapper.toDtoRegisterAndUpdateUser(user);
 //            return new UserResponseDto(user, HttpStatus.CREATED);
@@ -147,11 +149,11 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}/confirm-registration")
-    public ResponseEntity<User> confirmUserRegistration(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody User user) {
+    public ResponseEntity<User> confirmUserRegistration(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
-            authenticationHelper.tryGetUser(headers);
-            User currentUser = userService.getById(id);
-            User updatedUser = userService.confirmUserRegistration(currentUser, user);
+            User admin = authenticationHelper.tryGetUser(headers);
+            User toBeVerified = userService.getById(id);
+            User updatedUser = userService.confirmUserRegistration(admin, toBeVerified);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

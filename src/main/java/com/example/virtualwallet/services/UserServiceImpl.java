@@ -115,10 +115,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User confirmUserRegistration(User currentUser, User user) {
         checkAccessPermissionsAdmin(currentUser, VERIFY_USER);
-        Optional<User> userToBeVerifiedOptional = userRepository.getByEmail(user.getEmail());
+        Optional<User> userToBeVerifiedOptional = userRepository.getById(user.getId());
 
         if (userToBeVerifiedOptional.isEmpty()) {
-            throw new EntityNotFoundException("User", "email", user.getEmail());
+            throw new EntityNotFoundException("User", "id", user.getEmail());
         }
 
         User userToBeVerified = userToBeVerifiedOptional.get();

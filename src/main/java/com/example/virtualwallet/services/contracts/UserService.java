@@ -30,7 +30,7 @@ public interface UserService {
 
     void deleteUser(int deleteUserId, User executingUser);
 
-    User confirmUserRegistration(User currentUser, User user);
+    User confirmUserRegistration(User admin, User toBeVerified);
 
     void saveProfilePictureUrl(String username, String profilePictureUrl);
 
