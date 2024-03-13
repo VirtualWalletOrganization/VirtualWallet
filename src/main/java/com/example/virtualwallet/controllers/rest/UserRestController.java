@@ -9,10 +9,7 @@ import com.example.virtualwallet.helpers.UserMapper;
 import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.dtos.PhoneNumberDto;
-import com.example.virtualwallet.models.dtos.RegisterDto;
-import com.example.virtualwallet.models.dtos.UpdateUserDto;
-import com.example.virtualwallet.models.dtos.UserResponseDto;
+import com.example.virtualwallet.models.dtos.*;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.services.contracts.UserService;
@@ -88,10 +85,13 @@ public class UserRestController {
         }
     }
 
-    @GetMapping(value = "/search", params = {"username"})
-    public UserResponseDto getByUsername(@RequestHeader HttpHeaders headers, @RequestParam String username) {
+    @GetMapping(value = "/administrative-search", params = {"username"})
+    public UserResponseDto getByUsernameA(@RequestHeader HttpHeaders headers, @RequestParam String username) {
         try {
-            authenticationHelper.tryGetUser(headers);
+            User ifAdmin = authenticationHelper.tryGetUser(headers);
+            if (ifAdmin.getUsersRole().getRole() != Role.ADMIN) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
+            }
             User targetUser = userService.getByUsername(username);
             return userMapper.toDto(targetUser);
         } catch (EntityNotFoundException e) {
@@ -101,10 +101,13 @@ public class UserRestController {
         }
     }
 
-    @GetMapping(value = "/search", params = {"email"})
-    public UserResponseDto getByEmail(@RequestHeader HttpHeaders headers, @RequestParam String email) {
+    @GetMapping(value = "/administrative-search", params = {"email"})
+    public UserResponseDto getByEmailA(@RequestHeader HttpHeaders headers, @RequestParam String email) {
         try {
-            authenticationHelper.tryGetUser(headers);
+            User ifAdmin = authenticationHelper.tryGetUser(headers);
+            if (ifAdmin.getUsersRole().getRole() != Role.ADMIN) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
+            }
             User targetUser = userService.getByEmail(email);
             return userMapper.toDto(targetUser);
         } catch (EntityNotFoundException e) {
@@ -114,10 +117,13 @@ public class UserRestController {
         }
     }
 
-    @GetMapping(value = "/search", params = {"phoneNumber"})
-    public UserResponseDto getByPhoneNumber(@RequestHeader HttpHeaders headers, @RequestParam String phoneNumber) {
+    @GetMapping(value = "/administrative-search", params = {"phoneNumber"})
+    public UserResponseDto getByPhoneNumberA(@RequestHeader HttpHeaders headers, @RequestParam String phoneNumber) {
         try {
-            authenticationHelper.tryGetUser(headers);
+            User ifAdmin = authenticationHelper.tryGetUser(headers);
+            if (ifAdmin.getUsersRole().getRole() != Role.ADMIN) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
+            }
             User targetUser = userService.getByPhoneNumber(phoneNumber);
             return userMapper.toDto(targetUser);
         } catch (EntityNotFoundException e) {
@@ -324,4 +330,45 @@ public class UserRestController {
 //            throw new ResponseStatusException(HttpStatus.GONE, e.getMessage());
 //        }
 //    }
+
+    @GetMapping(value = "/search", params = {"username"})
+    public ReturnDto getByUsername(@RequestHeader HttpHeaders headers, @RequestParam String username) {
+        try {
+            authenticationHelper.tryGetUser(headers);
+            User targetUser = userService.getByUsername(username);
+            return userMapper.fromDtoShow(targetUser);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
+        }
+    }
+
+    @GetMapping(value = "/search", params = {"email"})
+    public ReturnDto getByEmail(@RequestHeader HttpHeaders headers, @RequestParam String email) {
+        try {
+            authenticationHelper.tryGetUser(headers);
+            User targetUser = userService.getByEmail(email);
+            return userMapper.fromDtoShow(targetUser);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
+        }
+    }
+
+    @GetMapping(value = "/search", params = {"phoneNumber"})
+    public ReturnDto getByPhoneNumber(@RequestHeader HttpHeaders headers, @RequestParam String phoneNumber) {
+        try {
+            authenticationHelper.tryGetUser(headers);
+            User targetUser = userService.getByPhoneNumber(phoneNumber);
+            return userMapper.fromDtoShow(targetUser);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
+        }
+    }
+
+
 }

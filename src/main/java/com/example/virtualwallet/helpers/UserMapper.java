@@ -22,6 +22,13 @@ public class UserMapper {
         this.userService = userService;
     }
 
+    public ReturnDto fromDtoShow(User user){
+        ReturnDto dto = new ReturnDto();
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setUsername(user.getUsername());
+        return dto;
+    }
     public User fromDtoRegister(RegisterDto dto) {
         User user = new User();
         user.setUsername(dto.getUsername());
@@ -74,6 +81,8 @@ public class UserMapper {
         return userResponseDto;
     }
 
+
+
     public UserDto userToDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setFirstName(user.getFirstName());
@@ -104,4 +113,5 @@ public class UserMapper {
         user.getUsersRole().setRole(Role.USER);
         return user;
     }
+
 }
