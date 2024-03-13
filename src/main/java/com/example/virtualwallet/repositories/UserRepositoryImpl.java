@@ -221,7 +221,20 @@ public class UserRepositoryImpl implements UserRepository {
             session.getTransaction().commit();
         }
     }
+    @Override
+   public void confirmRegistration(User user){
 
+       IdentityStatus identityStatus = new IdentityStatus();
+       try (Session session = sessionFactory.openSession()) {
+           identityStatus = session.get(IdentityStatus.class, 1);
+       }
+       user.setIdentityStatus(identityStatus);
+       try (Session session = sessionFactory.openSession()) {
+           session.beginTransaction();
+           session.merge(user);
+           session.getTransaction().commit();
+       }
+   }
 
     public boolean existsByPhoneNumber(User userPhoneNumberToBeUpdate) {
         try (Session session = sessionFactory.openSession()) {

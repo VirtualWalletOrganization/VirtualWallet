@@ -113,12 +113,12 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public User confirmUserRegistration(User currentUser, User user) {
+    public void confirmUserRegistration(User currentUser, User user) {
         checkAccessPermissionsAdmin(currentUser, VERIFY_USER);
         Optional<User> userToBeVerifiedOptional = userRepository.getById(user.getId());
 
         if (userToBeVerifiedOptional.isEmpty()) {
-            throw new EntityNotFoundException("User", "id", user.getEmail());
+            throw new EntityNotFoundException("User", "email", user.getEmail());
         }
 
         User userToBeVerified = userToBeVerifiedOptional.get();
@@ -129,18 +129,16 @@ public class UserServiceImpl implements UserService {
             userToBeVerified.getIdentityStatus().setIdentity(Identity.REJECTED);
         } else {
             user.getIdentityStatus().setIdentity(Identity.APPROVED);
-            userRepository.updateUser(user);
+            userRepository.confirmRegistration(user);
 
-            if (referralRepository.getReferralEmail(user.getEmail()).isPresent()) {
-                if (referralRepository.getReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
-                    User referrerUser = referralRepository.getReferrerUserIdByEmail(user.getEmail()).get();
-                    addBonus(referrerUser);
-                    addBonus(user);
-                }
-            }
+//            if (referralRepository.getReferralEmail(user.getEmail()).isPresent()) {
+//                if (referralRepository.getReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
+//                    User referrerUser = referralRepository.getReferrerUserIdByEmail(user.getEmail()).get();
+//                    addBonus(referrerUser);
+//                    addBonus(user);
+//                }
+//            }
         }
-
-        return user;
     }
 
     @Override

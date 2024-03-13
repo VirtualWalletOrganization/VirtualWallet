@@ -22,7 +22,7 @@ public interface UserRepository {
     Optional <User> getByPhoneNumber(String phoneNumber);
 
     void registerUser(User user);
-
+    void confirmRegistration(User user);
     Photo createPhoto(Photo photo, User user);
 
     void reactivated(User targetUser);

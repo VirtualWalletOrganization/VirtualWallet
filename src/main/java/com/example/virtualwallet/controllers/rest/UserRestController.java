@@ -149,12 +149,12 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}/confirm-registration")
-    public ResponseEntity<User> confirmUserRegistration(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    public void confirmUserRegistration(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User admin = authenticationHelper.tryGetUser(headers);
             User toBeVerified = userService.getById(id);
-            User updatedUser = userService.confirmUserRegistration(admin, toBeVerified);
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+            userService.confirmUserRegistration(admin, toBeVerified);
+//            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (DuplicateEntityException e) {
