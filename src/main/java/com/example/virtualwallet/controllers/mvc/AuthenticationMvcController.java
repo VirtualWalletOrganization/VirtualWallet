@@ -48,7 +48,7 @@ public class AuthenticationMvcController {
     @GetMapping("/login")
     public String showLoginPage(Model model) {
         model.addAttribute("login", new LoginDto());
-        return "LoginView";
+        return "login";
     }
 
     @PostMapping("/login")
@@ -57,7 +57,7 @@ public class AuthenticationMvcController {
                               Model model,
                               HttpSession session) {
         if (bindingResult.hasErrors()) {
-            return "LoginView";
+            return "login";
         }
 
         try {
@@ -73,7 +73,7 @@ public class AuthenticationMvcController {
             return "redirect:/";
         } catch (AuthorizationException e) {
             bindingResult.rejectValue("username", "auth_error", e.getMessage());
-            return "LoginView";
+            return "login";
         } catch (EntityAlreadyDeleteException e) {
             model.addAttribute("statusCode", HttpStatus.GONE.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -90,19 +90,19 @@ public class AuthenticationMvcController {
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("register", new RegisterDto());
-        return "RegisterView";
+        return "register";
     }
 
     @PostMapping("/register")
     public String handleRegister(@Valid @ModelAttribute("register") RegisterDto register,
                                  BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            return "RegisterView";
+            return "register";
         }
 
         if (!register.getPassword().equals(register.getPasswordConfirm())) {
             bindingResult.rejectValue("passwordConfirm", "password_error", "Password confirmation should match password.");
-            return "RegisterView";
+            return "register";
         }
 
         try {
@@ -112,11 +112,11 @@ public class AuthenticationMvcController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (DuplicateEntityException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 }
