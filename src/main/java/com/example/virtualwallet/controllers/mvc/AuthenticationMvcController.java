@@ -69,7 +69,6 @@ public class AuthenticationMvcController {
                 session.setAttribute("isDelete", user.isDeleted());
                 throw new EntityAlreadyDeleteException("id", String.valueOf(user.getId()));
             }
-
             return "redirect:/";
         } catch (AuthorizationException e) {
             bindingResult.rejectValue("username", "auth_error", e.getMessage());

@@ -25,12 +25,12 @@
                 <a class="logo" href="/">Mukki Wallet<span class="text-primary"></span></a>
             </div>
             <div class="main-button">
-                <a th:href="@{/register}" class="btn btn-outline-primary"
+                <a th:href="@{/auth/register}" class="btn btn-outline-primary"
                    th:text="#{header.menu.signup}"></a>
-                <a th:href="@{/login}" class="btn btn-primary"
+                <a th:href="@{/auth/login}" class="btn btn-primary"
                    th:text="#{header.menu.login}"></a>
                 <div class="hide-mobile">
-                    <form class="logout-form" th:if="${isAuthenticated}" th:action="@{/logout}"
+                    <form class="logout-form" th:if="${isAuthenticated}" th:action="@{/auth/logout}"
                           method="post"><input
                             class="btn btn-outline-primary" th:type="submit" th:value="Logout"></form>
                     <a th:href="@{/users/profile}" th:if="${isAuthenticated}" class="btn btn-primary"
@@ -123,14 +123,14 @@
                     <h4 class="text-light footer-head" th:text="#{footer.navigation}"></h4>
                     <ul class="list-unstyled footer-list mt-4">
                         <li>
-                            <a th:if="${isAuthenticated}" th:href="@{/login}" th:text="#{footer.login}"
+                            <a th:if="${isAuthenticated}" th:href="@{/auth/login}" th:text="#{footer.login}"
                                class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i></a>
                             <a th:if="${isAuthenticated}" th:href="@{/transactions/wallets/{walletId}/history}"
                                class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span
                                     th:text="#{footer.transactions}"></span> </a>
                         </li>
                         <li>
-                            <a th:if="${isAuthenticated}" th:href="@{/register}" th:text="#{footer.signup}"
+                            <a th:if="${isAuthenticated}" th:href="@{/auth/register}" th:text="#{footer.signup}"
                                class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i></a>
                             <a th:if="${isAuthenticated}" th:href="@{/wallets}"
                                class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span

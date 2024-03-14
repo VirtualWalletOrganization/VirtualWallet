@@ -15,6 +15,7 @@ import com.example.virtualwallet.services.contracts.RecurringTransactionService;
 import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
+import com.example.virtualwallet.utils.TransactionFilterOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,10 +51,11 @@ public class TransactionRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Transaction>> getAllTransactions(@RequestHeader HttpHeaders headers) {
+    public ResponseEntity<List<Transaction>> getAllTransactions(@RequestHeader HttpHeaders headers,
+                                                                @RequestParam TransactionFilterOptions transactionFilterOptions) {
         try {
             authenticationHelper.tryGetUser(headers);
-            List<Transaction> transactions = transactionService.getAllTransactions();
+            List<Transaction> transactions = transactionService.getAllTransactions(transactionFilterOptions);
             return new ResponseEntity<>(transactions, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

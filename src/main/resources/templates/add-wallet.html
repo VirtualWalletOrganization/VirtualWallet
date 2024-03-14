@@ -9,16 +9,7 @@
 </head>
 
 <body>
-<!-- Loader -->
-<div id="preloader">
-    <div id="status">
-        <div class="spinner">
-            <div class="double-bounce1"></div>
-            <div class="double-bounce2"></div>
-        </div>
-    </div>
-</div>
-<!-- Loader -->
+
 
 <div th:replace="fragments/layout :: header"></div>
 
@@ -42,7 +33,7 @@
                     </div>
 
                     <div class="p-4">
-                        <form th:action="@{/user/add-wallet}" th:object="${walletDto}" method="post">
+                        <form th:action="@{/wallets/new}" th:object="${walletDto}" method="post">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">

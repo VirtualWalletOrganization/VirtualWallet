@@ -9,6 +9,7 @@ import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.WalletService;
+import com.example.virtualwallet.utils.TransactionFilterOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,8 +35,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.getAllTransactions()
+    public List<Transaction> getAllTransactions(TransactionFilterOptions transactionFilterOptions) {
+        return transactionRepository.getAllTransactions(transactionFilterOptions)
                 .orElseThrow(() -> new EntityNotFoundException("Transactions"));
     }
 

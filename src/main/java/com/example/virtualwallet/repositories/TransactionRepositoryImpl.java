@@ -3,15 +3,14 @@ package com.example.virtualwallet.repositories;
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
+import com.example.virtualwallet.utils.TransactionFilterOptions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
@@ -24,12 +23,56 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public Optional<List<Transaction>> getAllTransactions() {
+    public Optional<List<Transaction>> getAllTransactions(TransactionFilterOptions transactionFilterOptions) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Transaction> query = session.createQuery("FROM Transaction", Transaction.class);
-            return Optional.ofNullable(query.list());
+           // Query<Transaction> query = session.createQuery("FROM Transaction", Transaction.class);
+           // return Optional.ofNullable(query.list());
+                List<String> filters = new ArrayList<>();
+                Map<String, Object> params = new HashMap<>();
+
+                transactionFilterOptions.getSender().ifPresent(value -> {
+                    filters.add("sender_wallet_id = :senderId");
+                    params.put("senderId", value);
+                });
+            transactionFilterOptions.getRecipient().ifPresent(value -> {
+                filters.add("receiver_wallet_id = :recipientId");
+                params.put("senderId", value);
+            });
+            transactionFilterOptions.getAmount().ifPresent(value -> {
+                filters.add("amount >= :amount");
+                params.put("amount", value);
+            });
+
+            transactionFilterOptions.getCurrency().ifPresent(value -> {
+                    filters.add("currency = :currency");
+                    params.put("currency", value);
+                });
+
+                transactionFilterOptions.getCreationTime().ifPresent(value -> {
+                    filters.add("creationTime > :creationTime");
+                    params.put("creationTime", value);
+                });
+
+                StringBuilder queryString = new StringBuilder("from Transaction");
+
+                if (!filters.isEmpty()) {
+                    queryString
+                            .append(" where ")
+                            .append(String.join(" and ", filters));
+                }
+
+                queryString.append(generateOrderBy(transactionFilterOptions));
+
+                Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
+                query.setProperties(params);
+
+
+                return Optional.ofNullable(query.list());
+            }
         }
-    }
+
+
+
 
     @Override
     public Optional<Transaction> getTransactionById(int transactionId) {
@@ -97,5 +140,36 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             session.remove(transaction);
             session.getTransaction().commit();
         }
+    }
+    private String generateOrderBy(TransactionFilterOptions transactionFilterOptions) {
+        if (transactionFilterOptions.getSortBy().isEmpty()) {
+            return "";
+        }
+
+        String orderBy = "";
+        switch (transactionFilterOptions.getSortBy().get()) {
+            case "sender":
+                orderBy = "sender";
+                break;
+            case "receiver":
+                orderBy = "recipient";
+                break;
+            case "amount":
+                orderBy = "amount";
+                break;
+            case "creationTime":
+                orderBy = "creationTime";
+                break;
+            default:
+                return "";
+        }
+
+        orderBy = String.format(" order by %s", orderBy);
+
+        if (transactionFilterOptions.getSortOrder().isPresent() && transactionFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
+            orderBy = String.format("%s desc", orderBy);
+        }
+
+        return orderBy;
     }
 }

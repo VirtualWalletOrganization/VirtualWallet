@@ -104,7 +104,7 @@ public class WalletMvcController {
 
         model.addAttribute("wallet", new WalletDto());
         model.addAttribute("currentUser", user);
-        return "WalletCreateView";
+        return "add-wallet";
     }
 
     @PostMapping("/new")
@@ -121,7 +121,7 @@ public class WalletMvcController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("currentUser", user);
-            return "WalletCreateView";
+            return "add-wallet";
         }
 
         try {

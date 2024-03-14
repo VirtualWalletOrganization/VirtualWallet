@@ -22,7 +22,7 @@
                 <div class="row align-items-center">
                     <div class="col-lg-7 col-md-6">
                         <div class="mr-lg-5">
-                            <img src="images/user/signup.png" class="img-fluid d-block mx-auto" alt="">
+                            <img src="../images/user/signup.png" class="img-fluid d-block mx-auto" alt="">
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
@@ -72,7 +72,7 @@
                                             <label th:text="#{user.header.countryCode}" for="country-code"></label>
                                             <select id="country-code" class="form-control font-weight-bold" required
                                                     name="countryCode">
-                                                <option th:each="country: ${T(a16team1.virtualwallet.utilities.Country).values()}"
+                                                <option th:each="country: ${T(com.example.virtualwallet.models.enums.CountryCodes).values()}"
                                                         th:value="${country.getCode()}"
                                                         th:text="${country.toString()}">BG (+359)
                                                 </option>
@@ -147,7 +147,7 @@
                                     <div class="mx-auto">
                                         <p class="mb-0 mt-3"><small class="text-dark mr-2"
                                                                     th:text="#{registration.page.alreadyHaveAnAccount}"></small>
-                                            <a th:href="@{/login}" class="text-dark font-weight-bold"
+                                            <a th:href="@{/auth/login}" class="text-dark font-weight-bold"
                                                th:text="#{registration.page.logIn}"></a></p>
                                     </div>
                                 </div>
