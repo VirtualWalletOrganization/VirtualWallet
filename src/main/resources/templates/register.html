@@ -34,17 +34,13 @@
                                   method="post">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <!--                                        <div th:if="${duplicateUser != null}" class="alert alert-danger alert-pills">-->
-                                        <!--                                            <span class="badge badge-danger rounded"-->
-                                        <!--                                                  th:text="#{registration.duplication.error}"> </span>-->
-                                        <!--                                            <span class="alert-content" th:text="${duplicateUser}"></span>-->
-                                        <!--                                        </div>-->
                                         <div class="form-group position-relative">
                                             <label th:text="#{user.header.username}"></label><span class="text-danger"> *</span>
                                             <i class="mdi mdi-account ml-3 icons"></i>
                                             <input type="text" th:field="*{username}" class="form-control pl-5"
                                                    placeholder="Username" name="username" required="">
                                         </div>
+                                        <!-- Add error message display for username -->
                                         <div th:if="${#fields.hasErrors('username')}"
                                              class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
@@ -52,14 +48,44 @@
                                             <span class="alert-content" th:errors="*{username}"></span>
                                         </div>
                                     </div>
+                                    <!-- Add input fields for other fields from RegisterDto -->
+                                    <div class="col-md-6">
+                                        <div class="form-group position-relative">
+                                            <label th:text="#{user.header.firstName}"></label><span class="text-danger"> *</span>
+                                            <input type="text" th:field="*{firstName}" class="form-control pl-5"
+                                                   placeholder="First Name" name="firstName" required="">
+                                        </div>
+                                        <!-- Add error message display for firstName -->
+                                        <div th:if="${#fields.hasErrors('firstName')}"
+                                             class="alert alert-danger alert-pills">
+                                            <span class="badge badge-danger rounded"
+                                                  th:text="#{registration.firstName.error}"> </span>
+                                            <span class="alert-content" th:errors="*{firstName}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group position-relative">
+                                            <label th:text="#{user.header.lastName}"></label><span class="text-danger"> *</span>
+                                            <input type="text" th:field="*{lastName}" class="form-control pl-5"
+                                                   placeholder="Last Name" name="lastName" required="">
+                                        </div>
+                                        <!-- Add error message display for lastName -->
+                                        <div th:if="${#fields.hasErrors('lastName')}"
+                                             class="alert alert-danger alert-pills">
+                                            <span class="badge badge-danger rounded"
+                                                  th:text="#{registration.lastName.error}"> </span>
+                                            <span class="alert-content" th:errors="*{lastName}"></span>
+                                        </div>
+                                    </div>
+                                    <!-- Add input fields for other fields from RegisterDto -->
                                     <div class="col-md-12">
                                         <div class="form-group position-relative">
-                                            <label th:text="#{user.header.email}"></label><span
-                                                class="text-danger"> *</span>
+                                            <label th:text="#{user.header.email}"></label><span class="text-danger"> *</span>
                                             <i class="mdi mdi-email ml-3 icons"></i>
                                             <input type="email" th:field="*{email}" class="form-control pl-5"
                                                    placeholder="Email" name="email" required="">
                                         </div>
+                                        <!-- Add error message display for email -->
                                         <div th:if="${#fields.hasErrors('email')}"
                                              class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
@@ -67,80 +93,116 @@
                                             <span class="alert-content" th:errors="*{email}"></span>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-12">
                                         <div class="form-group position-relative">
-                                            <label th:text="#{user.header.countryCode}" for="country-code"></label>
-                                            <select id="country-code" class="form-control font-weight-bold" required
-                                                    name="countryCode">
-                                                <option th:each="country: ${T(com.example.virtualwallet.models.enums.CountryCodes).values()}"
-                                                        th:value="${country.getCode()}"
-                                                        th:text="${country.toString()}">BG (+359)
-                                                </option>
-                                            </select>
+                                            <label th:text="#{user.header.password}"></label><span class="text-danger"> *</span>
+                                            <i class="mdi mdi-key ml-3 icons"></i>
+                                            <input type="password" th:field="*{password}" class="form-control pl-5"
+                                                   placeholder="Password" name="password" required="">
                                         </div>
-                                    </div><!--end col-->
+                                        <!-- Add error message display for password -->
+                                        <div th:if="${#fields.hasErrors('password')}"
+                                             class="alert alert-danger alert-pills">
+                                              <span class="badge badge-danger rounded"
+                                              th:text="#{registration.password.error}"> </span>
+                                            <span class="alert-content" th:errors="*{password}"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group position-relative">
+                                            <label th:text="#{user.header.passwordConfirm}"></label><span class="text-danger"> *</span>
+                                            <i class="mdi mdi-key ml-3 icons"></i>
+                                            <input type="password" th:field="*{passwordConfirm}" class="form-control pl-5"
+                                                   placeholder="Confirm Password" name="passwordConfirmation" required="">
+                                        </div>
+                                        <!-- Add error message display for passwordConfirm -->
+                                        <div th:if="${#fields.hasErrors('passwordConfirm')}"
+                                             class="alert alert-danger alert-pills">
+                                              <span class="badge badge-danger rounded"
+                                               th:text="#{registration.passwordConfirm.error}"> </span>
+                                            <span class="alert-content" th:errors="*{passwordConfirm}"></span>
+                                        </div>
+                                    </div>
+
                                     <div class="col-md-8">
                                         <div class="form-group position-relative">
-                                            <label th:text="#{user.header.phone}"></label><span
-                                                class="text-danger"> *</span>
+                                            <label th:text="#{user.header.phone}"></label><span class="text-danger"> *</span>
                                             <i class="mdi mdi-phone ml-3 icons"></i>
                                             <input type="tel" th:field="*{phoneNumber}" class="form-control pl-5"
                                                    placeholder="Phone" name="phoneNumber" required="">
                                         </div>
+                                        <!-- Add error message display for phoneNumber -->
                                         <div th:if="${#fields.hasErrors('phoneNumber')}"
                                              class="alert alert-danger alert-pills">
-                                            <span class="badge badge-danger rounded"
-                                                  th:text="#{registration.phoneNumber.error}"> </span>
+                                             <span class="badge badge-danger rounded"
+                                             th:text="#{registration.phoneNumber.error}"> </span>
                                             <span class="alert-content" th:errors="*{phoneNumber}"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group position-relative">
-                                            <label th:text="#{user.header.password}"></label><span
-                                                class="text-danger"> *</span>
-                                            <i class="mdi mdi-key ml-3 icons"></i>
-                                            <input type="password" th:field="*{password}" class="form-control pl-5"
-                                                   placeholder="Password" required="">
+                                            <label th:text="#{user.header.currency}"></label><span class="text-danger"> *</span>
+                                            <i class="mdi mdi-currency-usd ml-3 icons"></i>
+                                            <input type="text" th:field="*{currency}" class="form-control pl-5"
+                                                   placeholder="Currency" name="currency" required="">
                                         </div>
-                                        <div th:if="${#fields.hasErrors('password')}"
+                                        <!-- Add error message display for currency -->
+                                        <div th:if="${#fields.hasErrors('currency')}"
                                              class="alert alert-danger alert-pills">
-                                            <span class="badge badge-danger rounded"
-                                                  th:text="#{registration.password.error}"> </span>
-                                            <span class="alert-content" th:errors="*{password}"></span>
+                                             <span class="badge badge-danger rounded"
+                                             th:text="#{registration.currency.error}"> </span>
+                                            <span class="alert-content" th:errors="*{currency}"></span>
                                         </div>
-                                        <!--                                        <div th:if="${#fields.hasErrors('global')}"-->
-                                        <!--                                             class="alert alert-danger alert-pills">-->
-                                        <!--                                            <span class="badge badge-danger rounded"-->
-                                        <!--                                                  th:text="#{registration.password.error}"> </span>-->
-                                        <!--                                            <span class="alert-content" th:errors="*{global}"></span>-->
-                                        <!--                                        </div>-->
-                                        <!--                                        <div th:if="${passwordMismatch != null}" class="alert alert-danger alert-pills">-->
-                                        <!--                                            <span class="badge badge-danger rounded"-->
-                                        <!--                                                  th:text="#{registration.password.error}"> </span>-->
-                                        <!--                                            <span class="alert-content" th:text="${passwordMismatch}"></span>-->
-                                        <!--                                        </div>-->
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group position-relative">
-                                            <label th:text="#{user.header.confirmPassword}"></label><span
-                                                class="text-danger"> *</span>
-                                            <i class="mdi mdi-key ml-3 icons"></i>
-                                            <input type="password" class="form-control pl-5"
-                                                   th:field="*{passwordConfirm}"
-                                                   placeholder="Confirm Password" name="passwordConfirmation"
-                                                   required="">
+                                            <label th:text="#{user.header.profilePicture}"></label><span class="text-danger"> *</span>
+                                            <i class="mdi mdi-image ml-3 icons"></i>
+                                            <input type="text" th:field="*{profilePicture}" class="form-control pl-5"
+                                                   placeholder="Profile Picture" name="profilePicture" required="">
+                                        </div>
+                                        <!-- Add error message display for profilePicture -->
+                                        <div th:if="${#fields.hasErrors('profilePicture')}"
+                                             class="alert alert-danger alert-pills">
+                                              <span class="badge badge-danger rounded"
+                                             th:text="#{registration.profilePicture.error}"> </span>
+                                            <span class="alert-content" th:errors="*{profilePicture}"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-12">
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox">
-                                                <input required="" type="checkbox" class="custom-control-input"
-                                                       id="customCheck1">
-                                                <label class="custom-control-label" for="customCheck1"
-                                                       th:text="#{registration.page.confirmLegalAge}"></label>
-                                            </div>
+                                        <div class="form-group position-relative">
+                                            <label th:text="#{user.header.cardId}"></label><span class="text-danger"> *</span>
+                                            <i class="mdi mdi-credit-card ml-3 icons"></i>
+                                            <input type="text" th:field="*{cardId}" class="form-control pl-5"
+                                                   placeholder="CardId" name="cardId" required="">
+                                        </div>
+                                        <!-- Add error message display for cardId -->
+                                        <div th:if="${#fields.hasErrors('cardId')}"
+                                             class="alert alert-danger alert-pills">
+                                                <span class="badge badge-danger rounded"
+                                                th:text="#{registration.cardId.error}"> </span>
+                                            <span class="alert-content" th:errors="*{cardId}"></span>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group position-relative">
+                                            <label th:text="#{user.header.selfie}"></label><span class="text-danger"> *</span>
+                                            <i class="mdi mdi-camera ml-3 icons"></i>
+                                            <input type="text" th:field="*{selfie}" class="form-control pl-5"
+                                                   placeholder="Selfie" name="selfie" required="">
+                                        </div>
+                                        <!-- Add error message display for selfie -->
+                                        <div th:if="${#fields.hasErrors('selfie')}"
+                                             class="alert alert-danger alert-pills">
+                                                     <span class="badge badge-danger rounded"
+                                                     th:text="#{registration.selfie.error}"> </span>
+                                            <span class="alert-content" th:errors="*{selfie}"></span>
+                                        </div>
+                                    </div>
+                                    <!-- Add input fields for other fields from RegisterDto -->
+                                    <!-- Repeat similar pattern for other fields -->
                                     <div class="col-md-12">
                                         <input type="submit" class="btn btn-primary w-100" value="Register">
                                     </div>

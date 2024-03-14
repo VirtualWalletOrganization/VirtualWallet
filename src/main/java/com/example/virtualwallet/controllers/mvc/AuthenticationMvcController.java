@@ -6,11 +6,14 @@ import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.UserMapper;
+import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.LoginDto;
 import com.example.virtualwallet.models.dtos.RegisterDto;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.services.contracts.UserService;
+import com.example.virtualwallet.services.contracts.WalletService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +34,16 @@ public class AuthenticationMvcController {
     private final AuthenticationHelper authenticationHelper;
     private final UserMapper userMapper;
 
+    private final WalletService walletService;
+
     @Autowired
     public AuthenticationMvcController(UserService userService,
                                        AuthenticationHelper authenticationHelper,
-                                       UserMapper userMapper) {
+                                       UserMapper userMapper, WalletService walletService) {
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
         this.userMapper = userMapper;
+        this.walletService = walletService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -105,8 +111,18 @@ public class AuthenticationMvcController {
         }
 
         try {
-            User user = userMapper.fromDto(register);
+//            User user = userMapper.fromDto(register);
+//            userService.registerUser(user);
+
+            User user = userMapper.fromDtoRegister(register);
+            Wallet wallet = userMapper.fromDtoCreateWallet(register);
+            Photo photo = userMapper.fromDtoCreatePhoto(register);
             userService.registerUser(user);
+            walletService.createWhenRegistering(wallet, user);
+            userService.createPhoto(photo, user);
+            user.setPhoto(photo);
+            userService.updateUser(user, user);
+            userMapper.toDtoRegisterAndUpdateUser(user);
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
