@@ -30,6 +30,7 @@
                             <h5 th:unless="${error} != null" th:text="#{error.unknown.description}"></h5>
                             <p th:text="${status}"></p>
                             <p th:text="${message}"></p>
+                            <a id="go-back-link" href="javascript:history.back()">Go Back</a>
                         </div> <!--end col-->
                     </div><!--end row-->
                 </div> <!--end container-->

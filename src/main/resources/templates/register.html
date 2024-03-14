@@ -10,9 +10,9 @@
 </head>
 
 <body>
-<div class="back-to-home rounded d-none d-sm-block">
-    <a href="/" class="text-white rounded d-inline-block text-center"><i class="mdi mdi-home"></i></a>
-</div>
+<!--<div class="back-to-home rounded d-none d-sm-block">-->
+<!--    <a href="/" class="text-white rounded d-inline-block text-center"><i class="mdi mdi-home"></i></a>-->
+<!--</div>-->
 
 <!-- Hero Start -->
 <section class="bg-home">
@@ -30,8 +30,7 @@
                             <div class="text-center">
                                 <h4 class="mb-4" th:text="#{registration.page.title}"></h4>
                             </div>
-                            <form class="login-form" action="#" th:action="@{/auth/register}" th:object="${register}"
-                                  method="post">
+                            <form class="login-form" action="#" th:action="@{/auth/register}" th:object="${register}" method="post">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group position-relative">

@@ -25,15 +25,15 @@
                 <a class="logo" href="/">Mukki Wallet<span class="text-primary"></span></a>
             </div>
             <div class="main-button">
-                <a th:href="@{/auth/register}" class="btn btn-outline-primary"
+                <a href="#" th:unless="${isAuthenticated}" th:href="@{/auth/register}" class="btn btn-outline-primary"
                    th:text="#{header.menu.signup}"></a>
-                <a th:href="@{/auth/login}" class="btn btn-primary"
+                <a href="#" th:unless="${isAuthenticated}" th:href="@{/auth/login}" class="btn btn-primary"
                    th:text="#{header.menu.login}"></a>
                 <div class="hide-mobile">
                     <form class="logout-form" th:if="${isAuthenticated}" th:action="@{/auth/logout}"
-                          method="post"><input
+                          method="get"><input
                             class="btn btn-outline-primary" th:type="submit" th:value="Logout"></form>
-                    <a th:href="@{/users/profile}" th:if="${isAuthenticated}" class="btn btn-primary"
+                    <a href="#" th:if="${isAuthenticated}" th:href="@{/users/profile}"  class="btn btn-primary"
                        th:text="#{header.menu.myProfile}"></a></div>
             </div><!--end login button-->
             <!-- End Logo container-->
@@ -54,6 +54,8 @@
             <div id="navigation" th:if="${isAuthenticated}">
                 <!-- Navigation Menu-->
                 <ul class="navigation-menu">
+                    <li class="has-submenu" th:text="${session.currentUser}" th:if="${isAuthenticated}">li>
+
                     <li><a href="/" th:text="#{header.menu.home}" th:if="${!session.isAdmin}">Home</a></li>
                     <li class="has-submenu" th:if="${session.isAdmin}">
                         <a th:href="@{/admin}" th:text="#{header.menu.admin}">Admin</a><span
@@ -66,23 +68,23 @@
 
                     </li>
                     <li class="has-submenu">
-                        <a th:href="@{/wallets}" th:text="#{header.menu.wallets}"></a><span
+                        <a href="#" th:if="${isAuthenticated}" th:href="@{/wallets}" th:text="#{header.menu.wallets}"></a><span
                             class="menu-arrow"></span>
                         <ul class="submenu">
-                            <li><a th:text="#{header.menu.addWallet}" th:href="@{/new}">Add wallet</a></li>
+                            <li><a  href="#" th:if="${isAuthenticated}" th:text="#{header.menu.addWallet}" th:href="@{/new}">Add wallet</a></li>
                             <!--                            <li><a th:href="@{/transaction/create-funding}" th:text="#{header.menu.topUpWallet}"></a></li>-->
-                            <li class="has-submenu"><a th:text="#{header.menu.cards}"
+                            <li class="has-submenu"><a href="#" th:if="${isAuthenticated}" th:text="#{header.menu.cards}"
                                                        th:href="@{/cards}">Cards</a><span
                                     class="submenu-arrow"></span>
                                 <ul class="submenu">
-                                    <li><a th:href="@{/cards/wallets/{walletId}/add}">Add card</a></li>
+                                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add}">Add card</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
-                    <li><a th:href="@{/transactions/wallets/{walletId}/history}" th:text="#{header.menu.transactionHistory}"></a></li>
-                    <li><a th:href="@{/transactions/wallets/{walletId}/send}" th:text="#{header.menu.sendMoney}"></a></li>
-                    <li class="hide-desktop"><a th:href="@{/users/profile}" th:if="${isAuthenticated}" th:text="#{header.menu.myProfile}"></a></li>
+                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/wallets/{walletId}/history}" th:text="#{header.menu.transactionHistory}"></a></li>
+                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/wallets/{walletId}/send}" th:text="#{header.menu.sendMoney}"></a></li>
+                    <li class="hide-desktop"><a  href="#" th:if="${isAuthenticated}" th:href="@{/users/profile}"  th:text="#{header.menu.myProfile}"></a></li>
                     <li class="hide-desktop">
                         <form class="logout-form" th:if="${isAuthenticated}" th:action="@{/logout}"
                               method="post"><input class="btn btn-outline-primary margin-left-extra" th:type="submit"

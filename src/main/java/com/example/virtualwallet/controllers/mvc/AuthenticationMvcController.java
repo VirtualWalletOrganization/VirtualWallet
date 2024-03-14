@@ -120,11 +120,11 @@ public class AuthenticationMvcController {
             User user = userMapper.fromDtoRegister(register);
             Wallet wallet = walletMapper.fromDtoCreateWallet(register,user);
             Photo photo = userMapper.fromDtoCreatePhoto(register);
+
             userService.registerUser(user);
-            walletService.createWhenRegistering(wallet, user);
-            userService.createPhoto(photo, user);
             user.setPhoto(photo);
-            userService.updateUser(user, user);
+            userService.createPhoto(photo, user);
+            walletService.create(wallet, user);
             userMapper.toDtoRegisterAndUpdateUser(user);
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
