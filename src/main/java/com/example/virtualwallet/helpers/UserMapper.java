@@ -1,11 +1,9 @@
 package com.example.virtualwallet.helpers;
 
 
-import com.example.virtualwallet.models.Photo;
-import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.*;
-import com.example.virtualwallet.models.enums.Role;
+import com.example.virtualwallet.models.enums.*;
 import com.example.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,15 +36,22 @@ public class UserMapper {
         user.setPassword(dto.getPassword());
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setProfilePicture(dto.getProfilePicture());
+        user.setEmailVerified(false);
+        IdentityStatus identityStatus=new IdentityStatus();
+        identityStatus.setId(Identity.PENDING.ordinal()+1);
+        identityStatus.setIdentity(Identity.PENDING);
+        user.setIdentityStatus(identityStatus);
+        UsersRole role=new UsersRole();
+        role.setId(Role.USER.ordinal()+1);
+        role.setRole(Role.USER);
+        user.setUsersRole(role);
+        user.setDeleted(false);
+        user.setStatus(UserStatus.PENDING);
+        WalletsRole walletsRole=new WalletsRole();
+        walletsRole.setId(WalletRole.USER.ordinal()+1);
+        walletsRole.setWalletRole(WalletRole.USER);
+        user.setWalletsRole(walletsRole);
         return user;
-    }
-
-    public Wallet fromDtoCreateWallet(RegisterDto registerDto) {
-        Wallet wallet = new Wallet();
-        wallet.setDefault(true);
-        wallet.setBalance(BigDecimal.ONE);
-        wallet.setCurrency(registerDto.getCurrency());
-        return wallet;
     }
 
     public Photo fromDtoCreatePhoto(RegisterDto registerDto) {

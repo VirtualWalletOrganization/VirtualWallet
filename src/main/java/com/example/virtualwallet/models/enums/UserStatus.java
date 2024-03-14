@@ -3,7 +3,8 @@ package com.example.virtualwallet.models.enums;
 public enum UserStatus {
 
     BLOCKED("BLOCKED"),
-    ACTIVE("ACTIVE");
+    ACTIVE("ACTIVE"),
+    PENDING("PENDING");
 
     private String name;
 

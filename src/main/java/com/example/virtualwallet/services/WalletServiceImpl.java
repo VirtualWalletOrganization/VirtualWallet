@@ -119,8 +119,8 @@ public class WalletServiceImpl implements WalletService {
             wallet.setDefault(true);
         }
 
-        user.getWallets().add(wallet);
-        wallet.getUsers().add(user);
+       user.getWallets().add(wallet);
+//        wallet.getUsers().add(user);
         Wallet walletToAdd = walletRepository.create(wallet);
         userService.updateUser(user, user);
         return walletToAdd;

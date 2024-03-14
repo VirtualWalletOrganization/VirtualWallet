@@ -61,13 +61,13 @@ public class WalletMvcController {
 
             List<Wallet> wallets = walletService.getAll(user);
             model.addAttribute("wallets", wallets);
-            return "WalletsView";
+            return "wallets";
         } catch (AuthorizationException e) {
-            return "WalletsView";
+            return "wallets";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 

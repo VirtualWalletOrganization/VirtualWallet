@@ -323,6 +323,9 @@ UsersRole usersRole = new UsersRole();
         if (userRepository.getByEmail(user.getEmail()).isPresent()) {
             throw new DuplicateEntityException("User", "email", user.getEmail());
         }
+        if (userRepository.getByPhoneNumber(user.getPhoneNumber()).isPresent()) {
+            throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
+        }
     }
 
     public static boolean isSameUser(User existingUser, User user) {

@@ -64,13 +64,13 @@ public class CardMvcController {
 
             List<Card> cards = cardService.getAllCards();
             model.addAttribute("cards", cards);
-            return "CardsView";
+            return "cards";
         } catch (AuthorizationException e) {
-            return "CardsView";
+            return "cards";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
