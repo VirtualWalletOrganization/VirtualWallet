@@ -39,7 +39,7 @@ create table users
     photo_id           int null,
     role_id            int                 not null,
     is_deleted         tinyint(1) default 0 null,
-    status             enum ('ACTIVE', 'BLOCKED') null,
+    status             enum ('ACTIVE', 'BLOCKED','PENDING') null,
     wallet_role_id     int null,
     CONSTRAINT users_identity_statuses_identity_status_id_fk
         FOREIGN KEY (identity_status_id) REFERENCES identity_statuses (identity_status_id),

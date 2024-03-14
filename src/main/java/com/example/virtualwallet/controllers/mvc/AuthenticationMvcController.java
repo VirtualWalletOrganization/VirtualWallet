@@ -82,7 +82,7 @@ public class AuthenticationMvcController {
         } catch (EntityAlreadyDeleteException e) {
             model.addAttribute("statusCode", HttpStatus.GONE.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorDeleteUserView";
+            return "error";
         }
     }
 

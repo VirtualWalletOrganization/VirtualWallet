@@ -6,6 +6,7 @@ import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.UserMapper;
+import com.example.virtualwallet.helpers.WalletMapper;
 import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
@@ -35,13 +36,15 @@ public class UserRestController {
     private final UserService userService;
     private final AuthenticationHelper authenticationHelper;
     private final UserMapper userMapper;
+    private final WalletMapper walletMapper;
     private final WalletService walletService;
 
     @Autowired
-    public UserRestController(UserService userService, AuthenticationHelper authenticationHelper, UserMapper userMapper, WalletService walletService) {
+    public UserRestController(UserService userService, AuthenticationHelper authenticationHelper, UserMapper userMapper, WalletMapper walletMapper, WalletService walletService) {
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
         this.userMapper = userMapper;
+        this.walletMapper = walletMapper;
         this.walletService = walletService;
     }
 
@@ -137,13 +140,16 @@ public class UserRestController {
     public UserResponseDto registerUser(@Valid @RequestBody RegisterDto userDto) {
         try {
             User user = userMapper.fromDtoRegister(userDto);
-            Wallet wallet = userMapper.fromDtoCreateWallet(userDto);
+            Wallet wallet = walletMapper.fromDtoCreateWallet(userDto,user);
             Photo photo = userMapper.fromDtoCreatePhoto(userDto);
+
             userService.registerUser(user);
-            walletService.createWhenRegistering(wallet, user);
-            userService.createPhoto(photo, user);
             user.setPhoto(photo);
-            userService.updateUser(user, user);
+            userService.createPhoto(photo, user);
+            walletService.create(wallet, user);
+
+
+//            userService.updateUser(user, user);
             userMapper.toDtoRegisterAndUpdateUser(user);
             return userMapper.toDtoRegisterAndUpdateUser(user);
 //            return new UserResponseDto(user, HttpStatus.CREATED);

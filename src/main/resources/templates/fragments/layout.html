@@ -123,14 +123,14 @@
                     <h4 class="text-light footer-head" th:text="#{footer.navigation}"></h4>
                     <ul class="list-unstyled footer-list mt-4">
                         <li>
-                            <a th:if="${isAuthenticated}" th:href="@{/auth/login}" th:text="#{footer.login}"
+                            <a th:href="@{/auth/login}" th:text="#{footer.login}"
                                class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i></a>
                             <a th:if="${isAuthenticated}" th:href="@{/transactions/wallets/{walletId}/history}"
                                class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span
                                     th:text="#{footer.transactions}"></span> </a>
                         </li>
                         <li>
-                            <a th:if="${isAuthenticated}" th:href="@{/auth/register}" th:text="#{footer.signup}"
+                            <a th:href="@{/auth/register}" th:text="#{footer.signup}"
                                class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i></a>
                             <a th:if="${isAuthenticated}" th:href="@{/wallets}"
                                class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span

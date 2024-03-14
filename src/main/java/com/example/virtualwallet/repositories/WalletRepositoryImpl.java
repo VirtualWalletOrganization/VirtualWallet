@@ -128,18 +128,11 @@ public class WalletRepositoryImpl implements WalletRepository {
 
     @Override
     public Wallet create(Wallet wallet) {
-        wallet.setWalletsType(getWalletsType());
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.persist(wallet);
             session.getTransaction().commit();
             return wallet;
-        }
-    }
-    public WalletsType getWalletsType(){
-        WalletsType walletsType = new WalletsType();
-        try (Session session = sessionFactory.openSession()) {
-            return walletsType = session.get(WalletsType.class, 1);
         }
     }
 

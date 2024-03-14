@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
 <head>
     <meta charset="UTF-8">
     <title>Wallets List</title>
@@ -25,10 +25,10 @@
 </section>
 <section class="section">
     <div class="container">
-        <div th:if="${presentableWalletDtos.isEmpty()}">
+        <div th:if="${wallets.isEmpty()}">
             <h2 th:text="#{wallet.noWallets}" th:align="center"></h2>
         </div>
-        <div th:unless="${presentableWalletDtos.isEmpty()}">
+        <div th:unless="${wallets.isEmpty()}">
 
             <div class="col-md-12">
                 <div th:if="${error} != null"
@@ -48,15 +48,17 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="wallet : ${presentableWalletDtos}">
-                        <td th:text="${wallet.name}">Name</td>
-                        <td th:text="${wallet.amount}" class="currency-format">Amount</td>
+                    <tr th:each="wallet : ${wallets}">
+                        <td th:text="${wallet.getWalletsType()}">Name</td>
+                        <td th:text="${wallet.getBalance()}" class="currency-format">Amount</td>
                         <td>
-                            <form th:if="${wallet.defaultWallet} == false"
-                                  th:action="@{'/user/wallets/' + ${wallet.id} + '/make-default'}" method="post">
-                                <input class="btn btn-primary" th:type="submit" th:value="#{wallet.list.makeDefault}">
+                            <form th:if="${wallet.getDefault()} == false"
+                                  th:action="@{'/wallets/' + ${wallet.id} + '/update'}" method="post">
+                                <label>
+                                    <input class="btn btn-primary" th:type="submit" th:value="#{wallet.list.makeDefault}">
+                                </label>
                             </form>
-                            <div th:unless="${wallet.defaultWallet} == false">
+                            <div th:unless="${wallet.getDefault()} == false">
                                 <p class="btn btn-success" th:text="#{wallet.list.alreadyDefault}"></p>
                             </div>
                         </td>
