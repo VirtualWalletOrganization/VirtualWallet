@@ -159,14 +159,11 @@
                                         <div class="form-group position-relative">
                                             <label th:text="#{user.header.profilePicture}"></label><span class="text-danger"> *</span>
                                             <i class="mdi mdi-image ml-3 icons"></i>
-                                            <input type="text" th:field="*{profilePicture}" class="form-control pl-5"
-                                                   placeholder="Profile Picture" name="profilePicture" required="">
+                                            <input type="file" class="form-control-file" id="profilePictureInput" name="profilePicture" accept="image/*" required="">
                                         </div>
                                         <!-- Add error message display for profilePicture -->
-                                        <div th:if="${#fields.hasErrors('profilePicture')}"
-                                             class="alert alert-danger alert-pills">
-                                              <span class="badge badge-danger rounded"
-                                             th:text="#{registration.profilePicture.error}"> </span>
+                                        <div th:if="${#fields.hasErrors('profilePicture')}" class="alert alert-danger alert-pills">
+                                            <span class="badge badge-danger rounded" th:text="#{registration.profilePicture.error}"></span>
                                             <span class="alert-content" th:errors="*{profilePicture}"></span>
                                         </div>
                                     </div>
@@ -174,14 +171,11 @@
                                         <div class="form-group position-relative">
                                             <label th:text="#{user.header.cardId}"></label><span class="text-danger"> *</span>
                                             <i class="mdi mdi-credit-card ml-3 icons"></i>
-                                            <input type="text" th:field="*{cardId}" class="form-control pl-5"
-                                                   placeholder="CardId" name="cardId" required="">
+                                            <input type="file" class="form-control-file" id="cardIdInput" name="cardId" accept="image/*" required="">
                                         </div>
                                         <!-- Add error message display for cardId -->
-                                        <div th:if="${#fields.hasErrors('cardId')}"
-                                             class="alert alert-danger alert-pills">
-                                                <span class="badge badge-danger rounded"
-                                                th:text="#{registration.cardId.error}"> </span>
+                                        <div th:if="${#fields.hasErrors('cardId')}" class="alert alert-danger alert-pills">
+                                            <span class="badge badge-danger rounded" th:text="#{registration.cardId.error}"></span>
                                             <span class="alert-content" th:errors="*{cardId}"></span>
                                         </div>
                                     </div>
@@ -190,14 +184,11 @@
                                         <div class="form-group position-relative">
                                             <label th:text="#{user.header.selfie}"></label><span class="text-danger"> *</span>
                                             <i class="mdi mdi-camera ml-3 icons"></i>
-                                            <input type="text" th:field="*{selfie}" class="form-control pl-5"
-                                                   placeholder="Selfie" name="selfie" required="">
+                                            <input type="file" class="form-control-file" id="selfieInput" name="selfie" accept="image/*" required="">
                                         </div>
                                         <!-- Add error message display for selfie -->
-                                        <div th:if="${#fields.hasErrors('selfie')}"
-                                             class="alert alert-danger alert-pills">
-                                                     <span class="badge badge-danger rounded"
-                                                     th:text="#{registration.selfie.error}"> </span>
+                                        <div th:if="${#fields.hasErrors('selfie')}" class="alert alert-danger alert-pills">
+                                            <span class="badge badge-danger rounded" th:text="#{registration.selfie.error}"></span>
                                             <span class="alert-content" th:errors="*{selfie}"></span>
                                         </div>
                                     </div>
