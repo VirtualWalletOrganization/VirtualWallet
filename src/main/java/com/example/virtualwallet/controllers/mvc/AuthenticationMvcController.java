@@ -6,6 +6,7 @@ import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.UserMapper;
+import com.example.virtualwallet.helpers.WalletMapper;
 import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
@@ -33,16 +34,18 @@ public class AuthenticationMvcController {
     private final UserService userService;
     private final AuthenticationHelper authenticationHelper;
     private final UserMapper userMapper;
+    private final WalletMapper walletMapper;
 
     private final WalletService walletService;
 
     @Autowired
     public AuthenticationMvcController(UserService userService,
                                        AuthenticationHelper authenticationHelper,
-                                       UserMapper userMapper, WalletService walletService) {
+                                       UserMapper userMapper, WalletMapper walletMapper, WalletService walletService) {
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
         this.userMapper = userMapper;
+        this.walletMapper = walletMapper;
         this.walletService = walletService;
     }
 
@@ -115,7 +118,7 @@ public class AuthenticationMvcController {
 //            userService.registerUser(user);
 
             User user = userMapper.fromDtoRegister(register);
-            Wallet wallet = userMapper.fromDtoCreateWallet(register);
+            Wallet wallet = walletMapper.fromDtoCreateWallet(register,user);
             Photo photo = userMapper.fromDtoCreatePhoto(register);
             userService.registerUser(user);
             walletService.createWhenRegistering(wallet, user);
