@@ -70,6 +70,7 @@
                                 <h5 id="user-actions">
                                     <div class="col-sm-12">
                                     <a id="update-link" th:if="${isAuthenticated}" th:href="@{'/users/'+${currentUser.id}+'/update'}">Update</a>
+
                                     <a id="delete-link" th:if="${isAuthenticated}" th:href="@{'/users/'+${currentUser.id}+'/delete'}">Delete</a>
                                     </div>
                                 </h5>

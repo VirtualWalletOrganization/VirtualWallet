@@ -188,7 +188,7 @@ public class UserMvcController {
             userService.updateUser(user, userToBeUpdated);
             User userToUpdate = userMapper.fromDtoUpdate(id, dto);
             userService.updateUser(user, userToBeUpdated);
-            return "redirect:/user";
+            return "redirect:/users/profile";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
