@@ -81,12 +81,30 @@
                                         <input type="text" th:field="*{phoneNumber}"/><br/>
                                         <label class="error" th:errors="*{phoneNumber}">Email error placeholder</label><br/><br/>
 
+<!--                                        <label th:text="#{user.label.profilepicture}">Phone number</label><br/>-->
+<!--                                        <input type="text" th:field="*{profilePicture}"/><br/>-->
+<!--                                        <label class="error" th:errors="*{profilePicture}">Email error placeholder</label><br/><br/>-->
+<!--                                        <div class="col-md-12">-->
+                                            <div class="form-group position-relative">
+                                                <label th:text="#{user.header.profilePicture}"></label><br/>
+<!--                                                <span class="text-danger"> *</span>-->
+                                                <!--                                            <i class="mdi mdi-image ml-3 icons"></i>-->
+                                                <input type="file" class="form-control-file" id="profilePictureInput" name="profilePicture" accept="image/*" required="">
+                                            </div>
+                                            <!-- Add error message display for profilePicture -->
+                                            <div th:if="${#fields.hasErrors('profilePicture')}" class="alert alert-danger alert-pills">
+                                                <span class="badge badge-danger rounded" th:text="#{registration.profilePicture.error}"></span>
+                                                <span class="alert-content" th:errors="*{profilePicture}"></span>
+                                            </div>
+<!--                                        </div>-->
+<!--                                        <label th:text="#{user.label.profilepicture}">Profile picture</label><br/>-->
+<!--                                        <input type="text" th:field="*{profilePicture}"/><br/>-->
+<!--                                        <label class="error" th:errors="*{profilePicture}">Profile picture error placeholder</label><br/><br/>-->
 
                                         <label for="password" class="password" th:text="#{user.label.password}">Password</label><br/>
                                         <!--        <br/>-->
                                         <input id="password" class="password" name="password" type="password" th:field="*{password}"/><br/>
                                         <label class="error" th:errors="*{password}">Password error placeholder</label><br/><br/>
-
 
 
 <!--                                        <div th:if="${session.isAdmin}">-->

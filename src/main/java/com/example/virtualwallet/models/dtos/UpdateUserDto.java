@@ -30,7 +30,7 @@ public class UpdateUserDto {
     @NotBlank(message = "Phone number can't be blank.")
     private String phoneNumber;
 
-//    @NotEmpty(message = "Profile picture can't be empty")
+    @NotEmpty(message = "Profile picture can't be empty")
     private String profilePicture;
 
     public UpdateUserDto() {

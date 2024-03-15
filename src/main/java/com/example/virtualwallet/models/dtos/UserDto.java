@@ -41,6 +41,8 @@ public class UserDto {
 
     private int overdarftLimit;
 
+    private String profilePicture;
+
     public UserDto() {
     }
 
@@ -110,6 +112,14 @@ public class UserDto {
 
     public int getOverdarftLimit() {
         return overdarftLimit;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public void setOverdarftLimit(int overdarftLimit) {
