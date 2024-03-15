@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--<head>-->
+<!--    <meta charset="utf-8"/>-->
+<!--    <title>Login to Virtual Wallet</title>-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <div th:replace="fragments/layout  :: css-sheets"></div>-->
+
+<!--</head>-->
+<head>
+    <meta charset="utf-8"/>
+    <title>User profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div th:replace="fragments/layout :: css-sheets"></div>
+</head>
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>User Profile</title>-->
+<!--&lt;!&ndash;    <link rel="stylesheet" href="styles.css"> &lt;!&ndash; Link to your CSS file &ndash;&gt;&ndash;&gt;-->
+<!--</head>-->
+
+<body>
+<div th:replace="fragments/layout :: header"></div>
+
+<section class="section bg-light">
+
+    <div class="container mt-10">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center">
+                <div class="section-title mb-4 pb-2">
+                    <h4 class="title mb-4" th:text="#{user.profile.title}"></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-7 col-md-6 col-12 mt-4 pt-2">
+                <div class="rounded bg-white border shadow">
+                    <div class="bg-light p-4 text-center rounded-top">
+                        <h4 class="mb-0 text-primary" th:text="#{user.add.subtitle}">Add a new Wallet</h4>
+                    </div>
+<!--                        <header>-->
+<!--                            &lt;!&ndash; Your header content goes here &ndash;&gt;-->
+<!--                            <h1>User Profile</h1>-->
+<!--                        </header>-->
+
+                        <main>
+                            <section class="profile-info">
+<!--                                <h5>Welcome, John Doe!</h5>-->
+<!--                                <p>Email: johndoe@example.com</p>-->
+<!--                                <p>Role: User</p>-->
+<!--                                <p>Phone Number: 123-456-7890</p>-->
+<!--                                <p> </p>-->
+<!--                                <div th:if="${isAuthenticated}">-->
+
+<!--                                    <h2 id="user-name" th:text="${currentUser.firstName} + ' ' + ${currentUser.lastName}"></h2>-->
+<!--                                    <p id="user-email" th:text="'Email: ' + ${currentUser.email}"></p>-->
+<!--                                    <p id="user-role" th:text="'Role: ' + ${currentUser.role}"></p>-->
+
+                                <div th:if="${isAuthenticated}">
+                                    <h5 id="user-name" th:text="${currentUser.firstName} + ' ' + ${currentUser.lastName}"></h5>
+                                    <p id="user-email" th:text="'Email: ' + ${currentUser.email}"></p>
+                                    <p id="user-phone number" th:text="'Phone number: ' + ${currentUser.getPhoneNumber()}"></p>
+                                </div>
+
+                                <h5 id="user-actions">
+                                    <a id="update-link" th:if="${isAuthenticated}" th:href="@{'/users/'+${currentUser.id}+'/update'}">Update</a>
+                                    <a id="delete-link" th:if="${isAuthenticated}" th:href="@{'/users/'+${currentUser.id}+'/delete'}">Delete</a>
+                                </h5>
+
+
+
+<!--                                </div>-->
+                            </section>
+
+<!--                            <section class="actions">-->
+<!--                                <a href="/update-profile">Update Profile</a>-->
+<!--                                <a href="/delete-profile">Delete Profile</a>-->
+<!--                            </section>-->
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section><!--end section-->
+</main>
+
+<footer>
+    <!-- Your footer content goes here -->
+    <p>&copy; 2024 Your Company</p>
+</footer>
+</body>
+
+</html>
+
