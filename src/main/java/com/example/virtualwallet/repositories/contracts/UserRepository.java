@@ -19,10 +19,12 @@ public interface UserRepository {
 
     Optional<User> getByEmail(String email);
 
-    Optional <User> getByPhoneNumber(String phoneNumber);
+    Optional<User> getByPhoneNumber(String phoneNumber);
 
     void registerUser(User user);
+
     void confirmRegistration(User user);
+
     Photo createPhoto(Photo photo, User user);
 
     void reactivated(User targetUser);
@@ -32,6 +34,7 @@ public interface UserRepository {
     void deleteUser(User targetUser);
 
     boolean isDataBaseEmpty();
+
     void updateUserToAdmin(User targetUser, User executingUser);
 
     boolean existsByPhoneNumber(User userPhoneNumberToBeUpdate);

@@ -1,12 +1,13 @@
 package com.example.virtualwallet;
+
 import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.enums.*;
 import com.example.virtualwallet.utils.UserFilterOptions;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class helpers {
     public static User createMockUser() {
@@ -19,12 +20,13 @@ public class helpers {
         mockUser.setEmail("mock@user.com");
         mockUser.setStatus(UserStatus.ACTIVE);
         mockUser.setPhoneNumber("3333333333");
-        UsersRole usersRole=new UsersRole();
+        UsersRole usersRole = new UsersRole();
         usersRole.setRole(Role.ADMIN);
         mockUser.setUsersRole(usersRole);
 
         return mockUser;
     }
+
     public static UserFilterOptions createMockUserFilterOptions() {
         return new UserFilterOptions(
                 createMockUser().getUsername(),
@@ -37,20 +39,20 @@ public class helpers {
                 "order");
     }
 
-        public static Card createMockCard() {
-            Card mockCard = new Card();
-            mockCard.setId(1);
-            mockCard.setCardsType(new CardsType());
-            mockCard.setUser(createMockUser());
-            mockCard.setCardNumber("1234567891234567");
-            mockCard.setExpirationDate(LocalDate.now());
-            mockCard.setCardHolder("MockFirstName MockLastName");
-            mockCard.setCheckNumber("123");
-            mockCard.setCurrency("USD");
-            mockCard.setCardStatus(CardStatus.ACTIVE);
+    public static Card createMockCard() {
+        Card mockCard = new Card();
+        mockCard.setId(1);
+        mockCard.setCardsType(new CardsType());
+        mockCard.setUser(createMockUser());
+        mockCard.setCardNumber("1234567891234567");
+        mockCard.setExpirationDate(LocalDateTime.now());
+        mockCard.setCardHolder("MockFirstName MockLastName");
+        mockCard.setCheckNumber("123");
+        mockCard.setCurrency("USD");
+        mockCard.setCardStatus(CardStatus.ACTIVE);
 
-            return mockCard;
-        }
+        return mockCard;
+    }
 
     public static Wallet createMockWallet() {
         Wallet mockWallet = new Wallet();
@@ -70,12 +72,12 @@ public class helpers {
         RecurringTransaction mockTransaction = new RecurringTransaction();
         mockTransaction.setTransactionId(1);
         mockTransaction.setWalletSender(createMockWallet());
-        Wallet wallet=createMockWallet();
+        Wallet wallet = createMockWallet();
         wallet.setId(2);
         mockTransaction.setWalletReceiver(wallet);
         mockTransaction.setAmount(BigDecimal.TEN);
         mockTransaction.setCurrency("USD");
-        mockTransaction.setDate(LocalDateTime.now());
+        mockTransaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
         mockTransaction.setTransactionsStatus(new TransactionsStatus());
         mockTransaction.getTransactionsStatus().setId(1);
         mockTransaction.getTransactionsStatus().setTransactionStatus(Status.PENDING_RECURRING_REQUEST);
@@ -88,5 +90,5 @@ public class helpers {
         mockTransaction.setEndDate(LocalDate.now().plusMonths(6));
         return mockTransaction;
     }
-    }
+}
 

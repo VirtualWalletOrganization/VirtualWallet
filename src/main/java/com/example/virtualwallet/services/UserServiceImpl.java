@@ -8,10 +8,8 @@ import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.UsersRole;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
-import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.repositories.contracts.ReferralRepository;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
@@ -69,7 +67,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
     public User getByEmail(String email) {
         return userRepository.getByEmail(email)
@@ -96,11 +93,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createPhoto(Photo photo, User user){
+    public void createPhoto(Photo photo, User user) {
         User user1 = getByUsername(user.getUsername());
         photo.setCreator(user1);
         userRepository.createPhoto(photo, user);
     }
+
     @Override
     public User getByUsernameWhenRegistering(String username) {
         try (Session session = sessionFactory.openSession()) {
@@ -112,6 +110,7 @@ public class UserServiceImpl implements UserService {
             return result.isEmpty() ? null : result.get(0);
         }
     }
+
     @Override
     public void confirmUserRegistration(User currentUser, User user) {
         checkAccessPermissionsAdmin(currentUser, VERIFY_USER);
@@ -211,7 +210,7 @@ public class UserServiceImpl implements UserService {
 //        UsersRole usersRole = new UsersRole();
 //        usersRole.setRole(Role.ADMIN);
 //        targetUser.setUsersRole(usersRole);
-        userRepository.updateUserToAdmin(targetUser,executingUser);
+        userRepository.updateUserToAdmin(targetUser, executingUser);
     }
 
 
@@ -227,9 +226,10 @@ public class UserServiceImpl implements UserService {
         if (targetUser.getId() == 1) {
             throw new DeletionRestrictedException(MASTER_ADMIN_MESSAGE_ERROR);
         }
-UsersRole usersRole = new UsersRole();
+
+        UsersRole usersRole = new UsersRole();
         usersRole.setRole(Role.USER);
-        usersRole.setId(usersRole.getRole().ordinal()+1);
+        usersRole.setId(usersRole.getRole().ordinal() + 1);
         targetUser.setUsersRole(usersRole);
         userRepository.updateUser(targetUser);
     }

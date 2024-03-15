@@ -10,6 +10,7 @@ import com.example.virtualwallet.services.contracts.RecurringTransactionService;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Component
@@ -22,11 +23,13 @@ public class TransactionMapper {
                                     User userReceiver) {
         Transaction transaction = new Transaction();
         transaction.setWalletSender(walletSender);
+        transaction.setUserSender(userSender);
         transaction.setWalletReceiver(walletReceiver);
+        transaction.setUserReceiver(userReceiver);
         transaction.setAmount(transactionDto.getAmount());
         transaction.setCurrency(transactionDto.getCurrency());
         // transaction.setDirection(Direction.OUTGOING);
-        transaction.setDate(LocalDateTime.now());
+        transaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
 
         TransactionsStatus transactionsStatus = new TransactionsStatus();
         transactionsStatus.setId(Status.PENDING.ordinal());
@@ -50,11 +53,13 @@ public class TransactionMapper {
                 walletReceiver, userReceiver);
 
         recurringTransaction.setWalletSender(transaction.getWalletSender());
+        recurringTransaction.setUserSender(userSender);
         recurringTransaction.setWalletReceiver(transaction.getWalletReceiver());
+        recurringTransaction.setUserReceiver(userReceiver);
         recurringTransaction.setAmount(transaction.getAmount());
         recurringTransaction.setCurrency(transaction.getCurrency());
         // transaction.setDirection(Direction.OUTGOING);
-        recurringTransaction.setDate(LocalDateTime.now());
+        recurringTransaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
 
         recurringTransaction.setTransactionsStatus(transaction.getTransactionsStatus());
         recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal());
@@ -84,10 +89,12 @@ public class TransactionMapper {
     public Transaction fromDtoRecurring(Transaction recurringTransaction) {
         Transaction transaction = new Transaction();
         transaction.setWalletSender(recurringTransaction.getWalletSender());
+        transaction.setUserSender(recurringTransaction.getUserSender());
         transaction.setWalletReceiver(recurringTransaction.getWalletReceiver());
+        transaction.setUserReceiver(recurringTransaction.getUserReceiver());
         transaction.setAmount(recurringTransaction.getAmount());
         transaction.setCurrency(recurringTransaction.getCurrency());
-        transaction.setDate(LocalDateTime.now());
+        transaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
         transaction.setTransactionsStatus(recurringTransaction.getTransactionsStatus());
         recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal());
         recurringTransaction.getTransactionsStatus().setTransactionStatus(Status.PENDING_RECURRING_REQUEST);

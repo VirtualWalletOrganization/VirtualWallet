@@ -30,22 +30,22 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group position-relative">
-                            <label for="start-date" th:text="#{transaction.history.startDate}">Start date<span
+                            <label for="start-date" th:text="#{transaction.history.creationTime}">Creation time<span
                                     class="text-danger">*</span></label>
                             <i class="mdi mdi-calendar ml-3 icons"></i>
-                            <input name="startDate" id="start-date" type="date" th:value="${startDate}"
+                            <input name="startDate" id="start-date" type="date" th:value="${transactionFilterOptions.getDate()}"
                                    class="form-control pl-5">
                         </div>
                     </div><!--end col-->
-                    <div class="col-md-6">
-                        <div class="form-group position-relative">
-                            <label for="end-date" th:text="#{transaction.history.endDate}">End date<span
-                                    class="text-danger">*</span></label>
-                            <i class="mdi mdi-calendar ml-3 icons"></i>
-                            <input name="endDate" id="end-date" type="date" th:value="${endDate}"
-                                   class="form-control pl-5">
-                        </div>
-                    </div><!--end col-->
+<!--                    <div class="col-md-6">-->
+<!--                        <div class="form-group position-relative">-->
+<!--                            <label for="end-date" th:text="#{transaction.history.endDate}">End date<span-->
+<!--                                    class="text-danger">*</span></label>-->
+<!--                            <i class="mdi mdi-calendar ml-3 icons"></i>-->
+<!--                            <input name="endDate" id="end-date" type="date" th:value="${endDate}"-->
+<!--                                   class="form-control pl-5">-->
+<!--                        </div>-->
+<!--                    </div>&lt;!&ndash;end col&ndash;&gt;-->
 
                     <div class="col-md-6">
                         <div class="form-group position-relative">
@@ -144,23 +144,23 @@
                     <tr>
                         <th th:text="#{transaction.history.date}">Date</th>
                         <th th:text="#{transaction.history.amount}">Amount</th>
-                        <th th:text="#{transaction.history.source}">Source</th>
-                        <th th:text="#{transaction.history.destination}">Destination</th>
+                        <th th:text="#{transaction.history.sender}">Sender</th>
+                        <th th:text="#{transaction.history.recipient}">Recipient</th>
                         <th th:text="#{transaction.history.description}">Description</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="transaction: ${transactions}">
-                        <td th:text="${transaction.dateTime} ? ${#dates.format(transaction.dateTime, 'MM/dd/yyyy HH:mm')} : #{value.NA}">
+                        <td th:text="${transaction.date} ? ${#dates.format(transaction.date, 'MM/dd/yyyy HH:mm')} : #{value.NA}">
                             2020-01-28
                         </td>
-                        <td class="admin-transactions-amount-format" th:text="${transaction.transferAmount}">
+                        <td class="admin-transactions-amount-format" th:text="${transaction.amount}">
                             500.34
                         </td>
-                        <td th:text="${transaction.recipientInstrument} ? ${transaction.senderInstrument.owner.username} + ' / ' + ${transaction.senderInstrument.name} : #{value.NA}">
+                        <td th:text="${transaction.userReceiver.username} ? ${transaction.userSender.username} : #{value.NA}">
                             Jane/Jane's wallet
                         </td>
-                        <td th:text="${transaction.recipientInstrument} ? ${transaction.recipientInstrument.owner.username} + ' / ' + ${transaction.recipientInstrument.name} : #{value.NA}">
+                        <td th:text="${transaction.userSender.username} ? ${transaction.userReceiver.username} : #{value.NA}">
                             John/John's wallet
                         </td>
                         <td th:text="${transaction.description} ? ${transaction.description} : #{value.NA}">Reason for
@@ -169,20 +169,20 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="p-4" th:if="${lastPage > 0}">
-                    <ul class="pagination mb-0 list-unstyled">
-                        <li th:each="i : ${#numbers.sequence(beginIndex, endIndex)}">
-                            <a th:href="@{/admin/transactions(startDate=${startDate}, endDate=${endDate}, sender=${sender},
-                               recipient=${recipient}, amount=${amount}, date=${date}, pageSize=${pageSize}, page=${i})}"
-                               th:text="${i}"
-                               th:class="'pr-3 pl-3 pt-2 pb-2' + (${i == pageNumber} ? ' active bg-primary text-light' : '')"></a>
-                        </li>
-                    </ul>
-                </div>
+<!--                <div class="p-4" th:if="${lastPage > 0}">-->
+<!--                    <ul class="pagination mb-0 list-unstyled">-->
+<!--                        <li th:each="i : ${#numbers.sequence(beginIndex, endIndex)}">-->
+<!--                            <a th:href="@{/admin/transactions(startDate=${startDate}, endDate=${endDate}, sender=${sender},-->
+<!--                               recipient=${recipient}, amount=${amount}, date=${date}, pageSize=${pageSize}, page=${i})}"-->
+<!--                               th:text="${i}"-->
+<!--                               th:class="'pr-3 pl-3 pt-2 pb-2' + (${i == pageNumber} ? ' active bg-primary text-light' : '')"></a>-->
+<!--                        </li>-->
+<!--                    </ul>-->
+<!--                </div>-->
             </div>
-            <div class="container" th:unless="${noTransactions} == null">
+            <div class="container" th:if="${transactions.isEmpty()}">
                 <div class="row justify-content-center">
-                    <h3 th:text="${noTransactions}"></h3>
+                    <h3 th:text="${transactions.isEmpty()}"></h3>
                 </div>
             </div>
         </div>

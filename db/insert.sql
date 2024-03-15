@@ -101,12 +101,12 @@ INSERT INTO transactions_types (transaction_type_name) VALUES
                                                            ('RECURRING');
 
 -- Example data for transactions
-INSERT INTO transactions (sender_wallet_id, receiver_wallet_id, amount, currency, date, transaction_status_id, description, transaction_type_id)
+INSERT INTO transactions (sender_wallet_id, user_sender_id, receiver_wallet_id, user_receiver_id, amount, currency, date, transaction_status_id, description, transaction_type_id)
 VALUES
-    (1, 3, 200.00, 'USD', '2024-03-11 12:30:00', 2, 'Payment for services', 2),
-    (2, 4, 200.00, 'USD', '2024-03-11 12:30:00', 2, 'Reimbursement for dinner', 2),
-    (3, 5, 200.00, 'USD', '2024-03-12 12:30:00', 2, 'Payment for services', 2),
-    (4, 6, 50.00, 'EUR', '2024-03-13 13:45:00', 2, 'Reimbursement for dinner', 2);
+    (1, 1, 3, 2, 200.00, 'USD', '2024-03-11 12:30:00', 2, 'Payment for services', 2),
+    (2, 1, 4, 3, 200.00, 'USD', '2024-03-11 12:30:00', 2, 'Reimbursement for dinner', 2),
+    (3, 2, 5, 4, 200.00, 'USD', '2024-03-12 12:30:00', 2, 'Payment for services', 2),
+    (4, 3, 6, 5, 50.00, 'EUR', '2024-03-13 13:45:00', 2, 'Reimbursement for dinner', 2);
 
 -- Example data for recurring_transactions
 INSERT INTO recurring_transactions (transaction_id, intervals, start_date, end_date)

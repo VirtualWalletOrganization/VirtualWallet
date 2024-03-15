@@ -1,6 +1,7 @@
 package com.example.virtualwallet.models.dtos;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -10,7 +11,7 @@ public class TransactionFilterDto {
     private String recipient;
     private BigDecimal amount;
     private String currency;
-    private LocalDateTime date;
+    private Timestamp date;
     private String sortBy;
     private String sortOrder;
 
@@ -49,11 +50,11 @@ public class TransactionFilterDto {
         this.currency = currency;
     }
 
-    public LocalDateTime getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 

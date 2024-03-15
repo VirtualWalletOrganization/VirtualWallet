@@ -25,53 +25,53 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Override
     public Optional<List<Transaction>> getAllTransactions(TransactionFilterOptions transactionFilterOptions) {
         try (Session session = sessionFactory.openSession()) {
-           // Query<Transaction> query = session.createQuery("FROM Transaction", Transaction.class);
-           // return Optional.ofNullable(query.list());
-                List<String> filters = new ArrayList<>();
-                Map<String, Object> params = new HashMap<>();
+            // Query<Transaction> query = session.createQuery("FROM Transaction", Transaction.class);
+            // return Optional.ofNullable(query.list());
+            List<String> filters = new ArrayList<>();
+            Map<String, Object> params = new HashMap<>();
 
-                transactionFilterOptions.getSender().ifPresent(value -> {
-                    filters.add("sender_wallet_id = :senderId");
-                    params.put("senderId", value);
-                });
-            transactionFilterOptions.getRecipient().ifPresent(value -> {
-                filters.add("receiver_wallet_id = :recipientId");
-                params.put("senderId", value);
+            transactionFilterOptions.getSender().ifPresent(value -> {
+                   filters.add("userSender.username like :userSender");
+                   params.put("userSender", String.format("%%%s%%", value));
             });
+
+            transactionFilterOptions.getRecipient().ifPresent(value -> {
+                filters.add("userReceiver.username like :userReceiver");
+                params.put("userReceiver", String.format("%%%s%%", value));
+            });
+
             transactionFilterOptions.getAmount().ifPresent(value -> {
                 filters.add("amount >= :amount");
                 params.put("amount", value);
             });
 
             transactionFilterOptions.getCurrency().ifPresent(value -> {
-                    filters.add("currency = :currency");
-                    params.put("currency", value);
-                });
+                filters.add("currency = :currency");
+                params.put("currency", value);
+            });
 
-                transactionFilterOptions.getCreationTime().ifPresent(value -> {
-                    filters.add("creationTime > :creationTime");
-                    params.put("creationTime", value);
-                });
+            transactionFilterOptions.getCreationTime().ifPresent(value -> {
+                filters.add("date > :date");
+                params.put("date", value);
+            });
 
-                StringBuilder queryString = new StringBuilder("from Transaction");
+            StringBuilder queryString = new StringBuilder("from Transaction");
 
-                if (!filters.isEmpty()) {
-                    queryString
-                            .append(" where ")
-                            .append(String.join(" and ", filters));
-                }
-
-                queryString.append(generateOrderBy(transactionFilterOptions));
-
-                Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
-                query.setProperties(params);
-
-
-                return Optional.ofNullable(query.list());
+            if (!filters.isEmpty()) {
+                queryString
+                        .append(" where ")
+                        .append(String.join(" and ", filters));
             }
+
+            queryString.append(generateOrderBy(transactionFilterOptions));
+
+            Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
+            query.setProperties(params);
+
+
+            return Optional.ofNullable(query.list());
         }
-
-
+    }
 
 
     @Override
@@ -141,6 +141,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             session.getTransaction().commit();
         }
     }
+
     private String generateOrderBy(TransactionFilterOptions transactionFilterOptions) {
         if (transactionFilterOptions.getSortBy().isEmpty()) {
             return "";
@@ -148,17 +149,17 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         String orderBy = "";
         switch (transactionFilterOptions.getSortBy().get()) {
-            case "sender":
-                orderBy = "sender";
+            case "userSender":
+                orderBy = "userSender.username";
                 break;
-            case "receiver":
-                orderBy = "recipient";
+            case "userReceiver":
+                orderBy = "userReceiver.username";
                 break;
             case "amount":
                 orderBy = "amount";
                 break;
-            case "creationTime":
-                orderBy = "creationTime";
+            case "date":
+                orderBy = "date";
                 break;
             default:
                 return "";

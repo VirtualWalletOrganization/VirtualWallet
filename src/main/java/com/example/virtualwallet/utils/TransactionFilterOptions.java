@@ -1,6 +1,7 @@
 package com.example.virtualwallet.utils;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -11,7 +12,7 @@ public class TransactionFilterOptions {
     private Optional<String> recipient;
     private Optional<BigDecimal> amount;
     private Optional<String> currency;
-    private Optional<LocalDateTime> creationTime;
+    private Optional<Timestamp> creationTime;
     private Optional<String> sortBy;
     private Optional<String> sortOrder;
 
@@ -24,7 +25,7 @@ public class TransactionFilterOptions {
             String recipient,
             BigDecimal amount,
             String currency,
-            LocalDateTime creationTime,
+            Timestamp creationTime,
             String sortBy,
             String sortOrder) {
         this.sender = Optional.ofNullable(sender);
@@ -52,7 +53,7 @@ public class TransactionFilterOptions {
         return currency;
     }
 
-    public Optional<LocalDateTime> getCreationTime() {
+    public Optional<Timestamp> getCreationTime() {
         return creationTime;
     }
 

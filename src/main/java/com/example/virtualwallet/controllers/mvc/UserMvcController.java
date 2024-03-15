@@ -9,9 +9,7 @@ import com.example.virtualwallet.helpers.UserMapper;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.dtos.UpdateUserDto;
 import com.example.virtualwallet.models.dtos.UserDto;
-import com.example.virtualwallet.models.dtos.UserFilterDto;
 import com.example.virtualwallet.services.contracts.UserService;
-import com.example.virtualwallet.utils.UserFilterOptions;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -22,8 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/users")
@@ -66,40 +62,6 @@ public class UserMvcController {
             model.addAttribute("error", e.getMessage());
             return "error";
         }
-    }
-
-    @GetMapping
-    public String showAllUsers(@ModelAttribute("userFilterOptions") UserFilterDto filterDto,
-                               Model model, HttpSession session) {
-        UserFilterOptions userFilterOptions = new UserFilterOptions(
-                filterDto.getUsername(),
-                filterDto.getFirstName(),
-                filterDto.getLastName(),
-                filterDto.getEmail(),
-                filterDto.getRole(),
-                filterDto.getStatus(),
-                filterDto.getSortBy(),
-                filterDto.getSortOrder());
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            List<User> users = userService.getAll(user, userFilterOptions);
-            model.addAttribute("filterOptions", filterDto);
-            model.addAttribute("users", users);
-            model.addAttribute("currentUser", user);
-            userService.getAll(user, userFilterOptions);
-            return "AdminPortalView";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-
     }
 
     @GetMapping("/{id}")
@@ -153,17 +115,6 @@ public class UserMvcController {
             return "error";
         }
     }
-
-//    @RequestHeader
-//    HttpHeaders headers,
-//    @PathVariable int id, @Valid @RequestBody
-//    UpdateUserDto userDto) {
-//        try {
-//            User user = authenticationHelper.tryGetUser(headers);
-//            User userToBeUpdated = userService.getById(id);
-//            userToBeUpdated = userMapper.fromDtoUpdate(id, userDto);
-//            userService.updateUser(user, userToBeUpdated);
-//            return userMapper.toDtoRegisterAndUpdateUser(userToBeUpdated);
 
     @PostMapping("/{id}/update")
     public String updateUser(@PathVariable int id,
@@ -230,228 +181,6 @@ public class UserMvcController {
             return "error";
         } catch (DeletionRestrictedException e) {
             model.addAttribute("statusCode", HttpStatus.FORBIDDEN.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @GetMapping("/{id}/update-to-admin")
-    public String updateToAdminForm(@PathVariable int id, Model model,
-                                    HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            User userToUpdate = userService.getById(id);
-            userService.updateToAdmin(userToUpdate, user);
-            return "redirect:/admin";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @PostMapping("/{id}/update-to-admin")
-    public String updateToAdmin(@PathVariable int id,
-                                Model model,
-                                HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            User userToUpdate = userService.getById(id);
-            userService.updateToAdmin(userToUpdate, user);
-            return "redirect:/admin";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @GetMapping("/{id}/update-to-user")
-    public String updateToUserForm(@PathVariable int id, Model model,
-                                   HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            User userToUpdate = userService.getById(id);
-            userService.updateToUser(userToUpdate, user);
-            return "redirect:/admin";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DeletionRestrictedException e) {
-            model.addAttribute("statusCode", HttpStatus.FORBIDDEN.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @PostMapping("/{id}/update-to-user")
-    public String updateToUser(@PathVariable int id,
-                               Model model,
-                               HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            User userToUpdate = userService.getById(id);
-            userService.updateToUser(userToUpdate, user);
-            return "redirect:/admin";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DeletionRestrictedException e) {
-            model.addAttribute("statusCode", HttpStatus.FORBIDDEN.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @GetMapping("/{id}/block")
-    public String showBlockUserPage(@PathVariable int id, HttpSession session, Model model) {
-        try {
-            User currentUser = authenticationHelper.tryGetCurrentUser(session);
-            User userToBeBlocked = userService.getById(id);
-            userService.blockUser(currentUser, userToBeBlocked);
-            return "redirect:/admin";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DeletionRestrictedException e) {
-            model.addAttribute("statusCode", HttpStatus.FORBIDDEN.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @PostMapping("/{id}/block")
-    public String blockUser(@PathVariable int id, HttpSession session, Model model) {
-        try {
-            User currentUser = authenticationHelper.tryGetCurrentUser(session);
-            User userToBeBlocked = userService.getById(id);
-            userService.blockUser(currentUser, userToBeBlocked);
-            return "redirect:/admin";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DeletionRestrictedException e) {
-            model.addAttribute("statusCode", HttpStatus.FORBIDDEN.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @GetMapping("/{id}/unblock")
-    public String showUnblockUserPage(@PathVariable int id, HttpSession session, Model model) {
-        try {
-            User currentUser = authenticationHelper.tryGetCurrentUser(session);
-            User userToBeUnblocked = userService.getById(id);
-            userService.unBlockUser(currentUser, userToBeUnblocked);
-            return "redirect:/admin";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @PostMapping("/{id}/unblock")
-    public String unBlockUser(@PathVariable int id, HttpSession session, Model model) {
-        try {
-            User currentUser = authenticationHelper.tryGetCurrentUser(session);
-            User userToBeUnblocked = userService.getById(id);
-            userService.unBlockUser(currentUser, userToBeUnblocked);
-            return "redirect:/admin";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "error";
         }

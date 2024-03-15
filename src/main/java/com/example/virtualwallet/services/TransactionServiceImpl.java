@@ -11,8 +11,6 @@ import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -102,7 +100,6 @@ public class TransactionServiceImpl implements TransactionService {
                     wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
                     wallet.getReceiverTransactions().add(transaction);
                     walletService.update(wallet, user);
-
                 }));
     }
 

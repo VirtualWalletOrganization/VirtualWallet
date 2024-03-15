@@ -143,7 +143,9 @@ create table transactions
 (
     transaction_id        int auto_increment primary key,
     sender_wallet_id      int          not null,
+    user_sender_id      int          not null,
     receiver_wallet_id    int          not null,
+    user_receiver_id      int          not null,
     amount                decimal      not null,
     currency              varchar(3)   not null,
     date                  datetime     not null,
@@ -152,8 +154,12 @@ create table transactions
     transaction_type_id   int          not null,
     constraint transactions_wallets_wallet_id_fk
         foreign key (receiver_wallet_id) references wallets (wallet_id),
+    constraint transactions_users_user_id_fk
+        foreign key (user_receiver_id) references users (user_id),
     constraint transactions_wallets_wallet_id_fk_2
         foreign key (sender_wallet_id) references wallets (wallet_id),
+    constraint transactions_users_user_id_fk2
+        foreign key (user_sender_id) references users (user_id),
     constraint transactions_transactions_statuses_transaction_status_id_fk
         foreign key (transaction_status_id) references transactions_statuses (transaction_status_id),
     constraint transactions_transactions_types_transaction_type_id_fk

@@ -1,8 +1,10 @@
 package com.example.virtualwallet.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -21,9 +23,19 @@ public class Transaction {
     @JoinColumn(name = "sender_wallet_id")
     private Wallet walletSender;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_sender_id")
+    private User userSender;
+
     @ManyToOne
     @JoinColumn(name = "receiver_wallet_id")
     private Wallet walletReceiver;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_receiver_id")
+    private User userReceiver;
 
     @Column(name = "amount")
     private BigDecimal amount;
@@ -36,7 +48,7 @@ public class Transaction {
 //    private Direction direction;
 
     @Column(name = "date")
-    private LocalDateTime date;
+    private Timestamp date;
 
 //    @Enumerated(EnumType.STRING)
 //    @Column(name = "transaction_status_id")
@@ -111,11 +123,11 @@ public class Transaction {
 //        this.direction = direction;
 //    }
 
-    public LocalDateTime getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
@@ -162,5 +174,21 @@ public class Transaction {
     @Override
     public int hashCode() {
         return Objects.hash(transactionId);
+    }
+
+    public User getUserSender() {
+        return userSender;
+    }
+
+    public void setUserSender(User userSender) {
+        this.userSender = userSender;
+    }
+
+    public User getUserReceiver() {
+        return userReceiver;
+    }
+
+    public void setUserReceiver(User userReceiver) {
+        this.userReceiver = userReceiver;
     }
 }
