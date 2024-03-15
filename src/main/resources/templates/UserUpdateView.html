@@ -67,19 +67,19 @@
 
                                         <label th:text="#{user.label.first-name}">First name</label><br/>
                                         <input type="text" th:field="*{firstName}"/><br/>
-                                        <label class="error" th:errors="*{firstName}">First name error placeholder</label><br/><br/>
+                                        <label class="error" th:errors="*{firstName}">First name error placeholder</label><br/>
 
                                         <label th:text="#{user.label.last-name}">Last name</label><br/>
                                         <input type="text" th:field="*{lastName}"/><br/>
-                                        <label class="error" th:errors="*{lastName}">Last name error placeholder</label><br/><br/>
+                                        <label class="error" th:errors="*{lastName}">Last name error placeholder</label><br/>
 
                                         <label th:text="#{user.label.email}">Email</label><br/>
                                         <input type="text" th:field="*{email}"/><br/>
-                                        <label class="error" th:errors="*{email}">Email error placeholder</label><br/><br/>
+                                        <label class="error" th:errors="*{email}">Email error placeholder</label><br/>
 
                                         <label th:text="#{user.label.phoneNumber}">Phone number</label><br/>
                                         <input type="text" th:field="*{phoneNumber}"/><br/>
-                                        <label class="error" th:errors="*{phoneNumber}">Email error placeholder</label><br/><br/>
+                                        <label class="error" th:errors="*{phoneNumber}">Email error placeholder</label><br/>
 
 <!--                                        <label th:text="#{user.label.profilepicture}">Phone number</label><br/>-->
 <!--                                        <input type="text" th:field="*{profilePicture}"/><br/>-->
@@ -112,8 +112,10 @@
 <!--                                            <input type="text" th:field="*{phoneNumber}"/><br/>-->
 <!--                                            <label class="error" th:errors="*{phoneNumber}">Phone number error placeholder</label><br/><br/>-->
 <!--                                        </div>-->
-
-                                        <input type="submit" value="Save"/>
+                                        <input type="submit" id="submit" name="send" class="submitBnt btn btn-primary"
+                                               th:value="#{user.update.button}">
+                                        <br><br/>
+<!--                                        <input type="submit" value="Save"/>-->
                                     </form>
                                 </div>
                             </h5>
