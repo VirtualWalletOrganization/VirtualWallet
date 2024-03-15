@@ -71,13 +71,13 @@
                         <a href="#" th:if="${isAuthenticated}" th:href="@{/wallets}" th:text="#{header.menu.wallets}"></a><span
                             class="menu-arrow"></span>
                         <ul class="submenu">
-                            <li><a  href="#" th:if="${isAuthenticated}" th:text="#{header.menu.addWallet}" th:href="@{/new}">Add wallet</a></li>
+                            <li><a  href="#" th:if="${isAuthenticated}" th:text="#{header.menu.addWallet}" th:href="@{/wallets/new}">Add wallet</a></li>
                             <!--                            <li><a th:href="@{/transaction/create-funding}" th:text="#{header.menu.topUpWallet}"></a></li>-->
                             <li class="has-submenu"><a href="#" th:if="${isAuthenticated}" th:text="#{header.menu.cards}"
                                                        th:href="@{/cards}">Cards</a><span
                                     class="submenu-arrow"></span>
                                 <ul class="submenu">
-                                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add}">Add card</a></li>
+                                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add(walletId=${walletId})}">Add card</a></li>
                                 </ul>
                             </li>
                         </ul>

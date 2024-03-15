@@ -92,13 +92,12 @@ public class WalletRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Wallet> update(@RequestHeader HttpHeaders headers,
-                                         @PathVariable int id,
-                                         @Valid @RequestBody WalletDto walletDto) {
+                                         @PathVariable int id) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Wallet updateWallet = walletMapper.fromDto(id, walletDto, user.getId());
-            walletService.update(updateWallet, user);
-            return new ResponseEntity<>(updateWallet, HttpStatus.OK);
+            Wallet walletToUpdate = walletService.getWalletById(id, user.getId());
+            walletService.update(walletToUpdate, user);
+            return new ResponseEntity<>(walletToUpdate, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {

@@ -4,8 +4,11 @@ import com.example.virtualwallet.models.enums.CardStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "cards")
@@ -29,7 +32,7 @@ public class Card {
     private String cardNumber;
 
     @Column(name = "expiration_date")
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
 
     @Column(name = "card_holder")
     private String cardHolder;
@@ -44,9 +47,9 @@ public class Card {
     @Column(name = "status")
     private CardStatus cardStatus = CardStatus.ACTIVE;
 
-//    @JsonIgnore
-//    @ManyToMany(mappedBy = "cards",fetch = FetchType.EAGER)
-//    private Set<Wallet> wallets;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "cards",fetch = FetchType.EAGER)
+    private Set<Wallet> wallets= new HashSet<>();
 
     public Card() {
     }
@@ -83,11 +86,11 @@ public class Card {
         this.cardNumber = cardNumber;
     }
 
-    public LocalDateTime getExpirationDate() {
+    public LocalDate getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 
@@ -123,13 +126,13 @@ public class Card {
         this.cardStatus = cardStatus;
     }
 
-//    public Set<Wallet> getWallets() {
-//        return new HashSet<>();
-//    }
-//
-//    public void setWallets(Set<Wallet> wallets) {
-//        this.wallets = wallets;
-//    }
+    public Set<Wallet> getWallets() {
+        return wallets;
+    }
+
+    public void setWallets(Set<Wallet> wallets) {
+        this.wallets = wallets;
+    }
 
     @Override
     public boolean equals(Object o) {

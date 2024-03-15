@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
 
 <head>
     <meta charset="utf-8"/>
@@ -33,20 +33,21 @@
                     </div>
 
                     <div class="p-4">
-                        <form th:action="@{/wallets/new}" th:object="${walletDto}" method="post">
+                        <form th:action="@{/wallets/new}" th:object="${wallet}" method="post">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="wallet-name" th:text="#{wallet.name}">Name of Wallet</label>
-                                        <input name="wallet-name" id="wallet-name" type="text"
-                                               class="form-control font-weight-bold" required
-                                               th:field="*{name}" th:placeholder="#{wallet.name}">
+                                        <label for="wallet-type" th:text="#{wallet.type}">Type of Wallet</label>
+                                        <select id="wallet-type" name="wallet-type" class="form-control font-weight-bold" required th:field="*{walletType}">
+                                            <option value="">Select Wallet Type</option>
+                                            <option th:each="type : ${T(com.example.virtualwallet.models.enums.WalletType).values()}" th:value="${type}" th:text="${type}">Type</option>
+                                        </select>
                                     </div>
-                                    <div th:if="${#fields.hasErrors('name')}"
+                                    <div th:if="${#fields.hasErrors('walletType')}"
                                          class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{wallet.error}"> </span>
-                                        <span class="alert-content" th:errors="*{name}"></span>
+                                        <span class="alert-content" th:errors="*{walletType}"></span>
                                     </div>
                                     <div th:if="${error} != null"
                                          class="alert alert-danger alert-pills">
@@ -56,28 +57,43 @@
                                     </div>
                                 </div><!--end col-->
                                 <div class="col-md-12">
-                                    <div class="form-group" th:if="${user.defaultWallet} == null">
+                                    <div class="form-group">
+                                        <label for="wallet-currency" th:text="#{wallet.currency}">Currency</label>
+                                        <input name="wallet-currency" id="wallet-currency" type="text"
+                                               class="form-control font-weight-bold" required
+                                               th:field="*{currency}" th:placeholder="#{wallet.currency}">
+                                    </div>
+                                    </div>
+                                    <div th:if="${#fields.hasErrors('walletType')}"
+                                         class="alert alert-danger alert-pills">
+                                            <span class="badge badge-danger rounded"
+                                                  th:text="#{wallet.error}"> </span>
+                                        <span class="alert-content" th:errors="*{walletType}"></span>
+                                    </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group" th:if="${wallet.default} == null">
                                         <label for="default-wallet-1" th:text="#{wallet.select.asDefault}"></label>
                                         <input
                                                 id="default-wallet-1" type="checkbox" onclick="return false;"
                                                 disabled="disabled" checked>
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                            <strong th:text="#{wallet.select.autoDefault.bold}"></strong> <span
-                                                th:text="#{wallet.select.autoDefault.text}"></span>
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true"> × </span></button>
-                                        </div>
+<!--                                        <div class="alert alert-success alert-dismissible fade show" role="alert">-->
+<!--                                            <strong th:text="#{wallet.select.autoDefault.bold}"></strong> <span-->
+<!--                                                th:text="#{wallet.select.autoDefault.text}"></span>-->
+<!--                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+<!--                                                <span aria-hidden="true"> × </span></button>-->
+<!--                                        </div>-->
                                     </div>
-                                    <div class="form-group" th:unless="${user.defaultWallet} == null">
+                                    <div class="form-group" th:unless="${wallet.default} == null">
                                         <label for="default-wallet-2" th:text="#{wallet.select.asDefault}"></label>
-                                        <input id="default-wallet-2" type="checkbox" name="default" th:checked="${default}">
+                                        <input id="default-wallet-2" type="checkbox" name="default" th:checked="${wallet.default}">
                                     </div>
 
                                 </div><!--end col-->
                             </div><!--end row-->
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <input type="hidden" th:field="*{paymentInstrumentDto.name}"/>
+                                    <input type="hidden" th:field="*{walletType}"/>
                                     <input type="submit" id="submit" name="send" class="submitBnt btn btn-primary"
                                            th:value="#{wallet.add.button}">
                                 </div><!--end col-->

@@ -53,19 +53,41 @@ public class CardMvcController {
         return request.getRequestURI();
     }
 
+//    @GetMapping
+//    public String showAllCards(Model model, HttpSession session) {
+//        try {
+//            User user = authenticationHelper.tryGetCurrentUser(session);
+//
+//            if (user != null) {
+//                model.addAttribute("currentUser", user);
+//            }
+//
+//            List<Card> cards = cardService.getAllCards();
+//            model.addAttribute("cards", cards);
+//            return "cards";
+//        } catch (AuthorizationException e) {
+//            return "cards";
+//        } catch (EntityNotFoundException e) {
+//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+//            model.addAttribute("error", e.getMessage());
+//            return "error";
+//        }
+//    }
+
     @GetMapping
-    public String showAllCards(Model model, HttpSession session) {
+    public String showAllCardsByCurrentUser( Model model, HttpSession session) {
+        User user;
         try {
-            User user = authenticationHelper.tryGetCurrentUser(session);
-
-            if (user != null) {
-                model.addAttribute("currentUser", user);
-            }
-
-            List<Card> cards = cardService.getAllCards();
-            model.addAttribute("cards", cards);
-            return "cards";
+            user = authenticationHelper.tryGetCurrentUser(session);
         } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            List<Card> cards = cardService.getAllCardsByCurrentUser(user);
+            model.addAttribute("cards", cards);
+            model.addAttribute("userId",user.getId());
+            model.addAttribute("currentUser", user);
             return "cards";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -73,7 +95,6 @@ public class CardMvcController {
             return "error";
         }
     }
-
     @GetMapping("/{cardId}")
     public String showSingleCard(@PathVariable int cardId, Model model, HttpSession session) {
         User user;
@@ -89,27 +110,6 @@ public class CardMvcController {
             model.addAttribute("cardId", cardId);
             model.addAttribute("currentUser", user);
             return "CardView";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-    }
-
-    @GetMapping("/users/{userId}")
-    public String showAllCardsByUserId(@PathVariable int userId, Model model, HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            List<Card> cards = cardService.getAllCardsByUserId(userId, user);
-            model.addAttribute("cards", cards);
-            model.addAttribute("currentUser", user);
-            return "CardsView";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -180,9 +180,8 @@ public class CardMvcController {
         }
     }
 
-    @GetMapping("/{cardId}/wallets/{walletId}/update")
+    @GetMapping("/{cardId}/update")
     public String showUpdateCardToWalletPage(@PathVariable int cardId,
-                                             @PathVariable int walletId,
                                              Model model, HttpSession session) {
         User user;
         try {
@@ -193,21 +192,19 @@ public class CardMvcController {
 
         try {
             Card existingCard = cardService.getCardById(cardId, user);
-            walletService.getWalletById(walletId, user.getId());
-            model.addAttribute("card", existingCard);
-            model.addAttribute("walletId", walletId);
+            CardDto cardDto = cardMapper.toDto(existingCard);
+            model.addAttribute("card", cardDto);
             model.addAttribute("currentUser", user);
-            return "CardUpdateView";
+            return "card-update";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
-    @PostMapping("/{cardId}/wallets/{walletId}/update")
+    @PostMapping("/{cardId}/update")
     public String updateCardToWallet(@PathVariable int cardId,
-                                     @PathVariable int walletId,
                                      @Valid @ModelAttribute("card") CardDto cardDto,
                                      BindingResult bindingResult,
                                      Model model,
@@ -220,29 +217,29 @@ public class CardMvcController {
         }
 
         if (bindingResult.hasErrors()) {
-            return "CardUpdateView";
+            return "card-update";
         }
 
         try {
             Card cardToUpdate = cardMapper.fromDto(cardId, cardDto, user);
             cardService.updateCard(cardToUpdate, user);
-            return "redirect:/wallets/" + walletId;
+            return "redirect:/cards";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (DuplicateEntityException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (CardMismatchException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
@@ -259,15 +256,15 @@ public class CardMvcController {
         try {
             Card cardToDelete = cardService.getCardById(cardId, user);
             cardService.deleteCard(cardToDelete.getId(), user);
-            return "redirect:/wallets";
+            return "redirect:/cards";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 }

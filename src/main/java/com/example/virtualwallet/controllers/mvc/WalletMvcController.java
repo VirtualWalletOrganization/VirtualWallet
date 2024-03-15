@@ -59,7 +59,7 @@ public class WalletMvcController {
                 model.addAttribute("currentUser", user);
             }
 
-            List<Wallet> wallets = walletService.getAll(user);
+            List<Wallet> wallets = walletService.getAllWalletsByUserId(user);
             model.addAttribute("wallets", wallets);
             return "wallets";
         } catch (AuthorizationException e) {
@@ -104,7 +104,7 @@ public class WalletMvcController {
 
         model.addAttribute("wallet", new WalletDto());
         model.addAttribute("currentUser", user);
-        return "add-wallet";
+        return "wallet-add";
     }
 
     @PostMapping("/new")
@@ -121,7 +121,7 @@ public class WalletMvcController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("currentUser", user);
-            return "add-wallet";
+            return "wallet-add";
         }
 
         try {
@@ -131,19 +131,19 @@ public class WalletMvcController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (DuplicateEntityException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
-    @GetMapping("/{walletId}/update")
+    @GetMapping("/{walletId}/makeWalletDefault")
     public String showEditWalletPage(@PathVariable int walletId,
                                      Model model, HttpSession session) {
         User user;
@@ -161,18 +161,16 @@ public class WalletMvcController {
             model.addAttribute("walletId", walletId);
             model.addAttribute("wallet", walletDto);
             model.addAttribute("currentUser", user);
-            return "WalletUpdateView";
+            return "wallets";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
-    @PostMapping("/{walletId}/update")
+    @PostMapping("/{walletId}/makeWalletDefault")
     public String updateWallet(@PathVariable int walletId,
-                               @Valid @ModelAttribute("wallet") WalletDto walletDto,
-                               BindingResult bindingResult,
                                Model model,
                                HttpSession session) {
         User user;
@@ -182,26 +180,22 @@ public class WalletMvcController {
             return "redirect:/auth/login";
         }
 
-        if (bindingResult.hasErrors()) {
-            return "WalletUpdateView";
-        }
-
         try {
-            Wallet walletToUpdate = walletMapper.fromDto(walletDto, user);
+            Wallet walletToUpdate = walletService.getWalletById(walletId, user.getId());
             walletService.update(walletToUpdate, user);
             return "redirect:/wallets";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (DuplicateEntityException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 

@@ -30,6 +30,14 @@ public class CardRepositoryImpl implements CardRepository {
             return query.list();
         }
     }
+    @Override
+    public Optional<List<Card>> getAllCardsByCurrentUser(int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Card> query = session.createQuery("select c From Card c WHERE c.user.id= :userId ", Card.class);
+            query.setParameter("userId", userId);
+            return Optional.ofNullable(query.list());
+        }
+    }
 
     @Override
     public Optional<Card> getCardById(int cardId) {
@@ -38,14 +46,6 @@ public class CardRepositoryImpl implements CardRepository {
             query.setParameter("id", cardId);
             return Optional.ofNullable(query.uniqueResult());
 
-        }
-    }
-    @Override
-    public Optional<List<Card>> getAllCardsByUserId(int userId) {
-        try (Session session = sessionFactory.openSession()) {
-            Query<Card> query = session.createQuery("select c From Card c WHERE c.user.id= :userId ", Card.class);
-            query.setParameter("userId", userId);
-            return Optional.ofNullable(query.list());
         }
     }
 

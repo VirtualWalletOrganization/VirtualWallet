@@ -1,24 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="utf-8"/>
-    <title>Edit your card details</title>
+    <title>Edit your wallet details</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div th:replace="fragments/layout :: css-sheets"></div>
 </head>
 
 <body>
-<!-- Loader -->
-<div id="preloader">
-    <div id="status">
-        <div class="spinner">
-            <div class="double-bounce1"></div>
-            <div class="double-bounce2"></div>
-        </div>
-    </div>
-</div>
-<!-- Loader -->
+
 
 <div th:replace="fragments/layout :: header"></div>
 
@@ -43,7 +34,7 @@
                     </div>
 
                     <div class="p-4">
-                        <form th:action="@{'/user/cards/' + ${cardId} + '/edit'}" th:object="${cardDto}" method="post">
+                        <form th:action="@{'/cards/' + ${cardId} + '/update'}" th:object="${card}" method="post">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div th:if="${error} != null" class="alert alert-danger alert-pills">
@@ -51,18 +42,42 @@
                                                                                       th:text="#{card.error}"> </span>
                                         <span class="alert-content" th:text="${error}"></span>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="card-type" th:text="#{card.type}">Expires End</label>
+                                                <input type="text" autocomplete="off" id="card-type" class="form-control font-weight-bold" required
+                                                       th:field="*{cardType}" th:placeholder="${card.cardType}">
+                                            </div>
+                                            <div th:if="${#fields.hasErrors('cardType')}" class="alert alert-danger alert-pills">
+                                                <span class="badge badge-danger rounded" th:text="#{card.cardType.error}"></span>
+                                                <span class="alert-content" th:errors="*{cardType.name}"></span>
+                                            </div>
+                                        </div><!--end col-->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="currency" th:text="#{card.currency}">CVV</label>
+                                                <input type="text" autocomplete="off" id="currency" class="form-control font-weight-bold" required
+                                                       th:field="*{currency}" th:placeholder="${card.currency}">
+                                            </div>
+                                            <div th:if="${#fields.hasErrors('currency')}" class="alert alert-danger alert-pills">
+                                                <span class="badge badge-danger rounded" th:text="#{card.currency.error}"></span>
+                                                <span class="alert-content" th:errors="*{currency}"></span>
+                                            </div>
+                                        </div><!--end col-->
+                                    </div><!--end row-->
                                     <div class="form-group">
                                         <label for="cardholder-name" th:text="#{card.cardholderName}">Name of card
                                             holder</label>
                                         <input name="cardholder-name" id="cardholder-name" type="text"
                                                class="form-control font-weight-bold" required
-                                               th:field="*{cardholderName}" th:placeholder="${card.cardholderName}">
+                                               th:field="*{cardHolder}" th:placeholder="${card.cardHolder}">
                                     </div>
-                                    <div th:if="${#fields.hasErrors('cardholderName')}"
+                                    <div th:if="${#fields.hasErrors('cardHolder')}"
                                          class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{card.cardholderName.error}"> </span>
-                                        <span class="alert-content" th:errors="*{cardholderName}"></span>
+                                        <span class="alert-content" th:errors="*{cardHolder}"></span>
                                     </div>
                                 </div><!--end col-->
                                 <div class="col-md-12">
@@ -99,13 +114,13 @@
                                         <label for="cvv" th:text="#{card.csv}">CVV</label>
                                         <input type="text" autocomplete="off" id="cvv"
                                                class="form-control font-weight-bold" required
-                                               th:field="*{csv}" placeholder="000">
+                                               th:field="*{checkNumber}" placeholder="000">
                                     </div>
-                                    <div th:if="${#fields.hasErrors('csv')}"
+                                    <div th:if="${#fields.hasErrors('checkNumber')}"
                                          class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{card.csv.error}"> </span>
-                                        <span class="alert-content" th:errors="*{csv}"></span>
+                                        <span class="alert-content" th:errors="*{checkNumber}"></span>
                                     </div>
                                 </div><!--end col-->
                             </div><!--end row-->

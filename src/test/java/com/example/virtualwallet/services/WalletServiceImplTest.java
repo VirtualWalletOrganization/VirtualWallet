@@ -213,7 +213,7 @@ class WalletServiceImplTest {
         List<Wallet> expectedWallets = new ArrayList<>();
         when(walletRepository.getAllWalletsByUserId(userId)).thenReturn(Optional.of(expectedWallets));
 
-        List<Wallet> actualWallets = walletService.getAllWalletsByUserId(userId);
+        List<Wallet> actualWallets = walletService.getAllWalletsByUserId(new User());
 
         assertEquals(expectedWallets, actualWallets);
         verify(walletRepository, times(1)).getAllWalletsByUserId(userId);
@@ -224,7 +224,7 @@ class WalletServiceImplTest {
         int userId = 1;
         when(walletRepository.getAllWalletsByUserId(userId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> walletService.getAllWalletsByUserId(userId));
+        assertThrows(EntityNotFoundException.class, () -> walletService.getAllWalletsByUserId(new User()));
         verify(walletRepository, times(1)).getAllWalletsByUserId(userId);
     }
 

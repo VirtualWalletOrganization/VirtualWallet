@@ -43,7 +43,7 @@ public class helpers {
             mockCard.setCardsType(new CardsType());
             mockCard.setUser(createMockUser());
             mockCard.setCardNumber("1234567891234567");
-            mockCard.setExpirationDate(LocalDateTime.now());
+            mockCard.setExpirationDate(LocalDate.now());
             mockCard.setCardHolder("MockFirstName MockLastName");
             mockCard.setCheckNumber("123");
             mockCard.setCurrency("USD");

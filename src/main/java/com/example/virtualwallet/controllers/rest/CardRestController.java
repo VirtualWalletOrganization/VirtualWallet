@@ -35,16 +35,16 @@ public class CardRestController {
         this.authenticationHelper = authenticationHelper;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Card>> getAllCards(@RequestHeader HttpHeaders headers) {
-        try {
-            authenticationHelper.tryGetUser(headers);
-            List<Card> cards = cardService.getAllCards();
-            return new ResponseEntity<>(cards, HttpStatus.OK);
-        } catch (AuthorizationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-    }
+//    @GetMapping
+//    public ResponseEntity<List<Card>> getAllCards(@RequestHeader HttpHeaders headers) {
+//        try {
+//            authenticationHelper.tryGetUser(headers);
+//            List<Card> cards = cardService.getAllCards();
+//            return new ResponseEntity<>(cards, HttpStatus.OK);
+//        } catch (AuthorizationException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//        }
+//    }
 
     @GetMapping("/{cardId}")
     public ResponseEntity<Card> getCardById(@RequestHeader HttpHeaders headers, @PathVariable int cardId) {
@@ -59,11 +59,11 @@ public class CardRestController {
         }
     }
 
-    @GetMapping("/users/{userId}")
-    public ResponseEntity<List<Card>> getAllCardsByUserId(@RequestHeader HttpHeaders headers, @PathVariable int userId) {
+    @GetMapping
+    public ResponseEntity<List<Card>> getAllCardsByCurrentUser(@RequestHeader HttpHeaders headers) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            List<Card> cards = cardService.getAllCardsByUserId(userId, user);
+            List<Card> cards = cardService.getAllCardsByCurrentUser(user);
             return new ResponseEntity<>(cards, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

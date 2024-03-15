@@ -21,8 +21,8 @@ public class CardMapper {
         Card card = new Card();
 
         CardsType cardsType = new CardsType();
-        cardsType.setCardType(CardType.valueOf(dto.getCardType().name()));
-        cardsType.setId(dto.getCardType().ordinal() + 1);
+        cardsType.setId(dto.getCardType().equalsIgnoreCase("CREDIT") ? 1 : 2);
+        cardsType.setCardType(CardType.valueOf(dto.getCardType().toUpperCase()));
 
         card.setCardsType(cardsType);
         card.setCardNumber(dto.getCardNumber());
@@ -33,5 +33,17 @@ public class CardMapper {
         card.setUser(user);
 
         return card;
+    }
+
+    public CardDto toDto(Card card){
+        CardDto cardDto=new CardDto();
+        cardDto.setCardType(card.getCardsType().getCardType().name());
+        cardDto.setCardNumber(card.getCardNumber());
+        cardDto.setCardHolder(card.getCardHolder());
+        cardDto.setCheckNumber(card.getCheckNumber());
+        cardDto.setExpirationDate(card.getExpirationDate());
+        cardDto.setCurrency(card.getCurrency());
+
+        return cardDto;
     }
 }

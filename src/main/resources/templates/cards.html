@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Cards List</title>
@@ -42,20 +42,25 @@
                 <table class="table mb-0 table-center">
                     <thead>
                     <tr>
+                        <th th:text="#{card.cardStatus}">Card status</th>
                         <th th:text="#{card.cardNumber}">Card number</th>
                         <th th:text="#{card.cardholderName}">Cardholder name</th>
                         <th th:text="#{card.expirationDate}">Expiration date</th>
+                        <th th:text="#{card.wallet}">Wallet type</th>
                         <th th:text="#{card.edit.title}">Edit card</th>
                         <th th:text="#{card.delete.title}">Delete card</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="card : ${cards}">
+                        <td th:text="${card.cardStatus}" th:style="${#strings.equalsIgnoreCase(card.cardStatus, 'ACTIVE') ? 'color: green;' : 'color: red;'}">Card status</td>
                         <td th:text="${card.cardNumber}">Card number</td>
                         <td th:text="${card.cardHolder}">Cardholder Name</td>
                         <td th:text="${card.expirationDate}">Expiration date</td>
+                        <td> <span th:each="wallet : ${card.getWallets()}" th:text="${wallet.getWalletsType().getWalletType().name()}"></span>
+                        </td>
                         <td>
-                            <form th:action="@{'/cards/' + ${card.id} + '/wallets/{walletId}/update'}" method="get">
+                            <form th:action="@{'/cards/' + ${card.id} + '/update'}">
                                 <input class="btn btn-primary" th:type="submit" th:value="#{card.edit}">
                             </form>
 
@@ -88,7 +93,7 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-primary" data-dismiss="modal"
                                                     th:text="#{card.delete.confirmation.close}"></button>
-                                            <form th:action="@{'/cards/' + ${card.id} + '/delete'}" method="post">
+                                            <form th:action="@{'/cards/' + ${card.id} + '/delete'}" method="get">
                                                 <input class="btn btn-secondary" th:type="submit"
                                                        th:value="#{card.delete}">
                                             </form>

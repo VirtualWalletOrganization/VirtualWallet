@@ -9,6 +9,7 @@ public interface WalletService {
 
     List<Wallet> getAll(User user);
 
+    List<Wallet> getAllWalletsByUserId(User user);
     List<User> getAllUsersByWalletId(int walletId);
 
     Wallet getWalletById(int walletId, int userId);
@@ -19,7 +20,6 @@ public interface WalletService {
 
     List<Wallet> getAllWalletsByCreatorId(int creatorId);
 
-    List<Wallet> getAllWalletsByUserId(int userId);
 
     Wallet create(Wallet wallet, User user);
 

@@ -15,13 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.virtualwallet.utils.CheckPermissions.checkAccessPermissionsUser;
-import static com.example.virtualwallet.utils.CheckPermissions.checkPermissionExistingUsersInWallet;
+import static com.example.virtualwallet.utils.CheckPermissions.*;
 import static com.example.virtualwallet.utils.Messages.*;
 
 @Service
@@ -42,20 +42,19 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    public List<Card> getAllCardsByCurrentUser( User executingUser) {
+        List<Card> cards= cardRepository.getAllCardsByCurrentUser(executingUser.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cards"));
+        checkPermissionShowingCardsByUser(cards, executingUser, SEARCH_CARD_ERROR_MESSAGE);
+        return cards;
+
+    }
+    @Override
     public Card getCardById(int cardId, User executingUser) {
         Card card= cardRepository.getCardById(cardId)
                 .orElseThrow(() -> new EntityNotFoundException("Card", "id", String.valueOf(cardId)));
         checkAccessPermissionsUser(card.getUser().getId(), executingUser, SEARCH_CARD_ERROR_MESSAGE);
         return card;
-    }
-
-    @Override
-    public List<Card> getAllCardsByUserId(int userId, User executingUser) {
-        List<Card> cards= cardRepository.getAllCardsByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Cards"));
-        checkAccessPermissionsUser(userId, executingUser, SEARCH_CARD_ERROR_MESSAGE);
-        return cards;
-
     }
 
     @Override
@@ -103,7 +102,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 0 1 * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void deactivateExpiredCards() {
         Date currentDate = new Date();
         List<Card> expiredCards = cardRepository.findExpiredCards(currentDate);
@@ -155,7 +154,7 @@ public class CardServiceImpl implements CardService {
     }
 
     private static void throwIfCardExpired(Card card) {
-        if (card.getExpirationDate().isBefore(LocalDateTime.now()) || card.getCardStatus().equals(CardStatus.DEACTIVATED)) {
+        if (card.getExpirationDate().isBefore(LocalDate.now()) || card.getCardStatus().equals(CardStatus.DEACTIVATED)) {
             throw new CardMismatchException(CARD_IS_EXPIRED_OR_DEACTIVATED);
         }
     }

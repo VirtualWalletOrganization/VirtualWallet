@@ -85,12 +85,15 @@ public class WalletRepositoryImpl implements WalletRepository {
     }
 
     @Override
-    public Optional<Wallet> getDefaultWallet(int recipientUserId) {
+    public Optional<Wallet> getDefaultWallet(int userId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Wallet> query = session.createQuery(
-                    "FROM Wallet as w where w.creator.id = :recipientUserId" +
-                            " AND w.isDefault=true", Wallet.class);
-            query.setParameter("recipientUserId", recipientUserId);
+                    "SELECT w from Wallet w JOIN w.users u where u.id = :userId " +
+                            "AND w.isDefault=true", Wallet.class);
+//
+//            "FROM Wallet as w where w.creator.id = :recipientUserId" +
+//                            " AND w.isDefault=true", Wallet.class);
+            query.setParameter("userId", userId);
             List<Wallet> wallets = query.list();
 
             return Optional.ofNullable(wallets.get(0));

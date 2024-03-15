@@ -5,12 +5,13 @@ import jakarta.validation.constraints.Pattern;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CardDto {
 
     @NotNull(message = "Card type content can't be empty")
-    private CardType cardType;
+    private String cardType;
 
     @Pattern(regexp = "\\d{16}",
             message = "Invalid card number")
@@ -18,9 +19,9 @@ public class CardDto {
     private String cardNumber;
 
     // @Pattern(regexp = "(0[1-9]|1[0-2])/[0-9]{2}")
-    @Future
+    @Future(message = "Expiration date must be in the future")
     @NotNull(message = "Expiration date content can't be empty")
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
 
     @Pattern(regexp = ".{2,30}",
             message = "Invalid card holder name")
@@ -38,11 +39,11 @@ public class CardDto {
     public CardDto() {
     }
 
-    public CardType getCardType() {
+    public String getCardType() {
         return cardType;
     }
 
-    public void setCardType(CardType cardType) {
+    public void setCardType(String cardType) {
         this.cardType = cardType;
     }
 
@@ -54,11 +55,11 @@ public class CardDto {
         this.cardNumber = cardNumber;
     }
 
-    public LocalDateTime getExpirationDate() {
+    public LocalDate getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 

@@ -3,8 +3,10 @@ package com.example.virtualwallet.services;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
+import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.WalletsRole;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
@@ -34,6 +36,14 @@ public class WalletServiceImpl implements WalletService {
     public List<Wallet> getAll(User user) {
         checkAccessPermissionsAdmin(user, WALLET_ERROR_MESSAGE);
         return walletRepository.getAll();
+    }
+    @Override
+    public List<Wallet> getAllWalletsByUserId(User user) {
+        List<Wallet> wallets= walletRepository.getAllWalletsByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cards"));
+        checkPermissionShowingWalletsByUser(wallets, user, SEARCH_WALLET_ERROR_MESSAGE);
+        return wallets;
+
     }
 
     @Override
@@ -92,7 +102,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public Wallet getDefaultWallet(int recipientUserId) {
         return walletRepository.getDefaultWallet(recipientUserId)
-                .orElseThrow(() -> new EntityNotFoundException("Recipient's wallet"));
+                .orElseThrow(() -> new EntityNotFoundException("Default's wallet"));
     }
 
     @Override
@@ -101,17 +111,15 @@ public class WalletServiceImpl implements WalletService {
                 .orElseThrow(() -> new EntityNotFoundException("Wallets"));
     }
 
-    @Override
-    public List<Wallet> getAllWalletsByUserId(int userId) {
-        return walletRepository.getAllWalletsByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Wallets"));
-    }
 
     @Override
     public Wallet create(Wallet wallet, User user) {
         if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
             User userCreator = wallet.getCreator();
-            userCreator.getWalletsRole().setWalletRole(WalletRole.ADMIN);
+            WalletsRole walletsRole=new WalletsRole();
+            walletsRole.setId(WalletRole.ADMIN.ordinal()+1);
+            walletsRole.setWalletRole(WalletRole.ADMIN);
+            userCreator.setWalletsRole(walletsRole);
             wallet.setCreator(userCreator);
         }
 
@@ -149,10 +157,21 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void update(Wallet wallet, User user) {
-        checkAccessPermissionWalletUser(wallet, user, MODIFY_WALLET_ERROR_MESSAGE);
-        walletRepository.update(wallet);
-    }
+    public void update(Wallet walletToUpdate, User user) {
+        checkAccessPermissionWalletUser(walletToUpdate, user, MODIFY_WALLET_ERROR_MESSAGE);
+            Wallet currentDefaultWallet = getDefaultWallet(user.getId());
+            if (currentDefaultWallet.getId() != walletToUpdate.getId()) {
+                currentDefaultWallet.setDefault(false);
+                walletRepository.update(currentDefaultWallet);
+                walletToUpdate.setDefault(true);
+                walletRepository.update(walletToUpdate);
+            } else {
+                throw new DuplicateEntityException("Wallet", "id", String.valueOf(walletToUpdate.getId()),
+                        "has already been set as default.");
+            }
+
+        }
+
 
     @Override
     public void updateRecurringTransaction(Wallet wallet) {

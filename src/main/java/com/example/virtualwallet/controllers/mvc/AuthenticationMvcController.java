@@ -72,6 +72,7 @@ public class AuthenticationMvcController {
         try {
             User user = authenticationHelper.verifyAuthentication(login.getUsername(), login.getPassword());
             session.setAttribute("currentUser", login.getUsername());
+            session.setAttribute("userId", user.getId());
             session.setAttribute("isAdmin", user.getUsersRole().getRole().equals(Role.ADMIN));
 
             if (user.isDeleted()) {

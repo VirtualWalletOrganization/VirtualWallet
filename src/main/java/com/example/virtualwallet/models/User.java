@@ -84,7 +84,7 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Contact> contacts;
 
-    public User() {this.wallets = new HashSet<>();
+    public User() {
     }
 
     public int getId() {

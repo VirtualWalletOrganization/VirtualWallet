@@ -90,7 +90,7 @@ public class CardServiceImplTest {
         Mockito.when(mockRepository.getAllCardsByUserId(userId)).thenReturn(Optional.of(expectedCards));
 
         // Act
-        List<Card> actualCards = cardService.getAllCardsByUserId(userId, executingUser);
+        List<Card> actualCards = cardService.getAllCardsByUserId(executingUser);
 
         // Assert
         assertEquals(expectedCards, actualCards);
@@ -140,7 +140,7 @@ public class CardServiceImplTest {
         List<Card> expectedCards = Collections.singletonList(new Card());
         Mockito.when(mockRepository.getAllCardsByUserId(user.getId())).thenReturn(Optional.of(expectedCards));
 
-        cardService.getAllCardsByUserId(user.getId(), user);
+        cardService.getAllCardsByUserId(user);
 
         Mockito.verify(mockRepository, Mockito.times(1)).getAllCardsByUserId(user.getId());
     }
