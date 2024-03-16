@@ -84,6 +84,17 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             return Optional.ofNullable(query.list().get(0));
         }
     }
+    @Override
+    public Optional <List<Transaction>> getAllTransactionsByUserId(int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Transaction> query = session.createQuery(
+                    "FROM Transaction as t where t.userSender.id = :userId " +
+                            "or t.userReceiver.id=:userId", Transaction.class);
+            query.setParameter("userId", userId);
+
+            return Optional.ofNullable(query.list());
+        }
+    }
 
     @Override
     public Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId) {

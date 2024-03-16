@@ -83,7 +83,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/wallets/{walletId}/history}" th:text="#{header.menu.transactionHistory}"></a></li>
+                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/user-history}" th:text="#{header.menu.transactionHistory}"></a></li>
                     <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/wallets/{walletId}/send}" th:text="#{header.menu.sendMoney}"></a></li>
                     <li class="hide-desktop"><a  href="#" th:if="${isAuthenticated}" th:href="@{/users/profile}"  th:text="#{header.menu.myProfile}"></a></li>
                     <li class="hide-desktop">

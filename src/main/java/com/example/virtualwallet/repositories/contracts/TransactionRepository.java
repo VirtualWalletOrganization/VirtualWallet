@@ -13,6 +13,7 @@ public interface TransactionRepository {
 
     Optional<List<Transaction>> getAllTransactions(TransactionFilterOptions transactionFilterOptions);
     Optional<Transaction> getTransactionById(int transactionId);
+    Optional <List<Transaction>> getAllTransactionsByUserId(int userId);
 
     Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId);
 

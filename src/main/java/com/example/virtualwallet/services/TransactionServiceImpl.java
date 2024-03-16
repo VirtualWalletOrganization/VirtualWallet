@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.virtualwallet.utils.CheckPermissions.checkBlockOrDeleteUser;
 import static com.example.virtualwallet.utils.CheckPermissions.checkPermissionExistingUsersInWallet;
@@ -44,6 +45,12 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction getTransactionById(int transactionId) {
         return transactionRepository.getTransactionById(transactionId)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction", "id", String.valueOf(transactionId)));
+    }
+    @Override
+    public List<Transaction> getAllTransactionsByUserId(int userId){
+        return transactionRepository.getAllTransactionsByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Transactions"));
+
     }
 
     @Override

@@ -16,6 +16,8 @@ public interface TransactionService {
 
     Transaction getTransactionById(int transactionId);
 
+    List<Transaction> getAllTransactionsByUserId(int userId);
+
     List<Transaction> getAllTransactionsByStatus(Status status);
 
     List<Transaction> getAllTransactionsByWalletId(Wallet wallet);

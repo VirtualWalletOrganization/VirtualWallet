@@ -13,11 +13,13 @@ import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionFilterDto;
+import com.example.virtualwallet.models.dtos.TransactionHistoryDto;
 import com.example.virtualwallet.services.contracts.RecurringTransactionService;
 import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,16 @@ public class TransactionMvcController {
         this.recurringTransactionService = recurringTransactionService;
         this.userService = userService;
         this.walletService = walletService;
+    }
+
+    @ModelAttribute("isAuthenticated")
+    public boolean populateIsAuthenticated(HttpSession session) {
+        return session.getAttribute("currentUser") != null;
+    }
+
+    @ModelAttribute("requestURI")
+    public String requestURI(final HttpServletRequest request) {
+        return request.getRequestURI();
     }
 
     @GetMapping
@@ -127,6 +139,29 @@ public class TransactionMvcController {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "ErrorView";
+        }
+    }
+
+    @GetMapping("/user-history")
+    public String showAllTransactionsByUserId(@ModelAttribute TransactionHistoryDto transactionHistoryDto,
+                                              Model model, HttpSession session) {
+        User user;
+        try {
+            user = authenticationHelper.tryGetCurrentUser(session);
+        } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            List<Transaction> transactions= transactionService.getAllTransactionsByUserId(user.getId());
+            model.addAttribute("transaction", new TransactionHistoryDto());
+            model.addAttribute("transactions", transactions);
+            model.addAttribute("currentUser", user);
+            return "transaction-history";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
     }
 
