@@ -7,25 +7,21 @@ import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.TransactionFilterDto;
 import com.example.virtualwallet.models.dtos.UserFilterDto;
-import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.UserFilterOptions;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.example.virtualwallet.utils.Messages.UNAUTHORIZED_USER_ERROR_MESSAGE;
 
 @Controller
 @RequestMapping("/admin")
@@ -41,6 +37,56 @@ public class AdminMvcController {
         this.transactionService = transactionService;
     }
 
+    @ModelAttribute("isAuthenticated")
+    public boolean populateIsAuthenticated(HttpSession session) {
+        return session.getAttribute("currentUser") != null;
+    }
+
+    @ModelAttribute("requestURI")
+    public String requestURI(final HttpServletRequest request) {
+        return request.getRequestURI();
+    }
+
+    @GetMapping
+    public String showAllUsers(@ModelAttribute("userFilterOptions") UserFilterDto filterDto,
+                            HttpSession session, Model model) {
+        UserFilterOptions userFilterOptions = new UserFilterOptions(
+                filterDto.getUsername(),
+                filterDto.getFirstName(),
+                filterDto.getLastName(),
+                filterDto.getEmail(),
+                filterDto.getPhoneNumber(),
+                filterDto.getRole(),
+                filterDto.getStatus(),
+                filterDto.getSortBy(),
+                filterDto.getSortOrder());
+
+        User user;
+        try {
+            user = authenticationHelper.tryGetCurrentUser(session);
+        } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            List<User> users = userService.getAll(user, userFilterOptions);
+            model.addAttribute("users", users);
+            model.addAttribute("user", user);
+//            model.addAttribute("currentUser", user);
+            model.addAttribute("filterOptions", filterDto);
+//            model.addAttribute("isAuthenticated", true);
+            return "admin-users";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (AuthorizationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
     @GetMapping("/users")
     public String showUsers(@ModelAttribute("userFilterOptions") UserFilterDto filterDto,
                             HttpSession session, Model model) {
@@ -49,6 +95,7 @@ public class AdminMvcController {
                 filterDto.getFirstName(),
                 filterDto.getLastName(),
                 filterDto.getEmail(),
+                filterDto.getPhoneNumber(),
                 filterDto.getRole(),
                 filterDto.getStatus(),
                 filterDto.getSortBy(),
@@ -103,6 +150,8 @@ public class AdminMvcController {
             model.addAttribute("transactions", transactions);
             model.addAttribute("sender", filterDto.getSender());
             model.addAttribute("recipient", filterDto.getRecipient());
+            model.addAttribute("amount", filterDto.getAmount());
+            model.addAttribute("date", filterDto.getDate());
             model.addAttribute("filterOptions", filterDto);
 //            model.addAttribute("isAuthenticated", true);
             return "admin-transactions";

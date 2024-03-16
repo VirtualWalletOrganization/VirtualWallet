@@ -70,13 +70,13 @@ CREATE TABLE cards_types
 create table cards
 (
     card_id         int auto_increment primary key,
-    card_type_id    int                not null,
-    user_id         int                not null,
-    card_number     varchar(16)  not null,
-    expiration_date datetime           not null,
-    card_holder     varchar(30)        not null,
-    check_number    varchar(3)         not null,
-    currency        varchar(3)         not null,
+    card_type_id    int         not null,
+    user_id         int         not null,
+    card_number     varchar(16) not null,
+    expiration_date datetime    not null,
+    card_holder     varchar(30) not null,
+    check_number    varchar(3)  not null,
+    currency        varchar(3)  not null,
     status          enum ('ACTIVE', 'DEACTIVATED') not null,
     constraint cards_cards_types_card_type_id_fk
         foreign key (card_type_id) references cards_types (card_type_id),
@@ -143,7 +143,7 @@ create table transactions
 (
     transaction_id        int auto_increment primary key,
     sender_wallet_id      int          not null,
-    user_sender_id      int          not null,
+    user_sender_id        int          not null,
     receiver_wallet_id    int          not null,
     user_receiver_id      int          not null,
     amount                decimal      not null,

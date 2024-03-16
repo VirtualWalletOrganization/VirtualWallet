@@ -9,6 +9,7 @@ public class UserFilterDto {
     private String firstName;
     private String lastName;
     private String email;
+    private String phoneNumber;
     private Role role;
     private UserStatus status;
     private String sortBy;
@@ -79,5 +80,13 @@ public class UserFilterDto {
 
     public void setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

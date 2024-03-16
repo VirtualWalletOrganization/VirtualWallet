@@ -8,11 +8,10 @@ import java.util.Optional;
 
 public class UserFilterOptions {
     private Optional<String> username;
-
     private Optional<String> firstName;
     private Optional<String> lastName;
-
     private Optional<String> email;
+    private Optional<String> phoneNumber;
     private Optional<Role> role;
     private Optional<UserStatus> status;
     private Optional<String> sortBy;
@@ -23,6 +22,7 @@ public class UserFilterOptions {
             String firstName,
             String lastName,
             String email,
+            String phoneNumber,
             Role role,
             UserStatus status,
             String sortBy,
@@ -31,6 +31,7 @@ public class UserFilterOptions {
         this.firstName = Optional.ofNullable(firstName);
         this.lastName = Optional.ofNullable(lastName);
         this.email = Optional.ofNullable(email);
+        this.phoneNumber = Optional.ofNullable(phoneNumber);
         this.role = Optional.ofNullable(role);
         this.status = Optional.ofNullable(status);
         this.sortBy = Optional.ofNullable(sortBy);
@@ -67,5 +68,13 @@ public class UserFilterOptions {
 
     public Optional<String> getSortOrder() {
         return sortOrder;
+    }
+
+    public Optional<String> getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(Optional<String> phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
