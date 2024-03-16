@@ -13,6 +13,13 @@
     <title>User profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div th:replace="fragments/layout :: css-sheets"></div>
+    <style>
+        .profile-picture {
+            width: 150px; /* Adjust according to your preference */
+            height: auto; /* Maintains aspect ratio */
+            border-radius: 50%; /* Makes the image circular */
+        }
+    </style>
 </head>
 <!--<head>-->
 <!--    <meta charset="UTF-8">-->
@@ -63,15 +70,17 @@
                                 <div th:if="${isAuthenticated}">
                                     <div class="col-sm-12">
                                     <h5 id="user-name" th:text="${currentUser.firstName} + ' ' + ${currentUser.lastName}"></h5>
+
+
                                     <p id="user-email" th:text="'Email: ' + ${currentUser.email}"></p>
                                     <p id="user-phone number" th:text="'Phone number: ' + ${currentUser.getPhoneNumber()}"></p>
                                 </div>
                                 </div>
                                 <h5 id="user-actions">
                                     <div class="col-sm-12">
-                                    <a id="update-link" th:if="${isAuthenticated}" th:href="@{'/users/'+${currentUser.id}+'/update'}">Update</a>
+                                    <a id="update-link" th:if="${isAuthenticated}" class="submitBnt btn btn-primary" th:href="@{'/users/'+${currentUser.id}+'/update'}">Update</a>
 
-                                    <a id="delete-link" th:if="${isAuthenticated}" th:href="@{'/users/'+${currentUser.id}+'/delete'}">Delete</a>
+                                    <a id="delete-link" th:if="${isAuthenticated}" class="submitBnt btn btn-primary" th:href="@{'/users/'+${currentUser.id}+'/delete'}">Delete</a>
                                     </div>
                                 </h5>
 
