@@ -3723,3 +3723,10 @@ input#default-wallet-1, input#default-wallet-2 {
     position: absolute;
     z-index: -1;
 }
+.currency-format:before {
+    content: "$";
+}
+.btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}

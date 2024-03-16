@@ -25,11 +25,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
+    private final UserServiceImpl userService;
 
     @Autowired
-    public TransactionServiceImpl(TransactionRepository transactionRepository, WalletService walletService) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, WalletService walletService, UserServiceImpl userService) {
         this.transactionRepository = transactionRepository;
         this.walletService = walletService;
+        this.userService = userService;
     }
 
     @Override
@@ -92,7 +94,7 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.getWalletSender().getSentTransactions().add(transaction);
         walletService.update(transaction.getWalletSender(), userSender);
 
-        List<User> users = walletService.getAllUsersByWalletId(transaction.getWalletReceiver().getId());
+        List<User> users = userService.getAllUsersByWalletId(transaction.getWalletReceiver().getId());
         users.forEach(user -> user.getWallets().stream()
                 .filter(wallet -> wallet.getId() == transaction.getWalletReceiver().getId())
                 .findFirst()

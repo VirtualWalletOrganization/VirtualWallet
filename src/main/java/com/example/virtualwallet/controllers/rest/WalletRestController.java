@@ -109,7 +109,8 @@ public class WalletRestController {
     public ResponseEntity<Void> delete(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            walletService.delete(id, user);
+            Wallet walletToDelete=walletService.getWalletById(id, user.getId());
+            walletService.delete(walletToDelete, user);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

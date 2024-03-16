@@ -3,7 +3,7 @@ package com.example.virtualwallet.models.enums;
 public enum WalletType {
 
     JOINT("JOINT"),
-    REGULAR("REGULAR");
+    MAIN("MAIN");
 
     private final String name;
 

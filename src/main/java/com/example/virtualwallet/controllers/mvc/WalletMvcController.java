@@ -85,11 +85,11 @@ public class WalletMvcController {
             model.addAttribute("wallet", wallet);
             model.addAttribute("walletId", walletId);
             model.addAttribute("currentUser", user);
-            return "WalletView";
+            return "wallet";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
@@ -126,6 +126,7 @@ public class WalletMvcController {
 
         try {
             Wallet newWallet = walletMapper.fromDto(walletDto, user);
+            model.addAttribute("walletId", newWallet.getId());
             walletService.create(newWallet, user);
             return "redirect:/wallets";
         } catch (EntityNotFoundException e) {
@@ -210,7 +211,7 @@ public class WalletMvcController {
 
         try {
             Wallet walletToDelete = walletService.getWalletById(walletId, user.getId());
-            walletService.delete(walletToDelete.getId(), user);
+            walletService.delete(walletToDelete, user);
             return "redirect:/wallets";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -233,7 +234,8 @@ public class WalletMvcController {
         }
 
         try {
-            walletService.delete(walletId, user);
+            Wallet walletToDelete = walletService.getWalletById(walletId, user.getId());
+            walletService.delete(walletToDelete, user);
             return "redirect:/wallets";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -246,9 +248,8 @@ public class WalletMvcController {
         }
     }
 
-    @GetMapping("/{walletId}/users/{userId}")
+    @GetMapping("/{walletId}/users")
     public String showUsersWalletPage(@PathVariable("walletId") int walletId,
-                                      @PathVariable("userId") int userId,
                                       Model model, HttpSession session) {
         User user;
         try {
@@ -259,23 +260,21 @@ public class WalletMvcController {
 
         try {
             Wallet wallet = walletService.getWalletById(walletId, user.getId());
-            User userToAdd = userService.getById(userId);
             model.addAttribute("wallet", wallet);
-            model.addAttribute("user", userToAdd);
             model.addAttribute("currentUser", user);
-            return "WalletView";
+            return "wallet-add-user";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
-    @PostMapping("/{walletId}/users/{userId}")
+    @PostMapping("/{walletId}/users")
     public String addUserToWallet(@PathVariable("walletId") int walletId,
-                                  @PathVariable("userId") int userId,
-                                  BindingResult bindingResult,
+                                  @ModelAttribute("userToAdd") String username,
                                   Model model,
+                                  BindingResult bindingResult,
                                   HttpSession session) {
         User user;
         try {
@@ -285,31 +284,31 @@ public class WalletMvcController {
         }
 
         if (bindingResult.hasErrors()) {
-            return "WalletView";
+            return "wallet-add-user";
         }
 
         try {
-            walletService.addUsersToWallet(walletId, userId, user);
+            User userToAdd = userService.getByUsername(username);
+            walletService.addUsersToWallet(walletId, userToAdd.getId(), user);
             return "redirect:/wallets/" + walletId;
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (DuplicateEntityException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
-    @GetMapping("/{walletId}/users/{userId}/delete")
-    public String removeUserFromWallet(@PathVariable int walletId,
-                                       @PathVariable int userId,
-                                       Model model, HttpSession session) {
+    @GetMapping("/{walletId}/users/delete")
+    public String showDeleteUsersWalletPage(@PathVariable("walletId") int walletId,
+                                      Model model, HttpSession session) {
         User user;
         try {
             user = authenticationHelper.tryGetCurrentUser(session);
@@ -318,18 +317,46 @@ public class WalletMvcController {
         }
 
         try {
-            Wallet currentWallet = walletService.getWalletById(walletId, user.getId());
-            User userToRemove = userService.getById(userId);
-            walletService.removeUsersFromWallet(currentWallet.getId(), userToRemove.getId(), user);
-            return "redirect:/wallets";
+            Wallet wallet = walletService.getWalletById(walletId, user.getId());
+            model.addAttribute("wallet", wallet);
+            model.addAttribute("currentUser", user);
+            return "wallet-remove-user";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
+        }
+    }
+
+    @PostMapping("/{walletId}/users/delete")
+    public String removeUserFromWallet(@PathVariable int walletId,
+                                       @ModelAttribute("userToRemove") String username,
+                                       Model model,
+                                       BindingResult bindingResult,
+                                       HttpSession session) {
+        User user;
+        try {
+            user = authenticationHelper.tryGetCurrentUser(session);
+        } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+        if (bindingResult.hasErrors()) {
+            return "wallet-remove-user";
+        }
+
+        try {
+            Wallet currentWallet = walletService.getWalletById(walletId, user.getId());
+            User userToRemove = userService.getByUsername(username);
+            walletService.removeUsersFromWallet(currentWallet.getId(), userToRemove.getId(), user);
+            return "redirect:/wallets/" + walletId;
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 }

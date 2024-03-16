@@ -85,7 +85,7 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
     }
 
     @Override
-    @Scheduled(cron = "0 * * * * *") // Execute daily at midnight
+//    @Scheduled(cron = "0 * * * * *") // Execute daily at midnight
     public void executeRecurringTransaction() {
         LocalDate currentDate = LocalDate.now();
         List<RecurringTransaction> recurringTransactions = getAllRecurringTransactions();

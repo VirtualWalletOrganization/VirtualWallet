@@ -10,4 +10,8 @@ public enum CardType {
     CardType(String name) {
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -64,25 +64,30 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public Card addCard(Card card, int walletId, User user) {
-        throwIfCardWithSameNumberAlreadyExistsInSystem(card);
+    public void addCard(Card card, int walletId, User user) {
+        throwIfCardWithSameNumberAlreadyExistsInSystem(card,user);
         Wallet wallet = walletService.getWalletById(walletId, user.getId());
         checkPermissionExistingUsersInWallet(wallet, user, ADD_CARD_ERROR_MESSAGE);
 
         // checkAccessPermissionsUser(wallet.getCreator().getId(), user, ADD_CARD_ERROR_MESSAGE);
         throwIfCardWithSameNumberAlreadyExistsInWallet(card, wallet);
         validateCard(card, user);
+        Optional<Card> existingCard=cardRepository.getByCardNumber(card.getCardNumber());
+        if(existingCard.isEmpty()){
+            cardRepository.addCard(card);
+            wallet.getCards().add(card);
+            walletService.update(wallet, user);
+        }else{
+            wallet.getCards().add(existingCard.get());
+            walletService.update(wallet, user);
+        }
 
-        Card cardToAdd = cardRepository.addCard(card);
-        wallet.getCards().add(card);
-        walletService.update(wallet, user);
-        return cardToAdd;
     }
 
 
     @Override
     public void updateCard(Card cardToUpdate, User user) {
-        throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(cardToUpdate);
+        throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(cardToUpdate,user);
         getCardById(cardToUpdate.getId(), user);
         checkAccessPermissionsUser(cardToUpdate.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
         List<Wallet> wallets = walletService.getWalletsByCardId(cardToUpdate.getId(), user.getId());
@@ -95,6 +100,8 @@ public class CardServiceImpl implements CardService {
     public void deleteCard(int cardId, User user) {
         Card cardToDelete = getCardById(cardId, user);
         checkAccessPermissionsUser(cardToDelete.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
+//        wallet.getCards().removeIf(card -> card.getId()==cardToDelete.getId());
+//        walletService.update(wallet,user);
         List<Wallet> wallets = walletService.getWalletsByCardId(cardToDelete.getId(), user.getId());
         wallets.forEach(wallet -> wallet.getCards().removeIf(c -> c.getId() == cardToDelete.getId()));
         wallets.forEach(wallet -> walletService.update(wallet,user));
@@ -113,19 +120,23 @@ public class CardServiceImpl implements CardService {
         });
     }
 
-    private void throwIfCardWithSameNumberAlreadyExistsInSystem(Card card) {
+    private void throwIfCardWithSameNumberAlreadyExistsInSystem(Card card,User user) {
         if (cardRepository.getByCardNumber(card.getCardNumber()).isPresent()) {
-            throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
+            for (Card existingCard : user.getCards()) {
+                if (existingCard.getCardNumber().equals(card.getCardNumber()) && !existingCard.getUser().equals(user)) {
+                    throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
+                }
+            }
         }
     }
 
-    private void throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(Card card) {
+    private void throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(Card card,User user) {
         Optional<Card> existingCardOptional = getAllCards().stream()
                 .filter(c -> c.getCardNumber().equals(card.getCardNumber()))
                 .findFirst();
 
         existingCardOptional.ifPresent(existingCard -> {
-            if (existingCard.getId() != card.getId()) {
+            if (existingCard.getId() != card.getId() && existingCard.getUser()!=user) {
                 throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
             }
         });

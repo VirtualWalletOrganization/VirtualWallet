@@ -8,6 +8,7 @@ import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.CardMapper;
 import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.CardDto;
 import com.example.virtualwallet.services.contracts.CardService;
 import com.example.virtualwallet.services.contracts.WalletService;
@@ -132,11 +133,15 @@ public class CardMvcController {
             model.addAttribute("card", new CardDto());
             model.addAttribute("walletId", walletId);
             model.addAttribute("currentUser", user);
-            return "CardAddView";
+            return "card-add-new";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
+        } catch (DuplicateEntityException e) {
+            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
     }
 
@@ -154,29 +159,29 @@ public class CardMvcController {
         }
 
         if (bindingResult.hasErrors()) {
-            return "CardAddView";
+            return "card-add-new";
         }
 
         try {
             Card cardToAdd = cardMapper.fromDto(cardDto, user);
             cardService.addCard(cardToAdd, walletId, user);
-            return "redirect:/wallets/" + walletId;
+            return "redirect:/cards";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (DuplicateEntityException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (CardMismatchException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
@@ -244,7 +249,8 @@ public class CardMvcController {
     }
 
     @GetMapping("/{cardId}/delete")
-    public String deleteCard(@PathVariable int cardId, Model model, HttpSession session) {
+    public String deleteCard(@PathVariable int cardId,
+                             Model model, HttpSession session) {
 
         User user;
         try {

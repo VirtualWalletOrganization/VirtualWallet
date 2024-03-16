@@ -52,8 +52,8 @@ public class WalletMapper {
         wallet.setBalance(BigDecimal.ZERO);
         wallet.setCurrency(registerDto.getCurrency());
         WalletsType walletsType=new WalletsType();
-        walletsType.setId(WalletType.REGULAR.ordinal()+1);
-        walletsType.setWalletType(WalletType.REGULAR);
+        walletsType.setId(WalletType.MAIN.ordinal()+1);
+        walletsType.setWalletType(WalletType.MAIN);
         wallet.setWalletsType(walletsType);
         wallet.setDefault(true);
 

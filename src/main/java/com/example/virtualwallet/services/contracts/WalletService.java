@@ -10,7 +10,6 @@ public interface WalletService {
     List<Wallet> getAll(User user);
 
     List<Wallet> getAllWalletsByUserId(User user);
-    List<User> getAllUsersByWalletId(int walletId);
 
     Wallet getWalletById(int walletId, int userId);
 
@@ -20,16 +19,13 @@ public interface WalletService {
 
     List<Wallet> getAllWalletsByCreatorId(int creatorId);
 
-
     Wallet create(Wallet wallet, User user);
-
-    void createWhenRegistering(Wallet wallet, User user);
 
     void update(Wallet wallet, User user);
 
     void updateRecurringTransaction(Wallet wallet);
 
-    void delete(int walletId, User user);
+    void delete(Wallet walletToDelete, User user);
 
     void addUsersToWallet(int walletId, int userId, User user);
 

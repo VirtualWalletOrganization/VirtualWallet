@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" >
+
 <head>
     <meta charset="UTF-8">
     <title>Wallets List</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div th:replace="fragments/layout :: css-sheets"></div>
 </head>
+
 <body>
 <div th:replace="fragments/layout :: header"></div>
+
 <section class="bg-half bg-light">
     <div class="home-center">
         <div class="home-desc-center">
@@ -23,18 +26,16 @@
         </div>
     </div>
 </section>
+
 <section class="section">
     <div class="container">
         <div th:if="${wallets.isEmpty()}">
             <h2 th:text="#{wallet.noWallets}" th:align="center"></h2>
         </div>
         <div th:unless="${wallets.isEmpty()}">
-
             <div class="col-md-12">
-                <div th:if="${error} != null"
-                     class="alert alert-danger alert-pills">
-                                            <span class="badge badge-danger rounded"
-                                                  th:text="#{wallet.error}"> </span>
+                <div th:if="${error} != null" class="alert alert-danger alert-pills">
+                    <span class="badge badge-danger rounded" th:text="#{wallet.error}"></span>
                     <span class="alert-content" th:text="${error}"></span>
                 </div>
             </div>
@@ -43,32 +44,93 @@
                     <thead>
                     <tr>
                         <th th:text="#{wallet.list.name}">Wallet type</th>
-                        <th th:text="#{wallet.list.amount}">Amount</th>
+                        <th th:text="#{wallet.list.amount}">Balance</th>
                         <th th:text="#{wallet.list.makeDefault}">Make default</th>
+                        <th th:text="#{wallet.add.card}">Add card</th>
+<!--                        <th th:text="#{wallet.edit}">Edit wallet</th>-->
+                        <th th:text="#{wallet.delete}">Delete wallet</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="wallet : ${wallets}">
+                    <tr th:unless="${wallet.getDeleted()}" th:each="wallet : ${wallets}">
                         <td th:text="${wallet.getWalletsType().getWalletType().name()}">Wallet Type</td>
-
-<!--                        <td th:text="${wallet.getWalletsType()}">Name</td>-->
-                        <td th:text="${wallet.getBalance()}" class="currency-format">Amount</td>
+                        <td th:text="${wallet.getBalance()}" class="currency-format">Balance</td>
                         <td>
                             <form th:if="${wallet.default} == false"
                                   th:action="@{'/wallets/' + ${wallet.id} + '/makeWalletDefault'}" method="post">
-                                <label>
-                                    <input class="btn btn-primary" th:type="submit" th:value="#{wallet.list.makeDefault}">
-                                </label>
+                                <button type="submit" class="btn btn-primary"
+                                        th:text="#{wallet.list.makeDefault}">Make Default</button>
                             </form>
                             <div th:unless="${wallet.default} == false">
-                                <p class="btn btn-success" th:text="#{wallet.list.alreadyDefault}"></p>
+                                <button type="button" class="btn btn-success"
+                                        th:text="#{wallet.list.alreadyDefault}">Already Default</button>
                             </div>
+                        </td>
+                        <td>
+                            <form th:if="${isAuthenticated}"
+                                  th:action="@{'/cards/wallets/' + ${wallet.id} + '/add'}" method="get">
+                                <button type="submit" class="btn btn-outline-primary"
+                                        th:text="#{wallet.add.card}">Add card</button>
+                            </form>
+                        </td>
+<!--                        <td>-->
+<!--                            <form th:action="@{'/wallets/' + ${wallet.id} + '/update'}">-->
+<!--                                <button type="submit" class="btn btn-outline-primary"-->
+<!--                                        th:text="#{wallet.edit}">Edit wallet</button>-->
+<!--                            </form>-->
+<!--                        </td>-->
+                        <td>
+                            <button type="button" class="btn btn-light" data-toggle="modal"
+                                    data-target="#delete-card">Delete
+                            </button>
+                            <div class="modal fade" id="delete-card" tabindex="-1" role="dialog"
+                                 aria-labelledby="exampleModalCenterTitle"
+                                 style="display: none;" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content rounded shadow border-0">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalCenterTitle"
+                                                th:text="#{wallet.delete.confirmation.title}"></h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="bg-white p-3 rounded box-shadow">
+                                                <div class="alert alert-danger alert-dismissible fade show"
+                                                     role="alert">
+                                                    <strong th:text="#{wallet.delete.confirmation.warning}"></strong>
+                                                    <span class="text-white"
+                                                          th:text="#{wallet.delete.confirmation.textOne}"></span>
+                                                </div>
+                                                <p class="text-muted mb-0"
+                                                   th:text="#{wallet.delete.confirmation.textTwo}"></p>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                                                    th:text="#{wallet.delete.confirmation.close}"></button>
+                                            <form th:action="@{'/wallets/' + ${wallet.id} + '/delete'}"
+                                                  method="get">
+                                                <button type="submit" class="btn btn-secondary"
+                                                        th:text="#{wallet.delete}">Delete wallet</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <a th:href="@{'/wallets/' + ${wallet.id}}" class="btn btn-info">
+                                <i class="mdi mdi-eye"></i> View
+                            </a>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
 </section>
@@ -77,4 +139,3 @@
 
 </body>
 </html>
-

@@ -79,6 +79,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getAllUsersByWalletId(int walletId) {
+        return userRepository.getAllUsersByWalletId(walletId)
+                .orElseThrow(() -> new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId)));
+    }
+
+    @Override
     public void registerUser(User user) {
         setAdminRoleIfDataBaseEmpty(user);
         User existingUser = getByUsernameWhenRegistering(user.getUsername());

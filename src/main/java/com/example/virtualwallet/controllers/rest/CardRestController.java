@@ -8,8 +8,10 @@ import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.CardMapper;
 import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.CardDto;
 import com.example.virtualwallet.services.contracts.CardService;
+import com.example.virtualwallet.services.contracts.WalletService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,12 +28,14 @@ public class CardRestController {
 
     private final CardService cardService;
     private final CardMapper cardMapper;
+    private final WalletService walletService;
     private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public CardRestController(CardService cardService, CardMapper cardMapper, AuthenticationHelper authenticationHelper) {
+    public CardRestController(CardService cardService, CardMapper cardMapper, WalletService walletService, AuthenticationHelper authenticationHelper) {
         this.cardService = cardService;
         this.cardMapper = cardMapper;
+        this.walletService = walletService;
         this.authenticationHelper = authenticationHelper;
     }
 
@@ -79,8 +83,8 @@ public class CardRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Card cardToAdd = cardMapper.fromDto(cardDto, user);
-            Card card = cardService.addCard(cardToAdd, walletId, user);
-            return new ResponseEntity<>(card, HttpStatus.CREATED);
+             cardService.addCard(cardToAdd, walletId, user);
+            return new ResponseEntity<>( HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {

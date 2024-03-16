@@ -72,22 +72,28 @@
                                     </div>
 
                                 <div class="col-md-12">
-                                    <div class="form-group" th:if="${wallet.default} == null">
+<!--                                    <form th:action="@{'/wallets/' + ${walletId} + '/makeWalletDefault'}" method="post">-->
+
+                                    <div class="form-group">
                                         <label for="default-wallet-1" th:text="#{wallet.select.asDefault}"></label>
-                                        <input
-                                                id="default-wallet-1" type="checkbox" onclick="return false;"
-                                                disabled="disabled" checked>
+                                        <input id="default-wallet-1" type="checkbox" name="default" th:checked="${wallet.default}" th:value="${wallet.default}">
+                                        <input type="hidden" id="default" name="default" th:value="${wallet.default}">
+                                    </div>
+<!--                                        </form>-->
+
+                                        <!--                                                id="default-wallet-1" type="checkbox" onclick="return false;"-->
+<!--                                                disabled="disabled" checked>-->
 <!--                                        <div class="alert alert-success alert-dismissible fade show" role="alert">-->
 <!--                                            <strong th:text="#{wallet.select.autoDefault.bold}"></strong> <span-->
 <!--                                                th:text="#{wallet.select.autoDefault.text}"></span>-->
 <!--                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
 <!--                                                <span aria-hidden="true"> × </span></button>-->
 <!--                                        </div>-->
-                                    </div>
-                                    <div class="form-group" th:unless="${wallet.default} == null">
-                                        <label for="default-wallet-2" th:text="#{wallet.select.asDefault}"></label>
-                                        <input id="default-wallet-2" type="checkbox" name="default" th:checked="${wallet.default}">
-                                    </div>
+
+<!--                                    <div class="form-group" th:unless="${wallet.default} == null">-->
+<!--                                        <label for="default-wallet-2" th:text="#{wallet.select.asDefault}"></label>-->
+<!--                                        <input id="default-wallet-2" type="checkbox" name="default" th:checked="${wallet.default}">-->
+<!--                                    </div>-->
 
                                 </div><!--end col-->
                             </div><!--end row-->

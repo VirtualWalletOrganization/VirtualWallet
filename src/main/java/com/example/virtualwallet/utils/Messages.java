@@ -26,6 +26,7 @@ public class Messages {
     public static final String CARD_MISMATCH_ERROR = "Card holder name does not match user name";
     public static final String INVALID_CARD = "Card number must be 16 digits and check number must be 3 digits.";
     public static final String ADD_USER_TO_WALLET = "You are not authorized to add users to this wallet.";
+    public static final String DELETE_WALLET = "You are not authorized to delete this wallet.";
     public static final String REMOVE_USER_FROM_WALLET = "You are not authorized to remove users from this wallet.";
     public static final String ALREADY_APPROVED = "has already been approved.";
     public static final String VERIFY_USER = "Only admin can verify users.";
@@ -38,6 +39,7 @@ public class Messages {
     public static final String SUCCESS_TRANSFER = "Transfer successful";
     public static final String INVALID_REQUEST = "Invalid request data";
     public static final String ERROR_TRANSACTION = "You are not authorized to complete this transaction.";
+    public static final String REMOVE_YOURSELF_FROM_WALLET= "You can not remove yourself from wallet";
 
 
 }

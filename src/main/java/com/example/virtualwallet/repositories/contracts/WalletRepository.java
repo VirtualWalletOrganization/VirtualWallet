@@ -10,8 +10,6 @@ public interface WalletRepository {
 
     List<Wallet> getAll();
 
-    Optional<List<User>> getAllUsersByWalletId(int walletId);
-
     Optional<Wallet> getWalletById(int walletId);
 
     Optional<List<Wallet>> getWalletsByCardId(int cardId);

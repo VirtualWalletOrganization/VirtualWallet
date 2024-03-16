@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>Add a Payment Card To Virtual Wallet</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div th:replace="fragments/layout :: css-sheets"></div>
@@ -11,75 +11,114 @@
 <body>
 
 
-    <div th:replace="fragments/layout :: header"></div>
+<div th:replace="fragments/layout :: header"></div>
 
-    <section class="section bg-light">
-        <!-- Payment and Price Start -->
-        <div class="container mt-10">
-            <div class="row justify-content-center">
-                <div class="col-12 text-center">
-                    <div class="section-title mb-4 pb-2">
-                        <h4 class="title mb-4" th:text="#{card.add.title}"></h4>
+<section class="section bg-light">
+    <!-- Payment and Price Start -->
+    <div class="container mt-10">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center">
+                <div class="section-title mb-4 pb-2">
+                    <h4 class="title mb-4" th:text="#{card.add.title}"></h4>
+                </div>
+            </div><!--end col-->
+        </div><!--end row-->
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-7 col-md-6 col-12 mt-4 pt-2">
+                <div class="rounded bg-white border shadow">
+                    <div class="bg-light p-4 text-center rounded-top">
+                        <h4 class="mb-0 text-primary" th:text="#{card.add.subtitle}"></h4>
                     </div>
-                </div><!--end col-->
-            </div><!--end row-->
 
-            <div class="row justify-content-center">
-
-                <div class="col-lg-7 col-md-6 col-12 mt-4 pt-2">
-                    <div class="rounded bg-white border shadow">
-                        <div class="bg-light p-4 text-center rounded-top">
-                            <h4 class="mb-0 text-primary" th:text="#{card.add.subtitle}"></h4>
-                        </div>
-
-                        <div class="p-4">
-                            <form th:action="@{/user/add-card}" th:object="${cardDto}" method="post">
+                    <div class="p-4">
+                        <form th:action="@{'/cards/wallets/' + ${walletId} + '/add'}" method="post">
+                            <div class="col-md-12">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <div th:if="${duplicateCardError != null}" class="alert alert-danger alert-pills">
-                                            <span class="badge badge-danger rounded"
-                                                  th:text="#{card.error}"> </span>
-                                            <span class="alert-content" th:text="${duplicateCardError}"></span>
-                                        </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="cardholder-name" th:text="#{card.cardholderName}">Name of card holder</label>
+                                            <label for="card-type" th:text="#{card.type}">Card type</label>
+                                            <select id="card-type" name="card-type"
+                                                    class="form-control font-weight-bold"
+                                                    required th:field="*{card.cardType}">
+                                                <option value="">Select Wallet Type</option>
+                                                <option th:each="type : ${T(com.example.virtualwallet.models.enums.CardType).values()}"
+                                                        th:value="${type}" th:text="${type}">Type
+                                                </option>
+                                            </select>
+                                            <div th:if="${#fields.hasErrors('card.cardType')}"
+                                                 class="alert alert-danger alert-pills">
+                                            <span class="badge badge-danger rounded"
+                                                  th:text="#{card.cardType.error}"></span>
+                                                <span class="alert-content"
+                                                      th:errors="*{card.cardType.toString()}"></span>
+                                            </div>
+                                        </div><!--end col-->
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="currency" th:text="#{card.currency}">Currency</label>
+                                            <input type="text" autocomplete="off" id="currency"
+                                                   class="form-control font-weight-bold" required
+                                                   th:field="*{card.currency}" th:placeholder="${card.currency}">
+                                        </div>
+                                        <div th:if="${#fields.hasErrors('card.currency')}"
+                                             class="alert alert-danger alert-pills">
+                                        <span class="badge badge-danger rounded"
+                                              th:text="#{card.currency.error}"></span>
+                                            <span class="alert-content" th:errors="*{card.currency}"></span>
+                                        </div>
+                                    </div><!--end row-->
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label for="cardholder-name" th:text="#{card.cardholderName}">Name of
+                                                cardHolder</label>
                                             <input name="cardholder-name" id="cardholder-name" type="text"
                                                    class="form-control font-weight-bold" required
-                                                   th:field="*{cardholderName}" th:placeholder="#{card.cardholderName}">
+                                                   th:field="*{card.cardHolder}"
+                                                   th:placeholder="#{card.cardholderName}">
                                         </div>
-                                        <div th:if="${#fields.hasErrors('cardholderName')}"
+                                        <div th:if="${#fields.hasErrors('card.cardHolder')}"
                                              class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{card.cardholderName.error}"> </span>
-                                            <span class="alert-content" th:errors="*{cardholderName}"></span>
+                                            <span class="alert-content" th:errors="*{card.cardHolder}"></span>
                                         </div>
                                     </div><!--end col-->
-                                    <div class="col-md-12">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
                                         <div class="form-group">
                                             <label for="card-number" th:text="#{card.cardNumber}">Card Number</label>
                                             <input type=text autocomplete="off" id="card-number"
                                                    class="form-control font-weight-bold" required
-                                                   th:field="*{cardNumber}" placeholder="0000-0000-0000-0000">
+                                                   th:field="*{card.cardNumber}" placeholder="0000-0000-0000-0000">
                                         </div>
-                                        <div th:if="${#fields.hasErrors('cardNumber')}"
+                                        <div th:if="${#fields.hasErrors('card.cardNumber')}"
                                              class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{card.cardNumber.error}"> </span>
-                                            <span class="alert-content" th:errors="*{cardNumber}"></span>
+                                            <span class="alert-content" th:errors="*{card.cardNumber}"></span>
                                         </div>
                                     </div><!--end col-->
+                                </div>
+                                <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="expiration-date" th:text="#{card.expirationDate}">Expires End</label>
+                                            <label for="expiration-date" th:text="#{card.expirationDate}">Expires
+                                                End</label>
                                             <input type=text autocomplete="off" id="expiration-date"
                                                    class="form-control font-weight-bold" required
-                                                   th:field="*{expirationDate}" placeholder="MM/YY">
+                                                   th:field="*{card.expirationDate}" placeholder="MM/YY">
                                         </div>
-                                        <div th:if="${#fields.hasErrors('expirationDate')}"
+                                        <div th:if="${#fields.hasErrors('card.expirationDate')}"
                                              class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{card.expirationDate.error}"> </span>
-                                            <span class="alert-content" th:errors="*{expirationDate}"></span>
+                                            <span class="alert-content" th:errors="*{card.expirationDate}"></span>
                                         </div>
                                     </div><!--end col-->
                                     <div class="col-md-4">
@@ -87,41 +126,45 @@
                                             <label for="cvv" th:text="#{card.csv}">CVV</label>
                                             <input type="text" autocomplete="off" id="cvv"
                                                    class="form-control font-weight-bold" required
-                                                   th:field="*{csv}" placeholder="000">
+                                                   th:field="*{card.checkNumber}" placeholder="000">
                                         </div>
-                                        <div th:if="${#fields.hasErrors('csv')}"
+                                        <div th:if="${#fields.hasErrors('card.checkNumber')}"
                                              class="alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{card.csv.error}"> </span>
-                                            <span class="alert-content" th:errors="*{csv}"></span>
+                                            <span class="alert-content" th:errors="*{card.checkNumber}"></span>
                                         </div>
                                     </div><!--end col-->
-                                </div><!--end row-->
+                                </div>
+
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <input type="hidden" th:field="*{paymentInstrumentDto.name}"/>
-                                        <input type="submit" id="submit" name="send" class="submitBnt btn btn-primary" th:value="#{card.addCard}">
+                                        <input type="hidden" th:field="*{card.cardType}"/>
+                                        <input type="submit" id="submit" name="send" class="submitBnt btn btn-primary"
+                                               th:value="#{card.addCard}">
                                     </div><!--end col-->
                                 </div><!--end row-->
-                            </form><!--end form-->
-                        </div>
+                            </div>
+                        </form><!--end form-->
+
                     </div>
-                </div><!--end col-->
-            </div><!--end row-->
-        </div><!--end container-->
-        <!-- Payment and Price End -->
-    </section><!--end section-->
-    <!-- section End -->
+                </div>
+            </div><!--end col-->
+        </div><!--end row-->
+    </div><!--end container-->
+    <!-- Payment and Price End -->
+</section><!--end section-->
+<!-- section End -->
 
-    <div th:replace="fragments/layout :: footer"></div>
-    <!-- Footer End -->
+<div th:replace="fragments/layout :: footer"></div>
+<!-- Footer End -->
 
-    <!-- Back to top -->
-    <a href="#" class="back-to-top rounded text-center" id="back-to-top">
-        <i class="mdi mdi-chevron-up d-block"> </i>
-    </a>
-    <!-- Back to top -->
+<!-- Back to top -->
+<a href="#" class="back-to-top rounded text-center" id="back-to-top">
+    <i class="mdi mdi-chevron-up d-block"> </i>
+</a>
+<!-- Back to top -->
 
-    <div th:replace="fragments/layout :: js-scripts"></div>
+<div th:replace="fragments/layout :: js-scripts"></div>
 </body>
 </html>

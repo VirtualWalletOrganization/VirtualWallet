@@ -47,17 +47,24 @@
                         <th th:text="#{card.cardholderName}">Cardholder name</th>
                         <th th:text="#{card.expirationDate}">Expiration date</th>
                         <th th:text="#{card.wallet}">Wallet type</th>
-                        <th th:text="#{card.edit.title}">Edit card</th>
-                        <th th:text="#{card.delete.title}">Delete card</th>
+                        <th th:text="#{card.edit}">Edit card</th>
+                        <th th:text="#{card.delete}">Delete card</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="card : ${cards}">
-                        <td th:text="${card.cardStatus}" th:style="${#strings.equalsIgnoreCase(card.cardStatus, 'ACTIVE') ? 'color: green;' : 'color: red;'}">Card status</td>
+                        <td th:text="${card.cardStatus}"
+                            th:style="${#strings.equalsIgnoreCase(card.cardStatus, 'ACTIVE') ? 'color: green;' : 'color: red;'}">
+                            Card status
+                        </td>
                         <td th:text="${card.cardNumber}">Card number</td>
                         <td th:text="${card.cardHolder}">Cardholder Name</td>
                         <td th:text="${card.expirationDate}">Expiration date</td>
-                        <td> <span th:each="wallet : ${card.getWallets()}" th:text="${wallet.getWalletsType().getWalletType().name()}"></span>
+                        <td>
+                                <span th:each="wallet, iterStat : ${card.getWallets()}">
+                                <span th:text="${wallet.getWalletsType().getWalletType().name()}"></span>
+                                <span th:if="${!iterStat.last}"> / </span>
+                                </span>
                         </td>
                         <td>
                             <form th:action="@{'/cards/' + ${card.id} + '/update'}">
@@ -84,7 +91,7 @@
                                                      role="alert"><strong
                                                         th:text="#{card.delete.confirmation.warning}"></strong>
                                                     <span class="text-white"
-                                                       th:text="#{card.delete.confirmation.textOne}"></span>
+                                                          th:text="#{card.delete.confirmation.textOne}"></span>
                                                 </div>
                                                 <p class="text-muted mb-0"
                                                    th:text="#{card.delete.confirmation.textTwo}"></p>
@@ -93,7 +100,7 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-primary" data-dismiss="modal"
                                                     th:text="#{card.delete.confirmation.close}"></button>
-                                            <form th:action="@{'/cards/' + ${card.id} + '/delete'}" method="get">
+                                            <form th:action="@{'/cards/' + ${card.id} +'/delete'}" method="get">
                                                 <input class="btn btn-secondary" th:type="submit"
                                                        th:value="#{card.delete}">
                                             </form>

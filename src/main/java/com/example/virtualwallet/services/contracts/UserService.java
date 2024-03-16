@@ -22,6 +22,7 @@ public interface UserService {
     User getByEmail(String email);
 
     User getByPhoneNumber(String phoneNumber);
+    List<User> getAllUsersByWalletId(int walletId);
 
     void registerUser(User user);
     void createPhoto(Photo photo, User user);

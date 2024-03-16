@@ -72,7 +72,7 @@ create table cards
     card_id         int auto_increment primary key,
     card_type_id    int                not null,
     user_id         int                not null,
-    card_number     varchar(16) unique not null,
+    card_number     varchar(16)  not null,
     expiration_date datetime           not null,
     card_holder     varchar(30)        not null,
     check_number    varchar(3)         not null,
@@ -87,7 +87,7 @@ create table cards
 CREATE TABLE wallets_types
 (
     wallet_type_id   INT AUTO_INCREMENT PRIMARY KEY,
-    wallet_type_name enum ('JOINT', 'REGULAR') not null default 'REGULAR'
+    wallet_type_name enum ('JOINT', 'MAIN') not null default 'MAIN'
 );
 
 create table wallets

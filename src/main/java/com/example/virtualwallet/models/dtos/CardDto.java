@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class CardDto {
 
     @NotNull(message = "Card type content can't be empty")
-    private String cardType;
+    private CardType cardType;
 
     @Pattern(regexp = "\\d{16}",
             message = "Invalid card number")
@@ -39,11 +39,11 @@ public class CardDto {
     public CardDto() {
     }
 
-    public String getCardType() {
+    public CardType getCardType() {
         return cardType;
     }
 
-    public void setCardType(String cardType) {
+    public void setCardType(CardType cardType) {
         this.cardType = cardType;
     }
 

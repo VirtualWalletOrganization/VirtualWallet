@@ -10,12 +10,14 @@ import com.example.virtualwallet.models.WalletsRole;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
+import com.example.virtualwallet.services.contracts.CardService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.virtualwallet.utils.CheckPermissions.*;
 import static com.example.virtualwallet.utils.Messages.*;
@@ -29,28 +31,21 @@ public class WalletServiceImpl implements WalletService {
     @Autowired
     public WalletServiceImpl(WalletRepository walletRepository, UserService userService) {
         this.walletRepository = walletRepository;
-        this.userService = userService;
-    }
+        this.userService = userService;}
 
     @Override
     public List<Wallet> getAll(User user) {
         checkAccessPermissionsAdmin(user, WALLET_ERROR_MESSAGE);
         return walletRepository.getAll();
     }
+
     @Override
     public List<Wallet> getAllWalletsByUserId(User user) {
-        List<Wallet> wallets= walletRepository.getAllWalletsByUserId(user.getId())
+        List<Wallet> wallets = walletRepository.getAllWalletsByUserId(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Cards"));
         checkPermissionShowingWalletsByUser(wallets, user, SEARCH_WALLET_ERROR_MESSAGE);
         return wallets;
 
-    }
-
-    @Override
-    public List<User> getAllUsersByWalletId(int walletId) {
-        //getWalletById(walletId,userId);
-        return walletRepository.getAllUsersByWalletId(walletId)
-                .orElseThrow(() -> new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId)));
     }
 
 //    @Override
@@ -81,13 +76,12 @@ public class WalletServiceImpl implements WalletService {
 //                .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
 
         User user = userService.getById(userId);
-
         Wallet wallet = walletRepository.getWalletById(walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
-
-        if (!user.getCreatedWallets().stream().anyMatch(w -> w.getId() == walletId)) {
-            throw new AuthorizationException(SEARCH_WALLET_ERROR_MESSAGE);
-        }
+        checkPermissionExistingUsersInWallet(wallet, user, SEARCH_WALLET_ERROR_MESSAGE);
+//        if (!user.getCreatedWallets().stream().anyMatch(w -> w.getId() == walletId)) {
+//            throw new AuthorizationException(SEARCH_WALLET_ERROR_MESSAGE);
+//        }
 
         return wallet;
     }
@@ -116,62 +110,26 @@ public class WalletServiceImpl implements WalletService {
     public Wallet create(Wallet wallet, User user) {
         if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
             User userCreator = wallet.getCreator();
-            WalletsRole walletsRole=new WalletsRole();
-            walletsRole.setId(WalletRole.ADMIN.ordinal()+1);
+            WalletsRole walletsRole = new WalletsRole();
+            walletsRole.setId(WalletRole.ADMIN.ordinal() + 1);
             walletsRole.setWalletRole(WalletRole.ADMIN);
             userCreator.setWalletsRole(walletsRole);
             wallet.setCreator(userCreator);
         }
-
-        if (user.getCreatedWallets().isEmpty()) {
-            wallet.setDefault(true);
-        }
-
-       user.getWallets().add(wallet);
-//        wallet.getUsers().add(user);
+        checkDefaultWallets(wallet, user);
+        user.getWallets().add(wallet);
         Wallet walletToAdd = walletRepository.create(wallet);
         userService.updateUser(user, user);
         return walletToAdd;
     }
 
     @Override
-    public void createWhenRegistering(Wallet wallet, User user) {
-        User user1 = userService.getByUsername(user.getUsername());
-        wallet.setCreator(user1);
-
-//        if (wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
-//            User userCreator = wallet.getCreator();
-//            userCreator.getWalletsRole().setWalletRole(WalletRole.ADMIN);
-//            wallet.setCreator(userCreator);
-//        }
-//
-//        if (user.getCreatedWallets().size() == 1) {
-//            wallet.setDefault(true);
-//        }
-
-        wallet.getUsers().add(user);
-        Wallet walletToAdd = walletRepository.create(wallet);
-        Wallet walletReady = walletRepository.getByCreatorIdWhenRegistering(user1.getId());
-        user.getWallets().add(walletReady);
-        userService.updateUser(user, user);
-    }
-
-    @Override
     public void update(Wallet walletToUpdate, User user) {
-        checkAccessPermissionWalletUser(walletToUpdate, user, MODIFY_WALLET_ERROR_MESSAGE);
-            Wallet currentDefaultWallet = getDefaultWallet(user.getId());
-            if (currentDefaultWallet.getId() != walletToUpdate.getId()) {
-                currentDefaultWallet.setDefault(false);
-                walletRepository.update(currentDefaultWallet);
-                walletToUpdate.setDefault(true);
-                walletRepository.update(walletToUpdate);
-            } else {
-                throw new DuplicateEntityException("Wallet", "id", String.valueOf(walletToUpdate.getId()),
-                        "has already been set as default.");
-            }
+        checkPermissionExistingUsersInWallet(walletToUpdate, user, MODIFY_WALLET_ERROR_MESSAGE);
+        checkDefaultWallets(walletToUpdate, user);
+        walletRepository.update(walletToUpdate);
 
-        }
-
+    }
 
     @Override
     public void updateRecurringTransaction(Wallet wallet) {
@@ -179,10 +137,25 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void delete(int walletId, User user) {
-        Wallet wallet = getWalletById(walletId, user.getId());
-        checkAccessPermissionWalletUser(wallet, user, MODIFY_WALLET_ERROR_MESSAGE);
-        walletRepository.delete(wallet);
+    public void delete(Wallet walletToDelete, User currentUser) {
+        if(walletToDelete.getWalletsType().getWalletType()==WalletType.JOINT){
+            checkUserWalletAdmin(walletToDelete, currentUser, DELETE_WALLET);
+        }
+        walletToDelete.setDeleted(true);
+        List<User> users = userService.getAllUsersByWalletId(walletToDelete.getId());
+        for (User user : users) {
+            user.getWallets().forEach(wallet -> {
+                if (wallet.getId() == walletToDelete.getId()) {
+                    checkAccessPermissionWalletUser(walletToDelete, user, MODIFY_WALLET_ERROR_MESSAGE);
+                    wallet.setDeleted(true);
+                    wallet.getUsers().remove(user);
+                    walletRepository.update(wallet);
+                    userService.updateUser(user, currentUser);
+                }
+            });
+
+            walletRepository.update(walletToDelete);
+        }
     }
 
     @Override
@@ -211,12 +184,31 @@ public class WalletServiceImpl implements WalletService {
     public void removeUsersFromWallet(int walletId, int userId, User executingUser) {
         Wallet wallet = getWalletById(walletId, executingUser.getId());
         User userToRemove = userService.getById(userId);
-
+        if(executingUser.getId()==userId){
+            throw new AuthorizationException(REMOVE_YOURSELF_FROM_WALLET);
+        }
         checkUserWalletAdmin(wallet, executingUser, REMOVE_USER_FROM_WALLET);
 
         wallet.getUsers().remove(userToRemove);
         walletRepository.update(wallet);
         userToRemove.getWallets().remove(wallet);
         userService.updateUser(userToRemove, userToRemove);
+    }
+
+    private void checkDefaultWallets(Wallet wallet, User user) {
+        Optional<Wallet> currentDefaultWallet = walletRepository.getDefaultWallet(user.getId());
+        if (currentDefaultWallet.isPresent()) {
+            if (currentDefaultWallet.get().getId() != wallet.getId()) {
+                currentDefaultWallet.get().setDefault(false);
+                walletRepository.update(currentDefaultWallet.get());
+                wallet.setDefault(true);
+            }
+//            } else {
+//                throw new DuplicateEntityException("Wallet", "id", String.valueOf(wallet.getId()),
+//                        "has already been set as default.");
+//            }
+        }else {
+            wallet.setDefault(true);
+        }
     }
 }

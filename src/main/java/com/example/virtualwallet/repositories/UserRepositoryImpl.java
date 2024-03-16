@@ -139,6 +139,16 @@ public class UserRepositoryImpl implements UserRepository {
 //            return Optional.ofNullable(query.list().get(0));
         }
     }
+    @Override
+    public Optional<List<User>> getAllUsersByWalletId(int walletId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery(
+                    "SELECT u FROM User u JOIN u.wallets w WHERE w.id = :walletId", User.class);
+            query.setParameter("walletId", walletId);
+            return Optional.ofNullable(query.list());
+        }
+    }
+
 
     @Override
     public void registerUser(User user) {

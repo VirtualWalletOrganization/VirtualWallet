@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:enums="java:com.example.virtualwallet.models.enums">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wallet View</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div th:replace="fragments/layout :: css-sheets"></div>
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+
+<!-- Title outside of the square box -->
+<section class="bg-half bg-light">
+    <div class="home-center">
+        <div class="home-desc-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12 text-center">
+                        <div class="page-next-level">
+                            <h4 class="title" th:text="#{wallet.view}">Wallet View</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <!-- Square box -->
+                <div class="card bg-white shadow rounded">
+                    <div class="card-body">
+                        <!-- Title inside the square box -->
+                        <h5 class="card-title" th:text="#{wallet.type} + ': ' + ${wallet.getWalletsType().getWalletType().name()}">Wallet type</h5>
+                        <p class="card-text" th:text="#{wallet.creator} + ':' + ${wallet.creator.username}">Wallet creator</p>
+                        <p class="card-text" th:if="${currentUser.walletsRole.getWalletRole() == T(com.example.virtualwallet.models.enums.WalletRole).ADMIN
+                                    and wallet.getWalletsType().getWalletType() == T(com.example.virtualwallet.models.enums.WalletType).JOINT}">
+                            <span th:text="#{wallet.participants}"></span>:
+                            <span th:each="user, userStat : ${wallet.users}">
+                                     <span th:text="${user.username}"></span>
+                                     <span th:if="${!userStat.last}">, </span>
+                                        </span>
+                        </p>                        <p class="card-text">
+                            <span th:text="#{wallet.list.amount} + ':'"></span>
+                            <span class="currency-format" th:text="${wallet.balance}">Balance</span>
+                        </p>
+                        <p class="card-text" th:text="#{wallet.currency} + ':' + ${wallet.currency}">Currency</p>
+                        <p class="card-text" th:if="${currentUser.walletsRole.getWalletRole() == T(com.example.virtualwallet.models.enums.WalletRole).ADMIN
+                                    and wallet.getWalletsType().getWalletType() == T(com.example.virtualwallet.models.enums.WalletType).JOINT}"
+                           th:text="#{wallet.role} + ':' + ${currentUser.walletsRole.getWalletRole().name()}">Wallet role</p>
+                        <div class="row">
+                            <div class="col">
+                                <div class="d-flex">
+                                    <form th:if="${wallet.default} == false"
+                                          th:action="@{'/wallets/' + ${wallet.id} + '/makeWalletDefault'}" method="post">
+                                        <button type="submit" class="btn btn-primary mr-2"
+                                                th:text="#{wallet.list.makeDefault}">Make Default</button>
+                                    </form>
+                                    <div th:unless="${wallet.default} == false">
+                                        <button type="button" class="btn btn-success mr-2"
+                                                th:text="#{wallet.list.alreadyDefault}">Already Default</button>
+                                    </div>
+
+                                    <a th:href="@{'/wallets/' + ${wallet.id}+'/delete'}" class="btn btn-danger mr-2">Delete wallet</a>
+                                    <a th:if="${currentUser.walletsRole.getWalletRole() == T(com.example.virtualwallet.models.enums.WalletRole).ADMIN
+                  and wallet.getWalletsType().getWalletType() == T(com.example.virtualwallet.models.enums.WalletType).JOINT}"
+                                       th:href="@{'/wallets/' + ${wallet.id} + '/users'}"
+                                       class="btn btn-info mr-2">Add users</a>
+                                    <a th:if="${currentUser.walletsRole.getWalletRole() == T(com.example.virtualwallet.models.enums.WalletRole).ADMIN
+                  and wallet.getWalletsType().getWalletType() == T(com.example.virtualwallet.models.enums.WalletType).JOINT}"
+                                       th:href="@{'/wallets/' + ${wallet.id} + '/users/delete'}"
+                                       class="btn btn-outline-danger">Remove users</a>
+                                </div>
+                            </div>
+                        </div>
+<!--                            <a th:href="@{'/wallets/' + ${wallet.id}+'/update'}" class="btn btn-primary">Edit wallet</a>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="fragments/layout :: js-scripts"></div>
+
+</body>
+</html>

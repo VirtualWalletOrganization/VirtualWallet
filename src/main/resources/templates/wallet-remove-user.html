@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Users from Wallet</title>
+    <div th:replace="fragments/layout :: css-sheets"></div>
+</head>
+
+<body>
+
+<div th:replace="fragments/layout :: header"></div>
+
+<section class="section bg-light">
+    <div class="container mt-10">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center">
+                <div class="section-title mb-4 pb-2">
+                    <h2 class="title mb-4" th:text="#{remove.users.to.wallet.title}">Remove Users from Wallet</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-6 col-12 mt-4 pt-2">
+                <div class="rounded bg-white border shadow">
+                    <div class="bg-light p-4 text-center rounded-top">
+                        <h4 class="mb-0 text-primary" th:text="#{add.users.to.wallet.subtitle}">Enter User Details</h4>
+                    </div>
+
+                    <div class="p-4">
+                        <form th:action="@{'/wallets/' + ${wallet.id}+'/users/delete'}" method="post">
+                            <!--              <div class="form-group">-->
+                            <!--                <label for="walletId" th:text="#{wallet.id}">Wallet ID:</label>-->
+                            <!--                <input type="text" id="walletId" name="walletId" class="form-control" required>-->
+                            <!--              </div>-->
+
+                            <div class="form-group">
+                                <label for="userToRemove" th:text="#{user.name.to.remove}">Username to Remove:</label>
+                                <input type="text" id="userToRemove" name="userToRemove" class="form-control" required>
+                            </div>
+
+                            <!-- You can add more input fields if needed -->
+
+                            <button type="submit" class="btn btn-primary">Remove User from Wallet</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Users to Wallet Form End -->
+</section>
+
+<div th:replace="fragments/layout :: footer"></div>
+
+<!-- Add any additional HTML content or scripts here -->
+<div th:replace="fragments/layout :: js-scripts"></div>
+
+</body>
+
+</html>
