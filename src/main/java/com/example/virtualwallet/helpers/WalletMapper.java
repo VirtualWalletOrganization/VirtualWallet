@@ -25,15 +25,19 @@ public class WalletMapper {
 
     public Wallet fromDto(WalletDto dto, User user) {
         Wallet wallet = new Wallet();
+
+        wallet.setCreator(user);
+        wallet.setBalance(BigDecimal.ZERO);
         wallet.setCurrency(dto.getCurrency());
 
         WalletsType walletsType = new WalletsType();
         walletsType.setId(dto.getWalletType().ordinal());
         walletsType.setWalletType(WalletType.valueOf(dto.getWalletType().name()));
         walletsType.setId(dto.getWalletType().ordinal() + 1);
-        wallet.setBalance(BigDecimal.ZERO);
+
         wallet.setWalletsType(walletsType);
-        wallet.setCreator(user);
+        wallet.setDefault(dto.getDefault());
+
         return wallet;
     }
 

@@ -82,10 +82,10 @@
 <!--                        </td>-->
                         <td>
                             <button type="button" class="btn btn-light" data-toggle="modal"
-                                    data-target="#delete-card">Delete
+                                   th:data-target="'#delete-card-' + ${wallet.id}" data-wallet-id="${wallet.id}">Delete
                             </button>
-                            <div class="modal fade" id="delete-card" tabindex="-1" role="dialog"
-                                 aria-labelledby="exampleModalCenterTitle"
+                            <div class="modal fade" th:id="'delete-card-' + ${wallet.id}" role="dialog"
+                                 aria-labelledby="'exampleModalCenterTitle-' + ${wallet.id}"
                                  style="display: none;" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content rounded shadow border-0">
@@ -112,8 +112,10 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-primary" data-dismiss="modal"
                                                     th:text="#{wallet.delete.confirmation.close}"></button>
+
                                             <form th:action="@{'/wallets/' + ${wallet.id} + '/delete'}"
-                                                  method="get">
+                                                  method="post">
+                                                <input type="hidden" name="walletId" th:value="${wallet.id}">
                                                 <button type="submit" class="btn btn-secondary"
                                                         th:text="#{wallet.delete}">Delete wallet</button>
                                             </form>

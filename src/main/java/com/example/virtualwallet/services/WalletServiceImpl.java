@@ -31,7 +31,8 @@ public class WalletServiceImpl implements WalletService {
     @Autowired
     public WalletServiceImpl(WalletRepository walletRepository, UserService userService) {
         this.walletRepository = walletRepository;
-        this.userService = userService;}
+        this.userService = userService;
+    }
 
     @Override
     public List<Wallet> getAll(User user) {
@@ -116,7 +117,9 @@ public class WalletServiceImpl implements WalletService {
             userCreator.setWalletsRole(walletsRole);
             wallet.setCreator(userCreator);
         }
-        checkDefaultWallets(wallet, user);
+        if(wallet.getDefault()){
+            checkDefaultWallets(wallet, user);
+        }
         user.getWallets().add(wallet);
         Wallet walletToAdd = walletRepository.create(wallet);
         userService.updateUser(user, user);
@@ -126,8 +129,8 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public void update(Wallet walletToUpdate, User user) {
         checkPermissionExistingUsersInWallet(walletToUpdate, user, MODIFY_WALLET_ERROR_MESSAGE);
-        checkDefaultWallets(walletToUpdate, user);
-        walletRepository.update(walletToUpdate);
+            checkDefaultWallets(walletToUpdate, user);
+            walletRepository.update(walletToUpdate);
 
     }
 
@@ -138,7 +141,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public void delete(Wallet walletToDelete, User currentUser) {
-        if(walletToDelete.getWalletsType().getWalletType()==WalletType.JOINT){
+        if (walletToDelete.getWalletsType().getWalletType() == WalletType.JOINT) {
             checkUserWalletAdmin(walletToDelete, currentUser, DELETE_WALLET);
         }
         walletToDelete.setDeleted(true);
@@ -146,11 +149,10 @@ public class WalletServiceImpl implements WalletService {
         for (User user : users) {
             user.getWallets().forEach(wallet -> {
                 if (wallet.getId() == walletToDelete.getId()) {
-                    checkAccessPermissionWalletUser(walletToDelete, user, MODIFY_WALLET_ERROR_MESSAGE);
                     wallet.setDeleted(true);
+                    user.getWallets().remove(wallet);
                     wallet.getUsers().remove(user);
                     walletRepository.update(wallet);
-                    userService.updateUser(user, currentUser);
                 }
             });
 
@@ -167,12 +169,13 @@ public class WalletServiceImpl implements WalletService {
         }
 
         checkUserWalletAdmin(wallet, executingUser, ADD_USER_TO_WALLET);
-
-        // Set<User> existingUsers = wallet.getUsers();
-
         if (wallet.getUsers().contains(userToAdd)) {
             throw new DuplicateEntityException("User", "id", "one of the provided user IDs");
         }
+        userToAdd.getWallets().stream()
+                .filter(w -> wallet.getId() == walletId && wallet.getDeleted())
+                .forEach(w -> wallet.setDeleted(false));
+
 
         wallet.getUsers().add(userToAdd);
         walletRepository.update(wallet);
@@ -197,7 +200,7 @@ public class WalletServiceImpl implements WalletService {
 
     private void checkDefaultWallets(Wallet wallet, User user) {
         Optional<Wallet> currentDefaultWallet = walletRepository.getDefaultWallet(user.getId());
-        if (currentDefaultWallet.isPresent()) {
+        if (currentDefaultWallet.isPresent()){
             if (currentDefaultWallet.get().getId() != wallet.getId()) {
                 currentDefaultWallet.get().setDefault(false);
                 walletRepository.update(currentDefaultWallet.get());

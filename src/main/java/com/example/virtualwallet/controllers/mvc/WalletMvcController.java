@@ -126,7 +126,6 @@ public class WalletMvcController {
 
         try {
             Wallet newWallet = walletMapper.fromDto(walletDto, user);
-            model.addAttribute("walletId", newWallet.getId());
             walletService.create(newWallet, user);
             return "redirect:/wallets";
         } catch (EntityNotFoundException e) {
@@ -211,16 +210,17 @@ public class WalletMvcController {
 
         try {
             Wallet walletToDelete = walletService.getWalletById(walletId, user.getId());
+            model.addAttribute("walletId",walletId);
             walletService.delete(walletToDelete, user);
             return "redirect:/wallets";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
@@ -240,11 +240,11 @@ public class WalletMvcController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
