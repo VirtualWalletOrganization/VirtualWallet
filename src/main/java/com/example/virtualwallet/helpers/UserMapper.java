@@ -41,6 +41,8 @@ public class UserMapper {
         identityStatus.setId(Identity.PENDING.ordinal()+1);
         identityStatus.setIdentity(Identity.PENDING);
         user.setIdentityStatus(identityStatus);
+//        Photo photo = new Photo();
+//        photo.setId(photo.getId());
         UsersRole role=new UsersRole();
         role.setId(Role.USER.ordinal()+1);
         role.setRole(Role.USER);

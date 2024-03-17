@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class TransactionHistoryDto {
+
     private Timestamp startDate;
 
     private Timestamp endDate;

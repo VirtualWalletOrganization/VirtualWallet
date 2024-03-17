@@ -2,8 +2,6 @@ package com.example.virtualwallet.utils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class TransactionFilterOptions {
@@ -15,9 +13,12 @@ public class TransactionFilterOptions {
     private Optional<Timestamp> creationTime;
     private Optional<String> sortBy;
     private Optional<String> sortOrder;
+    private Optional<Timestamp> startDate;
+    private Optional<Timestamp> endDate;
+    private Optional<String> counterparty;
 
     public TransactionFilterOptions() {
-        this(null,null,null,null,null,null,null );
+        this(null, null, null, null, null, null, null);
     }
 
     public TransactionFilterOptions(
@@ -35,6 +36,12 @@ public class TransactionFilterOptions {
         this.creationTime = Optional.ofNullable(creationTime);
         this.sortBy = Optional.ofNullable(sortBy);
         this.sortOrder = Optional.ofNullable(sortOrder);
+    }
+
+    public TransactionFilterOptions(Timestamp startDate, Timestamp endDate, String counterparty) {
+        this.startDate = Optional.ofNullable(startDate);
+        this.endDate = Optional.ofNullable(endDate);
+        this.counterparty = Optional.ofNullable(counterparty);
     }
 
     public Optional<String> getSender() {
@@ -63,5 +70,17 @@ public class TransactionFilterOptions {
 
     public Optional<String> getSortOrder() {
         return sortOrder;
+    }
+
+    public Optional<Timestamp> getStartDate() {
+        return startDate;
+    }
+
+    public Optional<Timestamp> getEndDate() {
+        return endDate;
+    }
+
+    public Optional<String> getCounterparty() {
+        return counterparty;
     }
 }

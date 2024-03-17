@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Admin Panel: Transactions List</title>
@@ -28,7 +28,7 @@
 <section class="section">
     <div class="container">
         <div class="p-4">
-            <form id="query-form" th:action="@{/admin/transactions}" method="get">
+            <form id="query-form" th:action="@{/admin/transactions}" th:object="${filterOptions}" method="get">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group position-relative">

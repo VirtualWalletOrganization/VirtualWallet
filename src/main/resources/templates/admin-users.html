@@ -105,7 +105,8 @@
                         <th th:text="#{user.header.email}">Email</th>
                         <th th:text="#{user.header.phone}">Phone</th>
                         <th th:text="#{user.header.block}">Status</th>
-                        <th th:text="#{user.header.update.current.user}">Update Current User</th>
+                        <th th:text="#{user.header.confirm}">Confirm Registration</th>
+<!--                        <th th:text="#{user.header.update.current.user}">Update Current User</th>-->
                     </tr>
                     </thead>
                     <tbody>
@@ -126,16 +127,24 @@
                                 </button>
                             </form>
                         </td>
+<!--                        <td>-->
+<!--                            <form th:action="@{${'/admin/users/' + user.getId() + '/' + (user.getUsersRole().getRole().name().equals('ADMIN') ? 'update to user' : 'update to admin')}}"-->
+<!--                                  method="post">-->
+<!--                                &lt;!&ndash;                                <input class="btn btn-primary" th:type="submit" th:value="#{admin.update.to.admin}">&ndash;&gt;-->
+<!--                                <button class="btn btn-primary" type="submit"-->
+<!--                                        th:text="${user.getUsersRole().getRole().name().equals('ADMIN') ? 'Update To User' : 'Update To Admin'}">-->
+<!--                                    Toggle Block-->
+<!--                                </button>-->
+<!--                            </form>-->
+<!--                        </td>-->
                         <td>
-                            <form th:action="@{${'/admin/users/' + user.getId() + '/' + (user.getUsersRole().getRole().name().equals('ADMIN') ? 'update to user' : 'update to admin')}}"
-                                  method="post">
-                                <!--                                <input class="btn btn-primary" th:type="submit" th:value="#{admin.update.to.admin}">-->
-                                <button class="btn btn-primary" type="submit"
-                                        th:text="${user.getUsersRole().getRole().name().equals('ADMIN') ? 'Update To User' : 'Update To Admin'}">
-                                    Toggle Block
+                            <form th:action="@{${'/admin/users/' + user.getId() + '/confirm-registration'}}" method="post">
+                                <button class="btn btn-primary" type="submit" th:if="${user.getIdentityStatus().getIdentity().name() == 'REJECTED'} ? 'REJECTED' : 'APPROVED'">
+                                    Accept
                                 </button>
                             </form>
                         </td>
+
                     </tr>
                     </tbody>
                 </table>

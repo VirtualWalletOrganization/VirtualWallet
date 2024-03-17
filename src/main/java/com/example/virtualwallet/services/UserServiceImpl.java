@@ -94,6 +94,7 @@ public class UserServiceImpl implements UserService {
             userRepository.updateUser(existingUser);
         } else {
             checkDuplicateEntity(user);
+
             userRepository.registerUser(user);
         }
     }
@@ -103,6 +104,7 @@ public class UserServiceImpl implements UserService {
         User user1 = getByUsername(user.getUsername());
         photo.setCreator(user1);
         userRepository.createPhoto(photo, user);
+        userRepository.updateUser(user);
     }
 
     @Override
@@ -120,13 +122,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void confirmUserRegistration(User currentUser, User user) {
         checkAccessPermissionsAdmin(currentUser, VERIFY_USER);
-        Optional<User> userToBeVerifiedOptional = userRepository.getById(user.getId());
+        User userToBeVerified = getById(user.getId());
 
-        if (userToBeVerifiedOptional.isEmpty()) {
+        if (userToBeVerified == null) {
             throw new EntityNotFoundException("User", "email", user.getEmail());
         }
-
-        User userToBeVerified = userToBeVerifiedOptional.get();
 
         if (user.getIdentityStatus().getIdentity().equals(Identity.APPROVED)) {
             throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
@@ -134,6 +134,7 @@ public class UserServiceImpl implements UserService {
             userToBeVerified.getIdentityStatus().setIdentity(Identity.REJECTED);
         } else {
             user.getIdentityStatus().setIdentity(Identity.APPROVED);
+            user.setStatus(UserStatus.ACTIVE);
             userRepository.confirmRegistration(user);
 
 //            if (referralRepository.getReferralEmail(user.getEmail()).isPresent()) {

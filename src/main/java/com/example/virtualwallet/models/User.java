@@ -71,7 +71,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "wallet_id")
     )
-    private Set<Wallet> wallets;
+    private Set<Wallet> wallets = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)

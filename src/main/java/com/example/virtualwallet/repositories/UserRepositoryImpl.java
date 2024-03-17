@@ -224,11 +224,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
    public void confirmRegistration(User user){
 
-       IdentityStatus identityStatus = new IdentityStatus();
-       try (Session session = sessionFactory.openSession()) {
-           identityStatus = session.get(IdentityStatus.class, 1);
-       }
-       user.setIdentityStatus(identityStatus);
+//       IdentityStatus identityStatus = new IdentityStatus();
+//       try (Session session = sessionFactory.openSession()) {
+//           identityStatus = session.get(IdentityStatus.class, 1);
+//       }
+//       user.setIdentityStatus(identityStatus);
        try (Session session = sessionFactory.openSession()) {
            session.beginTransaction();
            session.merge(user);

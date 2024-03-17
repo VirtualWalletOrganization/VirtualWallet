@@ -145,6 +145,11 @@ public class TransactionMvcController {
     @GetMapping("/user-history")
     public String showAllTransactionsByUserId(@ModelAttribute TransactionHistoryDto transactionHistoryDto,
                                               Model model, HttpSession session) {
+        TransactionFilterOptions transactionFilterOptions = new TransactionFilterOptions(
+                transactionHistoryDto.getStartDate(),
+                transactionHistoryDto.getEndDate(),
+                transactionHistoryDto.getCounterpartyUsername());
+
         User user;
         try {
             user = authenticationHelper.tryGetCurrentUser(session);
@@ -153,10 +158,12 @@ public class TransactionMvcController {
         }
 
         try {
-            List<Transaction> transactions= transactionService.getAllTransactionsByUserId(user.getId());
+            List<Transaction> transactions = transactionService.getAllTransactionsByUserId(user.getId());
             model.addAttribute("transaction", new TransactionHistoryDto());
             model.addAttribute("transactions", transactions);
             model.addAttribute("currentUser", user);
+            model.addAttribute("counterparty", transactionFilterOptions.getCounterparty());
+            model.addAttribute("filterOptions", transactionHistoryDto);
             return "transaction-history";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());

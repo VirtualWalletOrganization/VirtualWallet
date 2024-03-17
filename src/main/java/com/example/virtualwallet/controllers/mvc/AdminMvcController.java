@@ -7,7 +7,6 @@ import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.TransactionFilterDto;
 import com.example.virtualwallet.models.dtos.UserFilterDto;
 import com.example.virtualwallet.services.contracts.TransactionService;
@@ -49,7 +48,7 @@ public class AdminMvcController {
 
     @GetMapping
     public String showAllUsers(@ModelAttribute("userFilterOptions") UserFilterDto filterDto,
-                            HttpSession session, Model model) {
+                               HttpSession session, Model model) {
         UserFilterOptions userFilterOptions = new UserFilterOptions(
                 filterDto.getUsername(),
                 filterDto.getFirstName(),
@@ -366,6 +365,50 @@ public class AdminMvcController {
             User currentUser = authenticationHelper.tryGetCurrentUser(session);
             User userToBeUnblocked = userService.getById(id);
             userService.unBlockUser(currentUser, userToBeUnblocked);
+            return "redirect:/admin/users";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (AuthorizationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (DuplicateEntityException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
+    @GetMapping("/users/{id}/confirm-registration")
+    public String showConfirmUserRegistration(@PathVariable int id, HttpSession session, Model model) {
+        try {
+            User currentUser = authenticationHelper.tryGetCurrentUser(session);
+            User userToBeConfirmed = userService.getById(id);
+            userService.confirmUserRegistration(currentUser, userToBeConfirmed);
+            return "redirect:/admin/users";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (AuthorizationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (DuplicateEntityException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
+    @PostMapping("/users/{id}/confirm-registration")
+    public String confirmUserRegistration(@PathVariable int id, HttpSession session, Model model) {
+        try {
+            User currentUser = authenticationHelper.tryGetCurrentUser(session);
+            User userToBeConfirmed = userService.getById(id);
+            userService.confirmUserRegistration(currentUser, userToBeConfirmed);
             return "redirect:/admin/users";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());

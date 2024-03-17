@@ -117,11 +117,13 @@ public class WalletServiceImpl implements WalletService {
             userCreator.setWalletsRole(walletsRole);
             wallet.setCreator(userCreator);
         }
-        if(wallet.getDefault()){
+
+        if (wallet.getDefault()) {
             checkDefaultWallets(wallet, user);
         }
-        user.getWallets().add(wallet);
+
         Wallet walletToAdd = walletRepository.create(wallet);
+        user.getWallets().add(walletToAdd);
         userService.updateUser(user, user);
         return walletToAdd;
     }
@@ -129,8 +131,8 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public void update(Wallet walletToUpdate, User user) {
         checkPermissionExistingUsersInWallet(walletToUpdate, user, MODIFY_WALLET_ERROR_MESSAGE);
-            checkDefaultWallets(walletToUpdate, user);
-            walletRepository.update(walletToUpdate);
+        checkDefaultWallets(walletToUpdate, user);
+        walletRepository.update(walletToUpdate);
 
     }
 
@@ -187,7 +189,7 @@ public class WalletServiceImpl implements WalletService {
     public void removeUsersFromWallet(int walletId, int userId, User executingUser) {
         Wallet wallet = getWalletById(walletId, executingUser.getId());
         User userToRemove = userService.getById(userId);
-        if(executingUser.getId()==userId){
+        if (executingUser.getId() == userId) {
             throw new AuthorizationException(REMOVE_YOURSELF_FROM_WALLET);
         }
         checkUserWalletAdmin(wallet, executingUser, REMOVE_USER_FROM_WALLET);
@@ -200,7 +202,7 @@ public class WalletServiceImpl implements WalletService {
 
     private void checkDefaultWallets(Wallet wallet, User user) {
         Optional<Wallet> currentDefaultWallet = walletRepository.getDefaultWallet(user.getId());
-        if (currentDefaultWallet.isPresent()){
+        if (currentDefaultWallet.isPresent()) {
             if (currentDefaultWallet.get().getId() != wallet.getId()) {
                 currentDefaultWallet.get().setDefault(false);
                 walletRepository.update(currentDefaultWallet.get());
@@ -210,7 +212,7 @@ public class WalletServiceImpl implements WalletService {
 //                throw new DuplicateEntityException("Wallet", "id", String.valueOf(wallet.getId()),
 //                        "has already been set as default.");
 //            }
-        }else {
+        } else {
             wallet.setDefault(true);
         }
     }

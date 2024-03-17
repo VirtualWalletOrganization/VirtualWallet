@@ -86,7 +86,11 @@ public class WalletRepositoryImpl implements WalletRepository {
             query.setParameter("userId", userId);
             List<Wallet> wallets = query.list();
 
-            return Optional.ofNullable(wallets.get(0));
+            if (wallets.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(wallets.get(0));
+            }
         }
     }
 

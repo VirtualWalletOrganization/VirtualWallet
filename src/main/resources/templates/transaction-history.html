@@ -26,7 +26,7 @@
 <section class="section">
     <div class="container">
         <div class="p-4">
-            <form id="query-form" th:action="@{/transactions/user-history}" method="get">
+            <form id="query-form" th:action="@{/transactions/user-history}" th:object="${filterOptions}" method="get">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group position-relative">
