@@ -6,8 +6,6 @@ import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.models.enums.Interval;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.TransactionType;
-import com.example.virtualwallet.services.contracts.RecurringTransactionService;
-import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -27,19 +25,20 @@ public class TransactionMapper {
         transaction.setWalletReceiver(walletReceiver);
         transaction.setUserReceiver(userReceiver);
         transaction.setAmount(transactionDto.getAmount());
-        transaction.setCurrency(transactionDto.getCurrency());
+        transaction.setCurrency("USD");
         // transaction.setDirection(Direction.OUTGOING);
         transaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
 
         TransactionsStatus transactionsStatus = new TransactionsStatus();
-        transactionsStatus.setId(Status.PENDING.ordinal());
+        transactionsStatus.setId(Status.PENDING.ordinal()+1);
         transactionsStatus.setTransactionStatus(Status.PENDING);
         transaction.setTransactionsStatus(transactionsStatus);
 
-        transaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
+        transaction.setDescription(transactionDto.getDescription());
+//        transaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
         TransactionsType transactionsType = new TransactionsType();
-        transactionsType.setId(TransactionType.SINGLE.ordinal());
+        transactionsType.setId(TransactionType.SINGLE.ordinal()+1);
         transactionsType.setTransactionType(TransactionType.SINGLE);
         transaction.setTransactionsType(transactionsType);
 
@@ -77,6 +76,7 @@ public class TransactionMapper {
 
         return recurringTransaction;
     }
+
     public RecurringTransaction fromDtoTransactionUpdate(RecurringTransactionDto recurringTransactionDto,
                                                          RecurringTransaction recurringTransaction) {
 

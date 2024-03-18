@@ -4,6 +4,7 @@ import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
+import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -85,16 +86,47 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         }
     }
     @Override
-    public Optional <List<Transaction>> getAllTransactionsByUserId(int userId) {
+    public Optional <List<Transaction>> getAllTransactionsByUserId(int userId,
+                                                                   TransactionHistoryFilterOptions transactionHistoryFilterOptions) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Transaction> query = session.createQuery(
-                    "FROM Transaction as t where t.userSender.id = :userId " +
-                            "or t.userReceiver.id=:userId", Transaction.class);
-            query.setParameter("userId", userId);
+        String baseQuery = "FROM Transaction as t WHERE t.userSender.id = :userId OR t.userReceiver.id = :userId";
 
-            return Optional.ofNullable(query.list());
+        // Apply additional filters if provided
+        List<String> filters = new ArrayList<>();
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryString = new StringBuilder(baseQuery);
+        params.put("userId", userId);
+
+        // Add filter conditions based on provided options
+        transactionHistoryFilterOptions.getStartDate().ifPresent(value -> {
+            filters.add("t.date >= :startDate");
+            params.put("startDate", value);
+        });
+        transactionHistoryFilterOptions.getEndDate().ifPresent(value -> {
+            filters.add("t.date <= :endDate");
+            params.put("endDate", value);
+        });
+            transactionHistoryFilterOptions.getCounterparty().ifPresent(value -> {
+                filters.add("(t.userSender.username = :counterparty OR t.userReceiver.username = :counterparty)");
+                params.put("counterparty", value);
+            });
+
+        // Append filter conditions to the query
+        if (!filters.isEmpty()) {
+            queryString.append(" AND ").append(String.join(" AND ", filters));
         }
+
+        // Apply ordering if needed
+        queryString.append(generateOrderByUserId(transactionHistoryFilterOptions));
+
+        // Create and execute the final query
+        Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
+        query.setProperties(params);
+
+        return Optional.ofNullable(query.list());
     }
+}
+
 
     @Override
     public Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId) {
@@ -179,6 +211,35 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         orderBy = String.format(" order by %s", orderBy);
 
         if (transactionFilterOptions.getSortOrder().isPresent() && transactionFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
+            orderBy = String.format("%s desc", orderBy);
+        }
+
+        return orderBy;
+    }
+
+    private String generateOrderByUserId(TransactionHistoryFilterOptions transactionHistoryFilterOptions) {
+        if (transactionHistoryFilterOptions.getSortBy().isEmpty()) {
+            return "";
+        }
+
+        String orderBy = "";
+        switch (transactionHistoryFilterOptions.getSortBy().get()) {
+            case "startDate":
+                orderBy = "t.date";
+                break;
+            case "endDate":
+                orderBy = "t.date";
+                break;
+            case "counterparty":
+                orderBy = "CASE WHEN t.userSender.id = :userId THEN t.userSender.username ELSE t.userReceiver.username END";
+                break;
+            default:
+                return "";
+        }
+
+        orderBy = String.format(" order by %s", orderBy);
+
+        if (transactionHistoryFilterOptions.getSortOrder().isPresent() && transactionHistoryFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
             orderBy = String.format("%s desc", orderBy);
         }
 

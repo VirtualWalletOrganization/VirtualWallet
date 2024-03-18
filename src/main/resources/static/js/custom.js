@@ -1,6 +1,4 @@
-// Addition by Petar
-// Change "Search by user" title, placeholder and icon in the Create Transaction page,
-// depending on whether the user chooses to search recipients by username, email or phone
+
 $(document).ready(
     function () {
         var radioButtons = document.getElementsByClassName("radio-buttons");
@@ -9,7 +7,7 @@ $(document).ready(
                     var radioButtonName = event.target.innerHTML;
                     var columnDiv = document.getElementById('contact-input-parent-column');
                     if (radioButtonName === 'Username') {
-                        document.getElementById('search-form-country-code').style.display = "none";
+                        // document.getElementById('search-form-country-code').style.display = "none";
                         columnDiv.classList.remove('col-md-8');
                         columnDiv.classList.add('col-md-12');
                         document.getElementById('contact').placeholder = "Username";
@@ -20,7 +18,7 @@ $(document).ready(
                             document.getElementsByClassName('icons')[0].classList.add('mdi-account');
                         }
                     } else if (radioButtonName === 'Email') {
-                        document.getElementById('search-form-country-code').style.display = "none";
+                        // document.getElementById('search-form-country-code').style.display = "none";
                         columnDiv.classList.remove('col-md-8');
                         columnDiv.classList.add('col-md-12');
                         document.getElementById('contact').placeholder = "Email";
@@ -31,7 +29,7 @@ $(document).ready(
                             document.getElementsByClassName('icons')[0].classList.add('mdi-email');
                         }
                     } else if (radioButtonName === 'Phone') {
-                        document.getElementById('search-form-country-code').style.display = "inline-block";
+                        // document.getElementById('search-form-country-code').style.display = "inline-block";
                         columnDiv.classList.remove('col-md-12');
                         columnDiv.classList.add('col-md-8');
                         document.getElementById('contact').placeholder = "Phone";
@@ -48,20 +46,20 @@ $(document).ready(
     }
 );
 
-// Addition by Ivan
+
 $(document).ready(function () {
-    $('form.format-phone-number-before-submission').submit(function () {
-        let countryCode = $('#search-form-country-code');
-        if ($(countryCode).css('display') !== 'none') {
-            let contactInput = $('#contact');
-            let contactInputValue = $(contactInput).val();
-            // Remove a single leading zero from the local phone number if the user has added it in error.
-            if (contactInputValue.startsWith('0')) {
-                contactInputValue = contactInputValue.substr(1);
-            }
-            $(contactInput).val('(+' + $('#country-code').val() + ')' + contactInputValue);
-        }
-    });
+    // $('form.format-phone-number-before-submission').submit(function () {
+    //     let countryCode = $('#search-form-country-code');
+    //     if ($(countryCode).css('display') !== 'none') {
+    //         let contactInput = $('#contact');
+    //         let contactInputValue = $(contactInput).val();
+    //         // Remove a single leading zero from the local phone number if the user has added it in error.
+    //         if (contactInputValue.startsWith('0')) {
+    //             contactInputValue = contactInputValue.substr(1);
+    //         }
+    //         $(contactInput).val('(+' + $('#country-code').val() + ')' + contactInputValue);
+    //     }
+    // });
 
     $('input[name="recipient"]').on('click', function () {
         $('#transaction-data').css('display', 'inline-block');
@@ -74,7 +72,7 @@ $(document).ready(function () {
 });
 
 
-// Addition by Ivan
+
 $(document).ready(function () {
     // Set initial values of transaction direction checkboxes.
     let direction = $('input[name="direction"]').val();
@@ -184,12 +182,12 @@ $(document).ready(function () {
         var amount = document.getElementsByClassName('currency-format');
         var formatter = new Intl.NumberFormat('bg-BG', {
             style: 'currency',
-            currency: 'EUR'
+            currency: 'USD'
         });
-        for (var i = 0; 0 <= amount.length; i++) {
-            // amount[i].innerHTML = (Math.round(amount[i].innerHTML * 100) / 100).toFixed(2);
-            amount[i].innerHTML = formatter.format(amount[i].innerHTML);
-        }
+        // for (var i = 0; 0 <= amount.length; i++) {
+        //     // amount[i].innerHTML = (Math.round(amount[i].innerHTML * 100) / 100).toFixed(2);
+        //     amount[i].innerHTML = formatter.format(amount[i].innerHTML);
+        // }
     }
 );
 
@@ -199,12 +197,12 @@ $(document).ready(function () {
         var formatter = new Intl.NumberFormat('bg-BG', {
             style: 'currency',
             signDisplay: 'always',
-            currency: 'EUR'
+            currency: 'USD'
         });
-        for (var i = 0; 0 <= amount.length; i++) {
-            // amount[i].innerHTML = (Math.round(amount[i].innerHTML * 100) / 100).toFixed(2);
-            amount[i].innerHTML = formatter.format(amount[i].innerHTML);
-        }
+        // for (var i = 0; 0 <= amount.length; i++) {
+        //     // amount[i].innerHTML = (Math.round(amount[i].innerHTML * 100) / 100).toFixed(2);
+        //     amount[i].innerHTML = formatter.format(amount[i].innerHTML);
+        // }
     }
 );
 
@@ -213,18 +211,22 @@ $(document).ready(function () {
         var amount = document.getElementsByClassName('admin-transactions-amount-format');
         var formatter = new Intl.NumberFormat('bg-BG', {
             style: 'currency',
-            currency: 'EUR'
+            currency: 'USD'
         });
-        for (var i = 0; 0 <= amount.length; i++) {
-            // amount[i].innerHTML = (Math.round(amount[i].innerHTML * 100) / 100).toFixed(2);
-            amount[i].innerHTML = formatter.format(amount[i].innerHTML);
-        }
+        // for (var i = 0; 0 <= amount.length; i++) {
+        //     // amount[i].innerHTML = (Math.round(amount[i].innerHTML * 100) / 100).toFixed(2);
+        //     amount[i].innerHTML = formatter.format(amount[i].innerHTML);
+        // }
     }
 );
 
 // Addition by Petar to add transaction details when creating transaction to the confirmation modal for previewing the transaction details
 $(document).ready(function () {
     var body = $('body');
+    body.on('change', '#wallet', function () {
+        var selectedWalletId = $(this).val(); // Get the selected wallet ID
+        $('input[name="senderWalletId"]').val(selectedWalletId); // Set the selected wallet ID as the value of senderWalletId input field
+    });
     body.on('change', '#amount', function () {
         $('#amount-confirm').val(this.value);
     });

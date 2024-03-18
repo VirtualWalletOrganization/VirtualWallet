@@ -10,6 +10,7 @@ import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
+import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +48,8 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new EntityNotFoundException("Transaction", "id", String.valueOf(transactionId)));
     }
     @Override
-    public List<Transaction> getAllTransactionsByUserId(int userId){
-        return transactionRepository.getAllTransactionsByUserId(userId)
+    public List<Transaction> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions){
+        return transactionRepository.getAllTransactionsByUserId(userId,transactionHistoryFilterOptions)
                 .orElseThrow(() -> new EntityNotFoundException("Transactions"));
 
     }

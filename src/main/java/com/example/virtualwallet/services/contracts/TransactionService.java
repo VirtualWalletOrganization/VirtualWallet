@@ -5,6 +5,7 @@ import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
+import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +17,7 @@ public interface TransactionService {
 
     Transaction getTransactionById(int transactionId);
 
-    List<Transaction> getAllTransactionsByUserId(int userId);
+    List<Transaction> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions);
 
     List<Transaction> getAllTransactionsByStatus(Status status);
 

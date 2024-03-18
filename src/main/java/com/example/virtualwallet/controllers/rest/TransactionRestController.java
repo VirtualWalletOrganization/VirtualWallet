@@ -99,7 +99,7 @@ public class TransactionRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            User userReceiver = userService.getByUsername(transactionDto.getReceiver());
+            User userReceiver = userService.getById(transactionDto.getReceiver());
             Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
             Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, user,
                     walletReceiver, userReceiver);
@@ -119,7 +119,7 @@ public class TransactionRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            User userReceiver = userService.getByUsername(transactionDto.getReceiver());
+            User userReceiver = userService.getById(transactionDto.getReceiver());
             Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
             Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, user,
                     walletReceiver, userReceiver);
@@ -174,7 +174,7 @@ public class TransactionRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletReceiver = walletService.getWalletById(walletId, user.getId());
-            User userSender = userService.getByUsername(transactionDto.getReceiver());
+            User userSender = userService.getById(transactionDto.getReceiver());
             Wallet walletSender = walletService.getDefaultWallet(userSender.getId());
             Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, userSender,
                     walletReceiver, user);
@@ -195,7 +195,7 @@ public class TransactionRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            User userReceiver = userService.getByUsername(recurringTransactionDto.getReceiver());
+            User userReceiver = userService.getById(recurringTransactionDto.getReceiver());
             Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
             RecurringTransaction recurringTransaction = transactionMapper.fromDtoTransaction(recurringTransactionDto,
                     walletSender,

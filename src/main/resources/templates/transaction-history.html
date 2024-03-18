@@ -26,33 +26,33 @@
 <section class="section">
     <div class="container">
         <div class="p-4">
-            <form id="query-form" th:action="@{/transactions/user-history}" th:object="${filterOptions}" method="get">
+            <form id="query-form" th:action="@{/transactions/user-history}" method="get" th:object="${transactionHistoryDto}">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group position-relative">
-                            <label for="start-date" th:text="#{transaction.history.startDate}">Start date<span
+                            <label for="startDate" th:text="#{transaction.history.startDate}">Start date<span
                                     class="text-danger">*</span></label>
                             <i class="mdi mdi-calendar ml-3 icons"></i>
-                            <input name="startDate" id="start-date" type="date" th:value="${transaction.startDate}"
+                            <input name="startDate" id="startDate" type="date"  th:field="*{startDate}"
                                    class="form-control pl-5">
                         </div>
                     </div><!--end col-->
                     <div class="col-md-6">
                         <div class="form-group position-relative">
-                            <label for="end-date" th:text="#{transaction.history.endDate}">End date<span
+                            <label for="endDate" th:text="#{transaction.history.endDate}">End date<span
                                     class="text-danger">*</span></label>
                             <i class="mdi mdi-calendar ml-3 icons"></i>
-                            <input name="endDate" id="end-date" type="date" th:value="${transaction.startDate}"
+                            <input name="endDate" id="endDate" type="date" th:field="*{endDate}"
                                    class="form-control pl-5">
                         </div>
                     </div><!--end col-->
 
                     <div class="col-md-6">
                         <div class="form-group position-relative">
-                            <label for="counterparty-username" th:text="#{transaction.history.counterparty}">Counterparty
+                            <label for="counterparty" th:text="#{transaction.history.counterparty}">Counterparty
                                 username</label>
                             <i class="mdi mdi-account ml-3 icons"></i>
-                            <input name="counterparty" id="counterparty-username" type="text" th:value="${transaction.counterpartyUsername}"
+                            <input name="counterparty" id="counterparty" type="text" th:field="*{counterparty}"
                                    class="form-control pl-5" th:placeholder="#{transaction.history.counterparty}">
                         </div>
                     </div><!--end col-->
@@ -86,7 +86,7 @@
 <!--                        <input name="direction" type="hidden" th:value="${direction.name()}">-->
 <!--                    </div>-->
 
-                    <span id="amount-asc-or-desc" th:text="${amount}" hidden="hidden"></span>
+                    <span id="amount-asc-or-desc" th:text="${transactionHistoryDto.amount}" hidden="hidden"></span>
                     <div class="col-md-6 pt-1 pb-3 sort-criterion">
                         <div class="custom-control custom-switch">
                             <div class="form-group">
@@ -169,24 +169,24 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="trans: ${transactions}">
-                        <td th:text="${trans.date} ? ${#dates.format(trans.date, 'MM/dd/yyyy HH:mm')} : #{value.NA}">
+                    <tr th:each="transaction: ${transactions}">
+                        <td th:text="${transaction.date} ? ${#dates.format(transaction.date, 'MM/dd/yyyy HH:mm')} : #{value.NA}">
                             2020-01-28
                         </td>
-                        <td th:text="${trans.userSender.id == currentUser.id && trans.userReceiver.id != currentUser.id} ? '-' + ${trans.amount} : '+' + ${trans.amount}" th:class="${trans.userSender.id == currentUser.id && trans.userReceiver.id != currentUser.id ? 'outgoing-style transactions-amount-format' : (trans.userSender.id != currentUser.id && trans.userReceiver.id == currentUser.id ? 'incoming-style transactions-amount-format' : 'funding-style transactions-amount-format')}">
+                        <td th:text="${transaction.userSender.id == currentUser.id && transaction.userReceiver.id != currentUser.id} ? '-' + ${transaction.amount} : '+' + ${transaction.amount}" th:class="${transaction.userSender.id == currentUser.id && transaction.userReceiver.id != currentUser.id ? 'outgoing-style transactions-amount-format' : (transaction.userSender.id != currentUser.id && transaction.userReceiver.id == currentUser.id ? 'incoming-style transactions-amount-format' : 'funding-style transactions-amount-format')}">
                             500.34
                         </td>
 <!--                        <td th:text="${trans.userSender.username + (trans.userSender.id == currentUser.id ? '/' + trans.walletSender.getWalletsType().getWalletType().name() + ' wallet' : '')}">-->
-                        <td th:text="${trans.userSender.username + '/ '  + trans.walletSender.getWalletsType().getWalletType().name() + ' wallet'}">
+                        <td th:text="${transaction.userSender.username + '/ '  + transaction.walletSender.getWalletsType().getWalletType().name() + ' wallet'}">
 
                         Jane/Jane's wallet
                         </td>
 <!--                        <td th:text="${trans.userReceiver.username + (trans.userReceiver.id == currentUser.id ? '/' + trans.walletReceiver.getWalletsType().getWalletType().name() + ' wallet'  : '')}">-->
-                        <td th:text="${trans.userReceiver.username +  '/ ' + trans.walletReceiver.getWalletsType().getWalletType().name() + ' wallet'}">
+                        <td th:text="${transaction.userReceiver.username +  '/ ' + transaction.walletReceiver.getWalletsType().getWalletType().name() + ' wallet'}">
 
                         John/John's wallet
                         </td>
-                        <td th:text="${trans.description} ? ${trans.description} : #{value.NA}">Reason for transfer
+                        <td th:text="${transaction.description} ? ${transaction.description} : #{value.NA}">Reason for transfer
                         </td>
                     </tr>
                     </tbody>
@@ -194,7 +194,7 @@
                 <div class="p-4" th:if="${lastPage > 0}">
                     <ul class="pagination mb-0 list-unstyled">
                         <li th:each="i : ${#numbers.sequence(beginIndex, endIndex)}">
-                            <a th:href="@{/transactions/user-history(startDate=${transaction.startDate}, endDate=${transaction.endDate}, counterparty=${transaction.counterpartyUsername}, date=${date}, amount=${amount}, pageSize=${pageSize}, page=${i})}"
+                            <a th:href="@{/transactions/user-history(startDate=${transaction.startDate}, endDate=${transaction.endDate}, counterparty=${transaction.counterparty}, date=${date}, amount=${amount}, pageSize=${pageSize}, page=${i})}"
                                th:text="${i}"
                                th:class="'pr-3 pl-3 pt-2 pb-2' + (${i == pageNumber} ? ' active bg-primary text-light' : '')"></a>
                         </li>

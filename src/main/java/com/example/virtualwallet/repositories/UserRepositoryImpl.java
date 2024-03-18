@@ -139,6 +139,19 @@ public class UserRepositoryImpl implements UserRepository {
 //            return Optional.ofNullable(query.list().get(0));
         }
     }
+    public Optional<User> getByContact(String contact) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery(  "FROM User WHERE phoneNumber = :contact " +
+                    "OR email = :contact OR username = :contact", User.class);
+            query.setParameter("contact", contact);
+            List<User> userList = query.list();
+            if (!userList.isEmpty()) {
+                return Optional.ofNullable(userList.get(0));
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
     @Override
     public Optional<List<User>> getAllUsersByWalletId(int walletId) {
         try (Session session = sessionFactory.openSession()) {

@@ -68,7 +68,7 @@ public class AdminMvcController {
         }
 
         try {
-            List<User> users = userService.getAll(user, userFilterOptions);
+            List<User> users = userService.getAll( userFilterOptions);
             model.addAttribute("users", users);
             model.addAttribute("user", user);
 //            model.addAttribute("currentUser", user);
@@ -108,7 +108,7 @@ public class AdminMvcController {
         }
 
         try {
-            List<User> users = userService.getAll(user, userFilterOptions);
+            List<User> users = userService.getAll(userFilterOptions);
             model.addAttribute("users", users);
             model.addAttribute("user", user);
 //            model.addAttribute("currentUser", user);

@@ -28,6 +28,9 @@ public interface UserRepository {
     Photo createPhoto(Photo photo, User user);
 
     void reactivated(User targetUser);
+
+    Optional<User> getByContact(String contact);
+
     Optional<List<User>> getAllUsersByWalletId(int walletId);
 
     void updateUser(User targetUser);

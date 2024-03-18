@@ -1,5 +1,6 @@
 package com.example.virtualwallet.models.dtos;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -9,11 +10,12 @@ public class TransactionHistoryDto {
 
     private Timestamp endDate;
 
-    String counterpartyUsername;
+    String counterparty;
 
-    private List<TransactionDto> list;
+    private BigDecimal amount;
 
-    private List<String> sortCriteria;
+    private String sortBy;
+    private String sortOrder;
 
     public TransactionHistoryDto() {
     }
@@ -34,27 +36,35 @@ public class TransactionHistoryDto {
         this.endDate = endDate;
     }
 
-    public String getCounterpartyUsername() {
-        return counterpartyUsername;
+    public String getCounterparty() {
+        return counterparty;
     }
 
-    public void setCounterpartyUsername(String counterpartyUsername) {
-        this.counterpartyUsername = counterpartyUsername;
+    public void setCounterparty(String counterparty) {
+        this.counterparty = counterparty;
     }
 
-    public List<TransactionDto> getList() {
-        return list;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setList(List<TransactionDto> list) {
-        this.list = list;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
-    public List<String> getSortCriteria() {
-        return sortCriteria;
+    public String getSortBy() {
+        return sortBy;
     }
 
-    public void setSortCriteria(List<String> sortCriteria) {
-        this.sortCriteria = sortCriteria;
+    public void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
+    }
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

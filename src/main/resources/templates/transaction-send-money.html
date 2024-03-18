@@ -1,25 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="utf-8"/>
-    <title>Create Transaction: Send Money to Your Friends</title>
+    <title>Create Transaction: Send Money</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div th:replace="fragments/layout  :: css-sheets"></div>
 
 </head>
 
 <body>
-<!-- Loader -->
-<div id="preloader">
-    <div id="status">
-        <div class="spinner">
-            <div class="double-bounce1"></div>
-            <div class="double-bounce2"></div>
-        </div>
-    </div>
-</div>
-<!-- Loader -->
 
 <div th:replace="fragments/layout  :: header"></div>
 
@@ -35,9 +25,9 @@
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                        <div th:if="${user.blocked} == false">
+                        <div th:if="${currentUser.status} != 'ACTIVE'">
                             <div class="bg-white shadow rounded p-4">
-                                <form action="#" th:action="@{/transaction/create-external}" method="get"
+                                <form action="#" th:action="@{/transactions/send-money}" method="get"
                                       class="format-phone-number-before-submission">
                                     <h3 th:text="#{transaction.create.findRecipient}"
                                         class="title-with-margin"></h3>
@@ -71,18 +61,18 @@
                                                            th:text="#{user.header.phone}"></label></div>
                                             </div>
                                         </div>
-                                        <div id="search-form-country-code" class="col-md-4" style="display:none">
-                                            <div class="form-group position-relative">
-                                                <label th:text="#{user.header.countryCode}" for="country-code"></label>
-                                                <select id="country-code" class="form-control font-weight-bold" required
-                                                        name="countryCode">
-                                                    <option th:each="country: ${T(a16team1.virtualwallet.utilities.Country).values()}"
-                                                            th:value="${country.getCode()}"
-                                                            th:text="${country.toString()}">BG (+359)
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div><!--end col-->
+<!--                                        <div id="search-form-country-code" class="col-md-4" style="display:none">-->
+<!--                                            <div class="form-group position-relative">-->
+<!--                                                <label th:text="#{user.header.countryCode}" for="country-code"></label>-->
+<!--                                                <select id="country-code" class="form-control font-weight-bold" required-->
+<!--                                                        name="countryCode">-->
+<!--&lt;!&ndash;                                                    <option th:each="country: ${T(a16team1.virtualwallet.utilities.Country).values()}"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                            th:value="${country.getCode()}"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                            th:text="${country.toString()}">BG (+359)&ndash;&gt;-->
+<!--&lt;!&ndash;                                                    </option>&ndash;&gt;-->
+<!--                                                </select>-->
+<!--                                            </div>-->
+<!--                                        </div>&lt;!&ndash;end col&ndash;&gt;-->
                                         <div id="contact-input-parent-column" class="col-md-12">
                                             <div class="form-group position-relative">
                                                 <label for="contact"
@@ -106,25 +96,25 @@
                                                   th:text="#{error.constraintViolation.error}"> </span>
                                         <span class="alert-content" th:text="${error}"></span>
                                     </div>
-                                    <div th:if="${#fields.hasErrors('externalTransactionDto.transferAmount')}"
+                                    <div th:if="${#fields.hasErrors('transaction.amount')}"
                                          class="mt-4 alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{error.amount}"> </span>
                                         <span class="alert-content"
-                                              th:errors="${externalTransactionDto.transferAmount}"></span>
+                                              th:errors="${transaction.amount}"></span>
                                     </div>
-                                    <div th:if="${#fields.hasErrors('externalTransactionDto.description')}"
+                                    <div th:if="${#fields.hasErrors('transaction.description')}"
                                          class="mt-4 alert alert-danger alert-pills">
                                             <span class="badge badge-danger rounded"
                                                   th:text="#{error.description}"> </span>
                                         <span class="alert-content"
-                                              th:errors="${externalTransactionDto.description}"></span>
+                                              th:errors="${transaction.description}"></span>
                                     </div>
                                 </form>
                             </div>
                             <div class="table-responsive bg-white shadow rounded mt-4">
                                 <table class="table mb-0 table-center"
-                                       th:if="${recipientListDto != null && !recipientListDto.list.isEmpty()}">
+                                       th:if="${recipientUser != null}">
                                     <thead>
                                     <tr>
                                         <th th:text="#{user.header.username}">Username</th>
@@ -132,28 +122,28 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="recipient : ${recipientListDto.list}">
+                                    <tr th:each="recipient : ${recipientUser}">
                                         <td class="align-middle">
                                             <div class="custom-control custom-radio custom-control-inline">
                                                 <div class="form-group">
                                                     <input type="radio"
-                                                           th:id="'recipient' + ${recipient.id}"
+                                                           th:id="'recipient' + ${recipientUser.id}"
                                                            name="recipient"
                                                            class="custom-control-input"
                                                            style="z-index: 1"
-                                                           th:value="${recipient.id}">
-                                                    <label th:for="'recipient' + ${recipient.id}"
+                                                           th:value="${recipientUser.id}">
+                                                    <label th:for="'recipient' + ${recipientUser.id}"
                                                            class="custom-control-label pl-3"
-                                                           th:text="${recipient.username}">Username</label>
+                                                           th:text="${recipientUser.username}">Username</label>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <img th:if="${recipient.photo} != null"
-                                                 th:src="@{'data:image/jpeg;base64,' + ${recipient.photo}}"
+                                            <img th:if="${recipientUser.photo} != null"
+                                                 th:src="@{'data:image/jpeg;base64,' + ${recipientUser.photo}}"
                                                  th:alt="#{user.profile.image}"
                                                  class="avatar avatar-small rounded-pill shadow d-block mx-auto">
-                                            <img th:unless="${recipient.photo} != null"
+                                            <img th:unless="${recipientUser.photo} != null"
                                                  th:src="@{/images/empty-profile-image.png}"
                                                  th:alt="#{user.no.profile.image}"
                                                  class="avatar avatar-small rounded-pill shadow d-block mx-auto">
@@ -161,32 +151,34 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                <div class="p-4"
-                                     th:if="${recipientListDto} != null AND ${recipientListDto.totalPages > 1}">
-                                    <ul class="pagination mb-0 list-unstyled">
-                                        <li th:each="i : ${#numbers.sequence(recipientListDto.beginIndex, recipientListDto.endIndex)}">
-                                            <a th:href="@{/transaction/create-external/(pageSize=${recipientListDto.pageSize}, page=${i}, contactType=${contactType}, contact=${contact})}"
-                                               th:text="${i}"
-                                               th:class="'pr-3 pl-3 pt-2 pb-2' + (${i == recipientListDto.page} ? ' active bg-primary text-light' : '')"></a>
-                                        </li>
-                                    </ul>
-                                </div>
+<!--                                <div class="p-4"-->
+<!--                                     th:if="${userList} != null AND ${userList.totalPages > 1}">-->
+<!--                                    <ul class="pagination mb-0 list-unstyled">-->
+<!--                                        <li th:each="i : ${#numbers.sequence(userList.beginIndex, userList.endIndex)}">-->
+<!--                                            <a th:href="@{/transactions/send-money/(pageSize=${userList.pageSize}, page=${i}, contactType=${userList}, contact=${userList})}"-->
+<!--                                               th:text="${i}"-->
+<!--                                               th:class="'pr-3 pl-3 pt-2 pb-2' + (${i == userList.page} ? ' active bg-primary text-light' : '')"></a>-->
+<!--                                        </li>-->
+<!--                                    </ul>-->
+<!--                                </div>-->
                             </div>
                             <div id="transaction-data" class="bg-white shadow rounded mt-4 p-4" style="display:none">
-                                <form id="external-transaction-form" th:action="@{/transaction/create-external}"
-                                      th:object="${externalTransactionDto}" method="post">
-                                    <input type="hidden" th:field="*{senderUsername}">
-                                    <input type="hidden" id="recipient-id" th:field="*{recipientId}">
+                                <form id="external-transaction-form" th:action="@{/transactions/send-money}"
+                                      th:object="${transaction}" method="post">
+                                    <input type="hidden" th:field="*{senderWalletId}">
+                                    <input type="hidden" id="recipient-id" th:field="*{receiver}">
                                     <div class="row">
                                         <div class="col-md-12">
+<!--                                            <input type="hidden" id="selectedWalletIselectedWalletIdd" name="selectedWalletId" />-->
+
                                             <div class="form-group">
                                                 <label for="wallet"
                                                        th:text="#{transaction.create.chooseWallet}"></label>
                                                 <select id="wallet" class="form-control" name="senderWalletId">
-                                                    <option th:each="wallet : ${wallets}"
+                                                    <option th:each="wallet : ${walletList}"
                                                             th:value="${wallet.id}"
-                                                            th:text="${wallet.name}"
-                                                            th:selected="${wallet.id == user.getDefaultWallet().getId()}">
+                                                            th:text="${wallet.getWalletsType().getWalletType().name}"
+                                                            th:selected="${wallet.id == wallet.getDefault()}">
                                                     </option>
                                                 </select>
                                             </div>
@@ -195,7 +187,7 @@
                                             <div class="form-group position-relative">
                                                 <label for="amount" th:text="#{transaction.create.amountText}"></label>
                                                 <i class="mdi mdi-send ml-3 icons"></i>
-                                                <input type="number" step=".01" id="amount" th:field="*{transferAmount}"
+                                                <input type="number" step=".01" id="amount" th:field="*{amount}"
                                                        class="form-control pl-5" required="required"
                                                        th:placeholder="#{transaction.create.amountPlaceholder}">
                                             </div>
@@ -208,6 +200,18 @@
                                                 <input type="text" id="description" th:field="*{description}"
                                                        class="form-control pl-5"
                                                        th:placeholder="#{transaction.create.descriptionPlaceholder}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="transactionType"
+                                                       th:text="#{transaction.create.transactionType}"></label>
+                                                <select id="transactionType" class="form-control" name="transactionType">
+                                                    <option th:each="type : ${T(com.example.virtualwallet.models.enums.TransactionType).values()}"
+                                                            th:value="${type}"
+                                                            th:text="${type}">
+                                                    </option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -237,8 +241,8 @@
                                                                    th:text="#{transaction.confirmRecipient}"></label>
                                                             <i class="mdi mdi-account ml-3 icons"></i>
                                                             <input type="text" id="recipient-confirm"
-                                                                   class="form-control pl-5"
-                                                                   th:placeholder="${contact}" readonly>
+                                                                   class="form-control pl-5" readonly>
+<!--                                                                   th:field="*{receiverName}"-->
                                                         </div>
                                                         <div class="form-group position-relative">
                                                             <label for="wallet-confirm"
@@ -246,6 +250,7 @@
                                                             <i class="mdi mdi-wallet ml-3 icons"></i>
                                                             <input type="text" id="wallet-confirm"
                                                                    class="form-control pl-5" readonly>
+<!--                                                                   th:field="*{senderWalletId}" readonly>-->
                                                         </div>
                                                         <div class="form-group position-relative">
                                                             <label for="amount-confirm"
@@ -277,7 +282,7 @@
                                 </form>
                             </div>
                         </div>
-                        <div th:unless="${user.blocked} == false">
+                        <div th:unless="${currentUser.status} != 'ACTIVE'">
                             <div class="alert alert-warning">
                                 <h4 class="mb-4" th:text="#{account.blocked.title}"></h4>
                                 <span th:text="#{account.blocked.textOne}"></span>

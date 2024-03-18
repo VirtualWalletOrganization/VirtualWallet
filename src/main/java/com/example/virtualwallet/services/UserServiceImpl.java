@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll(User user, UserFilterOptions userFilterOptions) {
+    public List<User> getAll(UserFilterOptions userFilterOptions) {
         return this.userRepository.getAll(userFilterOptions);
     }
 
@@ -76,6 +76,10 @@ public class UserServiceImpl implements UserService {
     public User getByPhoneNumber(String phoneNumber) {
         return userRepository.getByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new EntityNotFoundException("User", "phone number", phoneNumber));
+    }
+    public User getByContact(String contact) {
+        return userRepository.getByContact(contact)
+                .orElseThrow(() -> new EntityNotFoundException("User"));
     }
 
     @Override

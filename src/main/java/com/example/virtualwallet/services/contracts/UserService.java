@@ -6,10 +6,11 @@ import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.utils.UserFilterOptions;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
-    List<User> getAll(User user, UserFilterOptions userFilterOptions);
+    List<User> getAll(UserFilterOptions userFilterOptions);
 
     long getAllNumber();
 
@@ -22,9 +23,13 @@ public interface UserService {
     User getByEmail(String email);
 
     User getByPhoneNumber(String phoneNumber);
+
+    User getByContact(String contact);
+
     List<User> getAllUsersByWalletId(int walletId);
 
     void registerUser(User user);
+
     void createPhoto(Photo photo, User user);
 
     void updateUser(User executingUser, User targetUser);

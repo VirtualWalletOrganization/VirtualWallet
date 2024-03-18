@@ -94,7 +94,7 @@ VALUES ('EXPIRED'),
 
 -- Example data for transactions_types
 INSERT INTO transactions_types (transaction_type_name)
-VALUES ('DUMMY'),
+VALUES
        ('SINGLE'),
        ('RECURRING');
 
