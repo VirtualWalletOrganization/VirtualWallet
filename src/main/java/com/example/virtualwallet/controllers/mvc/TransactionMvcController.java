@@ -224,24 +224,19 @@ public class TransactionMvcController {
     public String showNewTransactionPage(
             @RequestParam(name = "contactType", defaultValue = "") String recipientContactType,
             @RequestParam(name = "contact", defaultValue = "") String recipientContactInfo,
-            Model model, HttpSession session,
-            @ModelAttribute("userFilterOptions") UserFilterDto userFilterDto) {
+            Model model, HttpSession session) {
         User user;
         try {
             user = authenticationHelper.tryGetCurrentUser(session);
         } catch (AuthorizationException e) {
             return "redirect:/auth/login";
         }
-        UserFilterOptions userFilterOptions = new UserFilterOptions(
-                userFilterDto.getUsername(),
-                userFilterDto.getEmail(),
-                userFilterDto.getPhoneNumber());
+
         if (!recipientContactInfo.isEmpty()) {
             User recipientUser = userService.getByContact(recipientContactInfo);
             List<Wallet> walletList = walletService.getAllWalletsByUserId(user);
-            model.addAttribute("contactType", recipientContactType);
-            model.addAttribute("contact", recipientContactInfo);
-            model.addAttribute("userFilterOptions", userFilterOptions);
+//            model.addAttribute("contactType", recipientContactType);
+//            model.addAttribute("contact", recipientContactInfo);
             model.addAttribute("recipientUser", recipientUser);
             model.addAttribute("walletList", walletList);
         }
@@ -264,20 +259,17 @@ public class TransactionMvcController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("currentUser", user);
-            return "transaction-send-money";
+            return  "transaction-send-money";
         }
 
         try {
-
             Wallet walletSender = walletService.getWalletById(transactionDto.getSenderWalletId(), user.getId());
             User userReceiver = userService.getById(transactionDto.getReceiver());
             Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
             Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, user,
                     walletReceiver, userReceiver);
             transactionService.createTransaction(transaction, walletSender, user, walletReceiver, userReceiver);
-
-
-            return "transaction-history";
+            return "redirect:/transactions/user-history";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -288,6 +280,10 @@ public class TransactionMvcController {
             return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (InsufficientBalanceException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "error";
         }

@@ -171,10 +171,14 @@
                                         <div class="col-md-12">
 <!--                                            <input type="hidden" id="selectedWalletIselectedWalletIdd" name="selectedWalletId" />-->
 
-                                            <div class="form-group">
+                                            <div class="form-group position-relative">
                                                 <label for="wallet"
                                                        th:text="#{transaction.create.chooseWallet}"></label>
-                                                <select id="wallet" class="form-control" name="senderWalletId">
+                                                <i class="mdi mdi-wallet ml-3 icons"></i>
+                                                <select id="wallet" class="form-control pl-5" name="senderWalletId"
+                                                    required="required">
+                                                    <option value="" disabled selected th:text="#{transaction.create.wallet}"></option>
+<!--                                                    th:placeholder="#{transaction.create.wallet}">-->
                                                     <option th:each="wallet : ${walletList}"
                                                             th:value="${wallet.id}"
                                                             th:text="${wallet.getWalletsType().getWalletType().name}"
@@ -203,13 +207,15 @@
                                             </div>
                                         </div>
                                         <div class="col-md-12">
-                                            <div class="form-group">
+                                            <div class="form-group position-relative">
                                                 <label for="transactionType"
                                                        th:text="#{transaction.create.transactionType}"></label>
-                                                <select id="transactionType" class="form-control" name="transactionType">
+                                                <i class="mdi mdi-comment-text ml-3 icons"></i>
+                                                <select id="transactionType" class="form-control pl-5" name="transactionType"
+                                                      required="required">
+                                                    <option value="" disabled selected th:text="#{transaction.create.type}"></option>
                                                     <option th:each="type : ${T(com.example.virtualwallet.models.enums.TransactionType).values()}"
-                                                            th:value="${type}"
-                                                            th:text="${type}">
+                                                            th:value="${type}" th:text="${type}">
                                                     </option>
                                                 </select>
                                             </div>
