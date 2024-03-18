@@ -16,6 +16,11 @@ import com.example.virtualwallet.models.enums.UserStatus;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.UserFilterOptions;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +54,12 @@ public class UserRestController {
     }
 
     @GetMapping
+    @Operation(tags ={"Get all users"},
+            summary = "This method retrieve information about all users.",
+            description = "This method search for all users in the data base. When a person is authorized and there are registered users, a list with all users will be presented.",
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "User(s) was/were found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to access the list of users."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User(s) is/were not found.")})
     public List<UserResponseDto> getAll(@RequestHeader HttpHeaders headers,
                                         @RequestParam(required = false) String username,
                                         @RequestParam(required = false) String firstName,
@@ -74,9 +85,18 @@ public class UserRestController {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
         }
+
     }
 
     @GetMapping("/{id}")
+    @Operation(tags ={"Get a user"},
+            operationId = "Id to be searched for",
+            summary = "This method search for a user when id is given.",
+            description = "This method search for a user. A valid id must be given as an input.",
+            parameters = {@Parameter( name = "id", description = "path variable", example = "5")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to access this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this id was not found.")})
     public UserResponseDto getById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             authenticationHelper.tryGetUser(headers);
@@ -90,6 +110,13 @@ public class UserRestController {
     }
 
     @GetMapping(value = "/administrative-search", params = {"username"})
+    @Operation(tags ={"Search for a user"},
+            summary = "This method search for a user when user name is given.",
+            description = "This method search for a user. A valid user name must be given as an input.",
+            parameters = {@Parameter( name = "username", description = "Username", example = "yoana")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to search for this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this title was not found.")})
     public UserResponseDto getByUsernameA(@RequestHeader HttpHeaders headers, @RequestParam String username) {
         try {
             User ifAdmin = authenticationHelper.tryGetUser(headers);
@@ -106,6 +133,13 @@ public class UserRestController {
     }
 
     @GetMapping(value = "/administrative-search", params = {"email"})
+    @Operation(tags ={"Search for a user"},
+            summary = "This method search for a user when user's email is given.",
+            description = "This method search for a user. A valid user email must be given as an input.",
+            parameters = {@Parameter( name = "email", description = "User's email address", example = "yoana@abv.bg")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to search for this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this title was not found.")})
     public UserResponseDto getByEmailA(@RequestHeader HttpHeaders headers, @RequestParam String email) {
         try {
             User ifAdmin = authenticationHelper.tryGetUser(headers);
@@ -122,6 +156,13 @@ public class UserRestController {
     }
 
     @GetMapping(value = "/administrative-search", params = {"phoneNumber"})
+    @Operation(tags ={"Search for a user"},
+            summary = "This method search for a user when user's phone number is given.",
+            description = "This method search for a user. A valid user phone number must be given as an input.",
+            parameters = {@Parameter( name = "phoneNumber", description = "User's phone number", example = "0898252771")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to search for this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this title was not found.")})
     public UserResponseDto getByPhoneNumberA(@RequestHeader HttpHeaders headers, @RequestParam String phoneNumber) {
         try {
             User ifAdmin = authenticationHelper.tryGetUser(headers);
@@ -138,6 +179,14 @@ public class UserRestController {
     }
 
     @PostMapping
+    @Operation(tags ={"Register user"},
+            summary = "Using this method, a new user can be registered.",
+            description = "This method do registering of a new user. When valid parameters are given as an input, a new user is being created.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request body that accepts user dto object as a parameter.",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been created successfully"),
+                    @ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = User.class)), description = "There is a conflict."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "Not found.")})
     public UserResponseDto registerUser(@Valid @RequestBody RegisterDto userDto) {
         try {
             User user = userMapper.fromDtoRegister(userDto);
@@ -162,6 +211,14 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}/confirm-registration")
+    @Operation(tags ={"Confirm registration"},
+            summary = "Using this method, a user's profile is being confirmed and its status is being changed.",
+            description = "This method makes a user capable of using the app, because the user's registration is being confirmed. When valid id is given as an input and the performing user is with role Admin, the user will be updated.",
+            parameters = {@Parameter( name = "id", description = "user's id", example = "1")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been updated successfully"),
+                    @ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = User.class)), description = "There is a conflict."),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to update this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this id was not found")})
     public void confirmUserRegistration(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User admin = authenticationHelper.tryGetUser(headers);
@@ -178,6 +235,16 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
+    @Operation(tags ={"Update a user"},
+            summary = "Using this method, a user is being updated.",
+            description = "This method updates the fields of a user. When valid id and parameters are given as an input, the user is updated.",
+            parameters = {@Parameter( name = "id", description = "user's id", example = "1")},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request body that accepts user dto object as a parameter.",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been updated successfully"),
+                    @ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = User.class)), description = "There is a conflict."),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to update this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this id was not found")})
     public UserResponseDto updateUser(@RequestHeader HttpHeaders headers,
                                       @PathVariable int id, @Valid @RequestBody UpdateUserDto userDto) {
         try {
@@ -196,6 +263,13 @@ public class UserRestController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(tags ={"Delete a user"},
+            summary = "Using this method, a user is being deleted.",
+            description = "This method deletes a user. When valid id is given as an input, the user is deleted.",
+            parameters = {@Parameter( name = "id", description = "user's id", example = "1")},
+            responses ={@ApiResponse(responseCode = "410", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been deleted successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to delete this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this id was not found.")})
     public ResponseEntity<Void> deleteUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
@@ -226,23 +300,32 @@ public class UserRestController {
 //        }
 //    }
 
-    @GetMapping("/{id}/profile-picture")
-    public ResponseEntity<String> getProfilePictureUrl(@RequestHeader HttpHeaders headers, @PathVariable int id) {
-        try {
-            authenticationHelper.tryGetUser(headers);
-            User currentUser = userService.getById(id);
-            String profilePictureUrl = userService.getProfilePictureUrl(currentUser.getUsername());
-            return new ResponseEntity<>(profilePictureUrl, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (DuplicateEntityException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        } catch (AuthorizationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-    }
+//    @GetMapping("/{id}/profile-picture")
+//
+//    public ResponseEntity<String> getProfilePictureUrl(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+//        try {
+//            authenticationHelper.tryGetUser(headers);
+//            User currentUser = userService.getById(id);
+//            String profilePictureUrl = userService.getProfilePictureUrl(currentUser.getUsername());
+//            return new ResponseEntity<>(profilePictureUrl, HttpStatus.OK);
+//        } catch (EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+//        } catch (DuplicateEntityException e) {
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+//        } catch (AuthorizationException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//        }
+//    }
 
     @PutMapping("/{id}/admins")
+    @Operation(tags ={"Update a user to admin"},
+            summary = "Using this method, a user is being updated to be an admin.",
+            description = "This method change the role of a user to be an admin. When valid id is given as an input, the user is being updated.",
+            parameters = {@Parameter( name = "id", description = "user's id", example = "1")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been updated successfully"),
+                    @ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = User.class)), description = "There is a conflict."),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to update this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this id was not found.")})
     public UserResponseDto updateToAdmin(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
@@ -259,6 +342,14 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}/role/user")
+    @Operation(tags ={"Update an admin to user"},
+            summary = "Using this method, an admin is being updated to be an user.",
+            description = "This method change the role of an admin to be an user. When valid id is given as an input, the user is being updated.",
+            parameters = {@Parameter( name = "id", description = "user's id", example = "1")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been updated successfully"),
+                    @ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = User.class)), description = "There is a conflict."),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to update this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "Admin with this id was not found.")})
     public ResponseEntity<Void> updateToUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
@@ -275,6 +366,14 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}/block")
+    @Operation(tags ={"Block a user"},
+            summary = "Using this method, a user can be blocked.",
+            description = "When a valid id is given and there is the proper authorization, a user'status can be changed to blocked.",
+            parameters = {@Parameter( name = "id", description = "user's id", example = "1")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been blocked successfully"),
+                    @ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = User.class)), description = "There is a conflict."),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to block this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this id was not found.")})
     public UserResponseDto blockUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
@@ -291,6 +390,14 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}/unblock")
+    @Operation(tags ={"Unblock a user"},
+            summary = "Using this method, a user can be unblocked.",
+            description = "When a valid id is given and there is the proper authorization, a user'status can be changed from blocked to unblocked.",
+            parameters = {@Parameter( name = "id", description = "user's id", example = "1")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been unblocked successfully"),
+                    @ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = User.class)), description = "There is a conflict."),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to unblock this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this id was not found.")})
     public UserResponseDto unblockUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
@@ -339,6 +446,13 @@ public class UserRestController {
 //    }
 
     @GetMapping(value = "/search", params = {"username"})
+    @Operation(tags ={"Search for a user"},
+            summary = "This method search for a user when user name is given.",
+            description = "This method search for a user. A valid user name must be given as an input.",
+            parameters = {@Parameter( name = "username", description = "Username", example = "yoana")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to search for this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this title was not found.")})
     public ReturnDto getByUsername(@RequestHeader HttpHeaders headers, @RequestParam String username) {
         try {
             authenticationHelper.tryGetUser(headers);
@@ -352,6 +466,13 @@ public class UserRestController {
     }
 
     @GetMapping(value = "/search", params = {"email"})
+    @Operation(tags ={"Search for a user"},
+            summary = "This method search for a user when user's email is given.",
+            description = "This method search for a user. A valid user email must be given as an input.",
+            parameters = {@Parameter( name = "email", description = "User's email address", example = "yoana@abv.bg")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to search for this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this title was not found.")})
     public ReturnDto getByEmail(@RequestHeader HttpHeaders headers, @RequestParam String email) {
         try {
             authenticationHelper.tryGetUser(headers);
@@ -365,6 +486,13 @@ public class UserRestController {
     }
 
     @GetMapping(value = "/search", params = {"phoneNumber"})
+    @Operation(tags ={"Search for a user"},
+            summary = "This method search for a user when user's phone number is given.",
+            description = "This method search for a user. A valid user phone number must be given as an input.",
+            parameters = {@Parameter( name = "phoneNumber", description = "User's phone number", example = "0898252771")},
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "The user has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to search for this user."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "User with this title was not found.")})
     public ReturnDto getByPhoneNumber(@RequestHeader HttpHeaders headers, @RequestParam String phoneNumber) {
         try {
             authenticationHelper.tryGetUser(headers);
