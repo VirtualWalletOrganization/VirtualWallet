@@ -4,17 +4,25 @@ import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
+import com.example.virtualwallet.models.Contact;
 import com.example.virtualwallet.models.Referral;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.services.contracts.ReferralService;
 import com.example.virtualwallet.services.contracts.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.sql.Ref;
 
 @RestController
 @RequestMapping("/api/referrals")
@@ -32,6 +40,14 @@ public class ReferralRestController {
     }
 
     @GetMapping("/{id}")
+    @Operation(tags = {"Get a teferral"},
+            operationId = "id to be searched for",
+            summary = "This method search for a referral when id is given.",
+            description = "This method search for a referral. A valid id must be given as an input. Proper authentication must be in place",
+            parameters = {@Parameter(name = "id", description = "referral id", example = "5")},
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Referral.class)), description = "The referral has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Referral.class)), description = "You are not allowed to access this referral."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Referral.class)), description = "Referral with this id was not found.")})
     public ResponseEntity<Referral> getReferralById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             authenticationHelper.tryGetUser(headers);
@@ -45,6 +61,14 @@ public class ReferralRestController {
     }
 
     @PostMapping
+    @Operation(tags = {"Create a referral"},
+            summary = "This method creates a referral when input is given.",
+            description = "This method creates a referral. A valid object must be given as an input. Proper authentication must be in place",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request that accepts object parameters.",
+                    content = @Content(schema = @Schema(implementation = Contact.class))),
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Referral.class)), description = "The referral has been created successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Referral.class)), description = "You are not allowed to create a referral."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Referral.class)), description = "Referral with this id was not found.")})
     public ResponseEntity<Referral> create(@RequestHeader HttpHeaders headers, @RequestBody Referral referral) {
         try {
             authenticationHelper.tryGetUser(headers);
@@ -58,6 +82,13 @@ public class ReferralRestController {
     }
 
     @PostMapping("/refer")
+    @Operation(tags = {"Refer a friend"},
+            summary = "With this method, a user can refer a friend..",
+            description = "Refer a friend method. A valid object must be given as an input. Proper authentication must be in place",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request that accepts object parameters.",
+                    content = @Content(schema = @Schema(implementation = Contact.class))),
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Referral.class)), description = "The referral has been created successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Referral.class)), description = "You are not allowed to create a referral."),})
     public ResponseEntity<Void> referFriend(@RequestHeader HttpHeaders headers, @RequestBody Referral referral) {
         try {
             authenticationHelper.tryGetUser(headers);
@@ -74,6 +105,7 @@ public class ReferralRestController {
     }
 
     @GetMapping("/status")
+
     public ResponseEntity<Status> getReferralStatusByEmail(@RequestHeader HttpHeaders headers, @RequestParam String email) {
         try {
             authenticationHelper.tryGetUser(headers);
