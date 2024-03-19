@@ -2,7 +2,7 @@ package com.example.virtualwallet.models.enums;
 
 public enum Status {
 
-    EXPIRED("EXPIRED"),
+    DECLINED("DECLINED"),
     COMPLETED("COMPLETED"),
     FAILED("FAILED"),
     PENDING("PENDING"),

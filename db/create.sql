@@ -130,7 +130,7 @@ create table users_wallets
 CREATE TABLE transactions_statuses
 (
     transaction_status_id INT AUTO_INCREMENT PRIMARY KEY,
-    status_name           enum ('EXPIRED', 'COMPLETED', 'FAILED', 'PENDING', 'PENDING_RECURRING_REQUEST', 'REJECT') not null
+    status_name           enum ('DECLINED', 'COMPLETED', 'FAILED', 'PENDING', 'PENDING_RECURRING_REQUEST', 'REJECT') not null
 );
 
 CREATE TABLE transactions_types

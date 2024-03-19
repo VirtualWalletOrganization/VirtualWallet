@@ -10,16 +10,6 @@
 </head>
 
 <body>
-<!-- Loader -->
-<div id="preloader">
-    <div id="status">
-        <div class="spinner">
-            <div class="double-bounce1"></div>
-            <div class="double-bounce2"></div>
-        </div>
-    </div>
-</div>
-<!-- Loader -->
 <div th:replace="fragments/layout  :: header"></div>
 
 
@@ -31,31 +21,31 @@
                 <div class="row align-items-center">
                     <div class="col-lg-7 col-md-6">
                         <div class="mr-lg-5">
-                            <img th:src="@{/images/user/login2.png}" class="img-fluid d-block mx-auto" alt="">
+                            <img th:src="@{/images/user/complete.png}" class="img-fluid d-block mx-auto" alt="">
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
                         <div class="alert alert-success" th:if="${transactionCompleted} == null">
                             <h4 class="mb-4" th:text="#{transaction.successful}"></h4>
-                            <span th:text="#{transaction.successful.textOne}"></span> <span th:text="${amount}"></span>
-                            <span th:text="${currency}"></span>
-                            <span th:text="#{transaction.successful.textTwo}"></span>
-                            <span th:text="${contactField}"></span><span> </span><span th:text="${recipient}"
-                                                                                       class="text-light font-weight-bold"></span>
+                            <span th:text="#{transaction.successful.text}"></span> <span th:text="${amount}"></span>
+<!--                            <span th:text="${currency}"></span>-->
+<!--                            <span th:text="#{transaction.successful.textTwo}"></span>-->
+<!--                            <span th:text="${contactField}"></span><span> </span><span th:text="${recipient}"-->
+<!--                                                                                       class="text-light font-weight-bold"></span>-->
                             <div class="margin-top"><span th:text="#{transaction.viewAll}"></span>
-                                <a th:href="@{/user/transaction-history}" th:text="#{transaction.link}"
+                                <a th:href="@{/transactions/user-history}" th:text="#{transaction.link}"
                                    class="text-light font-weight-bold"></a></div>
                         </div>
                         <div class="alert alert-success" th:unless="${transactionCompleted} == null">
-                            <h4 class="mb-4" th:text="#{transaction.already.completed}"></h4>
-                            <p th:text="#{transaction.already.completedTextOne}"></p>
-                            <span th:text="#{transaction.already.completedTextTwo}"></span>
-                            <a th:href="@{/user/transaction-history}"
-                               th:text="#{transaction.already.completedTextThree}"
-                               class="text-light font-weight-bold"></a> <span
-                                th:text="#{transaction.already.completedTextFour}"
-                                class="text-light"></span>
-                        </div>
+<!--                            <h4 class="mb-4" th:text="#{transaction.already.completed}"></h4>-->
+<!--                            <p th:text="#{transaction.already.completedTextOne}"></p>-->
+<!--                            <span th:text="#{transaction.already.completedTextTwo}"></span>-->
+<!--                            <a th:href="@{/transactions/user-history}"-->
+<!--                               th:text="#{transaction.already.completedTextThree}"-->
+<!--                               class="text-light font-weight-bold"></a> <span-->
+<!--                                th:text="#{transaction.already.completedTextFour}"-->
+<!--                                class="text-light"></span>-->
+<!--                        </div>-->
                     </div> <!--end col-->
                 </div><!--end row-->
             </div> <!--end container-->

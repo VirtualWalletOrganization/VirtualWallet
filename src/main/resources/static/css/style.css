@@ -708,9 +708,9 @@ button:not(:disabled) {
 }
 
 .alert-success {
-    background-color: #3ed397;
+    background-color: #87CEFA;
     color: #ffffff;
-    border-color: #2eca8b;
+    border-color: #48D1CC;
 }
 
 .alert-success .alert-link {
@@ -3729,4 +3729,33 @@ input#default-wallet-1, input#default-wallet-2 {
 .btn {
     padding: 0.5rem 1rem;
     font-size: 1rem;
+}
+.custom-alert {
+    background-color: #B0E0E6; /* Change background color */
+    border: 2px solid #20B2AA; /* Add border with color */
+    border-radius: 50px; /* Change border-radius for a rounded rectangular shape */
+    padding: 20px; /* Add padding for spacing */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add shadow effect */
+}
+.custom-image-container {
+    background-color: #2f55d4; /* Change to desired background color */
+    border: 2px solid #ccc; /* Change border style and color */
+    border-radius: 8px; /* Add rounded corners */
+    padding: 20px; /* Adjust padding as needed */
+    overflow: hidden; /* Ensure the image does not overflow its container */
+}
+
+.custom-image-wrapper {
+    position: relative; /* Position the image relative to its container */
+}
+
+.custom-image {
+    display: block; /* Ensure the image fills its container */
+    width: 100%; /* Make the image responsive */
+    height: auto; /* Maintain aspect ratio */
+    transition: transform 0.3s ease; /* Add smooth transition effects */
+}
+
+.custom-image:hover {
+    transform: scale(1.05); /* Enlarge the image on hover */
 }

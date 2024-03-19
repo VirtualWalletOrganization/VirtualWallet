@@ -29,6 +29,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/transactions")
@@ -222,7 +223,6 @@ public class TransactionMvcController {
 
     @GetMapping("/send-money")
     public String showNewTransactionPage(
-            @RequestParam(name = "contactType", defaultValue = "") String recipientContactType,
             @RequestParam(name = "contact", defaultValue = "") String recipientContactInfo,
             Model model, HttpSession session) {
         User user;
@@ -231,18 +231,21 @@ public class TransactionMvcController {
         } catch (AuthorizationException e) {
             return "redirect:/auth/login";
         }
-
-        if (!recipientContactInfo.isEmpty()) {
-            User recipientUser = userService.getByContact(recipientContactInfo);
-            List<Wallet> walletList = walletService.getAllWalletsByUserId(user);
-//            model.addAttribute("contactType", recipientContactType);
-//            model.addAttribute("contact", recipientContactInfo);
-            model.addAttribute("recipientUser", recipientUser);
-            model.addAttribute("walletList", walletList);
+        try {
+            if (!recipientContactInfo.isEmpty()) {
+                User recipientUser = userService.getByContact(recipientContactInfo);
+                List<Wallet> walletList = walletService.getAllWalletsByUserId(user);
+                model.addAttribute("recipientUser", recipientUser);
+                model.addAttribute("walletList", walletList);
+            }
+            model.addAttribute("transaction", new TransactionDto());
+            model.addAttribute("currentUser", user);
+            return "transaction-send-money";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
-        model.addAttribute("transaction", new TransactionDto());
-        model.addAttribute("currentUser", user);
-        return "transaction-send-money";
     }
 
     @PostMapping("/send-money")
@@ -259,7 +262,7 @@ public class TransactionMvcController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("currentUser", user);
-            return  "transaction-send-money";
+            return "transaction-send-money";
         }
 
         try {
@@ -269,7 +272,7 @@ public class TransactionMvcController {
             Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, user,
                     walletReceiver, userReceiver);
             transactionService.createTransaction(transaction, walletSender, user, walletReceiver, userReceiver);
-            return "redirect:/transactions/user-history";
+            return "transaction-completed";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -289,110 +292,36 @@ public class TransactionMvcController {
         }
     }
 
-    @GetMapping("/{transactionId}")
-    public String showCompleteRequestTransactionPage(Model model, HttpSession session,
-                                                     @PathVariable int transactionId) {
+
+    @GetMapping("/request-money")
+    public String showRequestTransactionPage(
+            @RequestParam(name = "contact", defaultValue = "") String senderContactInfo,
+            Model model, HttpSession session) {
         User user;
         try {
             user = authenticationHelper.tryGetCurrentUser(session);
         } catch (AuthorizationException e) {
             return "redirect:/auth/login";
         }
-
         try {
-            Transaction transaction = transactionService.getTransactionById(transactionId);
-
-            model.addAttribute("transactionId", transactionId);
-            model.addAttribute("transaction", transaction);
-            model.addAttribute("currentUser", user);
-            return "TransactionUpdateView";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-    }
-
-    @PostMapping("/{transactionId}")
-    public String completeRequestTransaction(@PathVariable int transactionId,
-                                             Model model,
-                                             HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            Transaction transaction = transactionService.getTransactionById(transactionId);
-            transactionService.updateTransaction(transaction, user);
-            return "redirect:/transactions";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (InsufficientBalanceException e) {
-            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-    }
-
-    @GetMapping("/{transactionId}/delete")
-    public String deleteTransactionPage(@PathVariable int transactionId, Model model, HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            Transaction transactionToDelete = transactionService.getTransactionById(transactionId);
-            transactionService.delete(transactionToDelete, user);
-            return "redirect:/transactions";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-    }
-
-    @GetMapping("/wallets/{walletId}/request")
-    public String showRequestTransactionPage(Model model, HttpSession session,
-                                             @PathVariable int walletId) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            Wallet wallet = walletService.getWalletById(walletId, user.getId());
+            if (!senderContactInfo.isEmpty()) {
+                User senderUser = userService.getByContact(senderContactInfo);
+                List<Wallet> walletList = walletService.getAllWalletsByUserId(user);
+                model.addAttribute("senderUser", senderUser);
+                model.addAttribute("walletList", walletList);
+            }
             model.addAttribute("transaction", new TransactionDto());
-            model.addAttribute("wallet", wallet);
             model.addAttribute("currentUser", user);
-            return "TransactionRequestView";
+            return "transaction-request-money";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
-    @PostMapping("/wallets/{walletId}/request")
-    public String requestTransaction(@PathVariable int walletId,
-                                     @RequestBody TransactionDto transactionDto,
+    @PostMapping("/request-money")
+    public String requestTransaction(@Valid @ModelAttribute("transaction") TransactionDto transactionDto,
                                      Model model,
                                      HttpSession session) {
         User user;
@@ -409,19 +338,19 @@ public class TransactionMvcController {
             Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, userSender,
                     walletReceiver, user);
             transactionService.requestMoney(transaction, walletReceiver, user);
-            return "redirect:/transactions";
+            return "transaction-requested";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (InsufficientBalanceException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
@@ -541,6 +470,96 @@ public class TransactionMvcController {
             return "ErrorView";
         }
     }
+
+    @GetMapping("/notifications")
+
+    public String showAllNotifications(HttpSession session, Model model) {
+
+        User user;
+        try {
+            user = authenticationHelper.tryGetCurrentUser(session);
+        } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            Optional<List<Transaction> > requestedTransactions=transactionService.getAllTransactionsByStatus(user);
+            requestedTransactions.ifPresent(transactions -> model.addAttribute("transactions", requestedTransactions));
+            model.addAttribute("user", user);
+            return "notifications";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (AuthorizationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
+    @PostMapping("/{transactionId}/complete")
+    public String completeRequestTransactionPage(Model model, HttpSession session,
+                                                 @PathVariable int transactionId) {
+        User user;
+        try {
+            user = authenticationHelper.tryGetCurrentUser(session);
+        } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            Transaction transaction = transactionService.getTransactionById(transactionId);
+            model.addAttribute("transaction", transaction);
+            model.addAttribute("currentUser", user);
+            transactionService.updateTransaction(transaction, user);
+            return "redirect: /transactions/notifications";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (InsufficientBalanceException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (AuthorizationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
+    @PostMapping("/{transactionId}/reject")
+    public String rejectRequestTransactionPage(Model model, HttpSession session,
+                                               @PathVariable int transactionId) {
+        User user;
+        try {
+            user = authenticationHelper.tryGetCurrentUser(session);
+        } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            Transaction transaction = transactionService.getTransactionById(transactionId);
+            model.addAttribute("transaction", transaction);
+            model.addAttribute("currentUser", user);
+            transactionService.delete(transaction, user);
+            return "redirect: /transactions/notifications";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (InsufficientBalanceException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (AuthorizationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
 }
 
 

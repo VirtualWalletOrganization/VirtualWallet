@@ -85,7 +85,7 @@ VALUES (1, 1),
 
 -- Example data for transactions_statuses
 INSERT INTO transactions_statuses (status_name)
-VALUES ('EXPIRED'),
+VALUES ('DECLINED'),
        ('COMPLETED'),
        ('FAILED'),
        ('PENDING'),

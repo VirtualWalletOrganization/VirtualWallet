@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="css/owl.theme.default.min.css" th:href="@{/css/owl.theme.default.min.css}"/>
     <!-- Main css -->
     <link href="css/style.css" th:href="@{/css/style.css}" rel="stylesheet" type="text/css"/>
+    <!-- Font Awesome Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 </div>
 
 <div th:fragment="header">
@@ -86,6 +89,15 @@
                     <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/user-history}" th:text="#{header.menu.transactionHistory}"></a></li>
                     <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/send-money}" th:text="#{header.menu.sendMoney}"></a></li>
                     <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/request-money}" th:text="#{header.menu.requestMoney}"></a></li>
+                    <li>
+                        <a href="#" th:if="${isAuthenticated && transactionList != null && !transactionList.isEmpty()}" th:href="@{/transactions/notifications}" style="position:relative" >
+                            <i style="color: red;position: absolute;width: 20px;height: 20px;top: 15px;right: 10px;background: #2f55d4;color: #fff;text-align: center;border-radius: 50%;" th:text="${transactionList.size()}"></i>
+                            <i class="far fa-bell fa-2x" style="color: blue;"></i>
+                        </a>
+                        <a href="#" th:if="${isAuthenticated && (transactionList == null || transactionList.isEmpty())}" th:href="@{/transactions/notifications}">
+                            <i class="far fa-bell fa-2x" style="color: blue;"></i>
+                        </a>
+                    </li>
                     <li class="hide-desktop"><a  href="#" th:if="${isAuthenticated}" th:href="@{/users/profile}"  th:text="#{header.menu.myProfile}"></a></li>
                     <li class="hide-desktop">
                         <form class="logout-form" th:if="${isAuthenticated}" th:action="@{/logout}"

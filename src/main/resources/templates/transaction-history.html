@@ -166,6 +166,7 @@
                         <th th:text="#{transaction.history.source}">Source</th>
                         <th th:text="#{transaction.history.destination}">Destination</th>
                         <th th:text="#{transaction.history.description}">Description</th>
+                        <th th:text="#{transaction.history.status}">Status</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -187,6 +188,8 @@
                         John/John's wallet
                         </td>
                         <td th:text="${transaction.description} ? ${transaction.description} : #{value.NA}">Reason for transfer
+                        </td>
+                        <td th:text="${transaction.transactionsStatus != null ? transaction.transactionsStatus.transactionStatus.name() : #strings.toUpperCase('NA')}" style="font-size: 14px; font-weight: 400;">Status</td>
                         </td>
                     </tr>
                     </tbody>

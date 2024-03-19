@@ -1,6 +1,7 @@
 package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.Transaction;
+import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
@@ -32,8 +33,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             Map<String, Object> params = new HashMap<>();
 
             transactionFilterOptions.getSender().ifPresent(value -> {
-                   filters.add("userSender.username like :userSender");
-                   params.put("userSender", String.format("%%%s%%", value));
+                filters.add("userSender.username like :userSender");
+                params.put("userSender", String.format("%%%s%%", value));
             });
 
             transactionFilterOptions.getRecipient().ifPresent(value -> {
@@ -85,47 +86,48 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             return Optional.ofNullable(query.list().get(0));
         }
     }
+
     @Override
-    public Optional <List<Transaction>> getAllTransactionsByUserId(int userId,
-                                                                   TransactionHistoryFilterOptions transactionHistoryFilterOptions) {
+    public Optional<List<Transaction>> getAllTransactionsByUserId(int userId,
+                                                                  TransactionHistoryFilterOptions transactionHistoryFilterOptions) {
         try (Session session = sessionFactory.openSession()) {
-        String baseQuery = "FROM Transaction as t WHERE t.userSender.id = :userId OR t.userReceiver.id = :userId";
+            String baseQuery = "FROM Transaction as t WHERE t.userSender.id = :userId OR t.userReceiver.id = :userId";
 
-        // Apply additional filters if provided
-        List<String> filters = new ArrayList<>();
-        Map<String, Object> params = new HashMap<>();
-        StringBuilder queryString = new StringBuilder(baseQuery);
-        params.put("userId", userId);
+            // Apply additional filters if provided
+            List<String> filters = new ArrayList<>();
+            Map<String, Object> params = new HashMap<>();
+            StringBuilder queryString = new StringBuilder(baseQuery);
+            params.put("userId", userId);
 
-        // Add filter conditions based on provided options
-        transactionHistoryFilterOptions.getStartDate().ifPresent(value -> {
-            filters.add("t.date >= :startDate");
-            params.put("startDate", value);
-        });
-        transactionHistoryFilterOptions.getEndDate().ifPresent(value -> {
-            filters.add("t.date <= :endDate");
-            params.put("endDate", value);
-        });
+            // Add filter conditions based on provided options
+            transactionHistoryFilterOptions.getStartDate().ifPresent(value -> {
+                filters.add("t.date >= :startDate");
+                params.put("startDate", value);
+            });
+            transactionHistoryFilterOptions.getEndDate().ifPresent(value -> {
+                filters.add("t.date <= :endDate");
+                params.put("endDate", value);
+            });
             transactionHistoryFilterOptions.getCounterparty().ifPresent(value -> {
                 filters.add("(t.userSender.username = :counterparty OR t.userReceiver.username = :counterparty)");
                 params.put("counterparty", value);
             });
 
-        // Append filter conditions to the query
-        if (!filters.isEmpty()) {
-            queryString.append(" AND ").append(String.join(" AND ", filters));
+            // Append filter conditions to the query
+            if (!filters.isEmpty()) {
+                queryString.append(" AND ").append(String.join(" AND ", filters));
+            }
+
+            // Apply ordering if needed
+            queryString.append(generateOrderByUserId(transactionHistoryFilterOptions));
+
+            // Create and execute the final query
+            Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
+            query.setProperties(params);
+
+            return Optional.ofNullable(query.list());
         }
-
-        // Apply ordering if needed
-        queryString.append(generateOrderByUserId(transactionHistoryFilterOptions));
-
-        // Create and execute the final query
-        Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
-        query.setProperties(params);
-
-        return Optional.ofNullable(query.list());
     }
-}
 
 
     @Override
@@ -146,14 +148,22 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public Optional<List<Transaction>> getAllTransactionsByStatus(Status status) {
+    public Optional<List<Transaction>> getAllTransactionsByStatus(User user) {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery(
-                    "FROM Transaction as t where t.transactionsStatus.transactionStatus = :status ", Transaction.class);
-            query.setParameter("transactionsStatus", status);
-            // query.setParameter("walletId", walletId);
+                    "FROM Transaction as t WHERE t.transactionsStatus.id = :statusId" +
+                            " and t.transactionsStatus.id= :statusId2 and t.userSender.id = :userId " +
+                            "ORDER BY t.date", Transaction.class);
+            query.setParameter("statusId", "4");
+            query.setParameter("statusId2", "1");
+            query.setParameter("userId", user.getId());
 
-            return Optional.ofNullable(query.list());
+            List<Transaction> transactions = query.list();
+            if (!transactions.isEmpty()) {
+                return Optional.ofNullable(transactions);
+            } else {
+                return Optional.empty();
+            }
         }
     }
 

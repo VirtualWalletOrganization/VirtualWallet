@@ -1,6 +1,7 @@
 package com.example.virtualwallet.repositories.contracts;
 
 import com.example.virtualwallet.models.Transaction;
+import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
@@ -20,8 +21,7 @@ public interface TransactionRepository {
 
     Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId);
 
-    Optional<List<Transaction>> getAllTransactionsByStatus(Status status);
-
+    Optional<List<Transaction>> getAllTransactionsByStatus(User user);
     Transaction create(Transaction transaction);
 
     void update(Transaction transaction);

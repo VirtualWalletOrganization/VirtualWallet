@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TransactionService {
 
@@ -19,7 +20,7 @@ public interface TransactionService {
 
     List<Transaction> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions);
 
-    List<Transaction> getAllTransactionsByStatus(Status status);
+    Optional<List<Transaction> >getAllTransactionsByStatus(User user);
 
     List<Transaction> getAllTransactionsByWalletId(Wallet wallet);
 

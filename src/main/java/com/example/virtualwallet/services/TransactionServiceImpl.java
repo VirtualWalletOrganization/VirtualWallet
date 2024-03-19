@@ -47,17 +47,17 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.getTransactionById(transactionId)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction", "id", String.valueOf(transactionId)));
     }
+
     @Override
-    public List<Transaction> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions){
-        return transactionRepository.getAllTransactionsByUserId(userId,transactionHistoryFilterOptions)
+    public List<Transaction> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions) {
+        return transactionRepository.getAllTransactionsByUserId(userId, transactionHistoryFilterOptions)
                 .orElseThrow(() -> new EntityNotFoundException("Transactions"));
 
     }
 
     @Override
-    public List<Transaction> getAllTransactionsByStatus(Status status) {
-        return transactionRepository.getAllTransactionsByStatus(status)
-                .orElseThrow(() -> new EntityNotFoundException("Transactions", "status", String.valueOf(status)));
+    public Optional<List<Transaction>> getAllTransactionsByStatus(User user) {
+        return transactionRepository.getAllTransactionsByStatus(user);
     }
 
     @Override
@@ -91,7 +91,8 @@ public class TransactionServiceImpl implements TransactionService {
         checkPermissionExistingUsersInWallet(transaction.getWalletSender(), userSender, ERROR_TRANSACTION);
         //TODO implement check for overdraft
 
-        if (transaction.getTransactionsStatus().getTransactionStatus() == (Status.PENDING)) {
+        if (transaction.getTransactionsStatus().getTransactionStatus() == (Status.PENDING)
+        || transaction.getTransactionsStatus().getTransactionStatus()==(Status.DECLINED)) {
             isValidRequestTransferMoney(transaction);
             transactionRepository.update(transaction);
         } else {
@@ -141,12 +142,12 @@ public class TransactionServiceImpl implements TransactionService {
 
     private void isValidRequestTransferMoney(Transaction transaction) {
         if (!isValidRequestEnoughMoney(transaction, transaction.getWalletSender())) {
-            transaction.getTransactionsStatus().setId(Status.FAILED.ordinal());
-            transaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
+            transaction.getTransactionsStatus().setId(Status.DECLINED.ordinal() + 1);
+            transaction.getTransactionsStatus().setTransactionStatus(Status.DECLINED);
             transactionRepository.update(transaction);
             throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
         } else {
-            transaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal());
+            transaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal() + 1);
             transaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);
         }
     }
