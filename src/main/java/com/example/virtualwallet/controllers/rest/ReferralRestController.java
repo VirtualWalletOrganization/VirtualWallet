@@ -105,7 +105,14 @@ public class ReferralRestController {
     }
 
     @GetMapping("/status")
-
+    @Operation(tags = {"Get referral status by email"},
+            operationId = "email to be searched for",
+            summary = "This method search for a referral status when email is given.",
+            description = "This method search for a referral status. A valid email must be given as an input. Proper authentication must be in place",
+            parameters = {@Parameter(name = "email", description = "valid email address", example = "example@abv.bg")},
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Referral.class)), description = "The referral has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Referral.class)), description = "You are not allowed to access this referral."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Referral.class)), description = "The referral was not found.")})
     public ResponseEntity<Status> getReferralStatusByEmail(@RequestHeader HttpHeaders headers, @RequestParam String email) {
         try {
             authenticationHelper.tryGetUser(headers);
@@ -119,6 +126,14 @@ public class ReferralRestController {
     }
 
     @GetMapping("/referrer")
+    @Operation(tags = {"Get referrae user id by email"},
+            operationId = "email to be searched for",
+            summary = "This method search for a referrer user id when email is given.",
+            description = "This method search for a referrer user id. A valid email must be given as an input. Proper authentication must be in place",
+            parameters = {@Parameter(name = "email", description = "valid email address", example = "example@abv.bg")},
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Referral.class)), description = "The referral has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Referral.class)), description = "You are not allowed to access this referral."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Referral.class)), description = "The referral was not found.")})
     public ResponseEntity<User> getReferrerUserIdByEmail(@RequestHeader HttpHeaders headers, @RequestParam String email) {
         try {
             authenticationHelper.tryGetUser(headers);
