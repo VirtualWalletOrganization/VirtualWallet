@@ -515,7 +515,7 @@ public class TransactionMvcController {
             model.addAttribute("transaction", transaction);
             model.addAttribute("currentUser", user);
             transactionService.updateTransaction(transaction, user);
-            return "redirect: /transactions/notifications";
+            return "redirect:/transactions/notifications";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -546,7 +546,7 @@ public class TransactionMvcController {
             model.addAttribute("transaction", transaction);
             model.addAttribute("currentUser", user);
             transactionService.delete(transaction, user);
-            return "redirect: /transactions/notifications";
+            return "redirect:/transactions/notifications";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());

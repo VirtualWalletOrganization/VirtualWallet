@@ -73,14 +73,8 @@
                         </td>
 
                         <td>
-                            <form th:action="@{${'/transactions/' + transacton.transactionId + '/' + 'complete'}}"
-                                  method="post">
-                                <!--                                <input class="btn btn-danger" type="submit" th:text="#{admin.block}">-->
-                                <button class="btn btn-outline-danger" type="submit" name="PENDING"
-                                        th:text="${transacton.getTransactionsType().getTransactionType().name().equals('COMPLETED') ? 'COMPLETED' : 'DECLINED'}">
-                                    <!--                                        th:text="#{transaction.complete}">-->
-
-                                    <!--                                    Toggle Block-->
+                            <form th:action="@{${'/transactions/' + transacton.transactionId + '/' + 'complete'}}" method="post">
+                                <button class="btn btn-outline-danger" type="submit" th:text="${transacton.getTransactionsType().getTransactionType().name().equals('COMPLETED') ? 'COMPLETED' : (transacton.getTransactionsType().getTransactionType().name().equals('DECLINED') ? 'DECLINED' : 'PENDING')}">
                                 </button>
                             </form>
                         </td>
