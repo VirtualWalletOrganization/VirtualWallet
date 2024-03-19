@@ -148,9 +148,9 @@ public class OverdraftRestController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request body that accepts boolean isPaid",
                     content = @Content(schema = @Schema(implementation = Overdraft.class))),
             parameters = {@Parameter(name = "overdrafttId", description = "path variable", example = "5")},
-            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Contact.class)), description = "The payment status has been updated successfully"),
-                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Contact.class)), description = "You are not allowed to modify the maypent status for this overdraft."),
-                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Contact.class)), description = "Overdraft with this id was not found.")})
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "The payment status has been updated successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "You are not allowed to modify the maypent status for this overdraft."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "Overdraft with this id was not found.")})
     public ResponseEntity<Void> updatePaidStatus(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestParam boolean isPaid) {
         try {
             authenticationHelper.tryGetUser(headers);

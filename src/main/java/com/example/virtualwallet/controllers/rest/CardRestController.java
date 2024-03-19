@@ -159,9 +159,9 @@ public class CardRestController {
             summary = "Using this method, a card is being deleted.",
             description = "This method deletes a card. When valid id is given as an input and proper authentication is in place, the card is deleted.",
             parameters = {@Parameter( name = "id", description = "card's id", example = "1")},
-            responses ={@ApiResponse(responseCode = "410", content = @Content(schema = @Schema(implementation = User.class)), description = "The card has been deleted successfully"),
-                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = User.class)), description = "You are not allowed to delete this card."),
-                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = User.class)), description = "Card with this id was not found.")})
+            responses ={@ApiResponse(responseCode = "410", content = @Content(schema = @Schema(implementation = Card.class)), description = "The card has been deleted successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Card.class)), description = "You are not allowed to delete this card."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Card.class)), description = "Card with this id was not found.")})
     public ResponseEntity<Void> delete(@RequestHeader HttpHeaders headers, @PathVariable int cardId) {
         try {
             User user = authenticationHelper.tryGetUser(headers);

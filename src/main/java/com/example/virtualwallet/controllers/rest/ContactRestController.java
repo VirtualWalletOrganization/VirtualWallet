@@ -37,7 +37,7 @@ public class ContactRestController {
     }
 
     @GetMapping("/{id}")
-    @Operation(tags = {"Get a contant"},
+    @Operation(tags = {"Get a contact"},
             operationId = "id to be searched for",
             summary = "This method search for a contact when id is given.",
             description = "This method search for a contact. A valid id must be given as an input. Proper authentication must be in place",
@@ -82,6 +82,7 @@ public class ContactRestController {
     @Operation(tags = {"Create a contact"},
             summary = "This method creates a contact when input is given.",
             description = "This method create a post. A valid object must be given as an input. Proper authentication must be in place",
+            operationId = "user id",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request that accepts object parameters.",
                     content = @Content(schema = @Schema(implementation = Contact.class))),
             responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Contact.class)), description = "The contact has been created successfully"),
