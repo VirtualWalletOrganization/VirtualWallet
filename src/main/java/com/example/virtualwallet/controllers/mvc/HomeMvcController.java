@@ -48,7 +48,7 @@ public class HomeMvcController {
 
             if (user != null) {
                 model.addAttribute("currentUser", user);
-                Optional<List<Transaction> > transactionList=transactionService.getAllTransactionsByStatus(user);
+                Optional<List<Transaction>> transactionList = transactionService.getAllTransactionsByStatus(user);
                 transactionList.ifPresent(transactions -> model.addAttribute("transactionList", transactions));
             }
 

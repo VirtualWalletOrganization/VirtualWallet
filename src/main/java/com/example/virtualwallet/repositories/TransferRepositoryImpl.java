@@ -1,13 +1,12 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.models.Transfer;
+import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransferRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.ast.OpAnd;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -39,6 +38,16 @@ public class TransferRepositoryImpl implements TransferRepository {
             query.setParameter("transferId", transferId);
 
             return Optional.ofNullable(query.list().get(0));
+        }
+    }
+
+    @Override
+    public Optional<List<Transfer>> getAllTransfersByStatus(Status status) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Transfer> query = session.createQuery(
+                    "FROM Transfer as t where t.status = :status ", Transfer.class);
+            query.setParameter("status", status);
+            return Optional.ofNullable(query.list());
         }
     }
 

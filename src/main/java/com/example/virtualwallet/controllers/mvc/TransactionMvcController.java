@@ -10,14 +10,16 @@ import com.example.virtualwallet.models.RecurringTransaction;
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.dtos.*;
+import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
+import com.example.virtualwallet.models.dtos.TransactionDto;
+import com.example.virtualwallet.models.dtos.TransactionFilterDto;
+import com.example.virtualwallet.models.dtos.TransactionHistoryDto;
 import com.example.virtualwallet.services.contracts.RecurringTransactionService;
 import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
-import com.example.virtualwallet.utils.UserFilterOptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -483,8 +485,8 @@ public class TransactionMvcController {
         }
 
         try {
-            Optional<List<Transaction> > requestedTransactions=transactionService.getAllTransactionsByStatus(user);
-            requestedTransactions.ifPresent(transactions -> model.addAttribute("transactions", requestedTransactions));
+            Optional<List<Transaction>> requestedTransactions = transactionService.getAllTransactionsByStatus(user);
+            requestedTransactions.ifPresent(transactions -> model.addAttribute("transactionList", transactions));
             model.addAttribute("user", user);
             return "notifications";
         } catch (EntityNotFoundException e) {

@@ -4,10 +4,7 @@ import com.example.virtualwallet.exceptions.DeletionRestrictedException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
-import com.example.virtualwallet.models.Photo;
-import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.UsersRole;
-import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
@@ -77,6 +74,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.getByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new EntityNotFoundException("User", "phone number", phoneNumber));
     }
+
     public User getByContact(String contact) {
         return userRepository.getByContact(contact)
                 .orElseThrow(() -> new EntityNotFoundException("User"));
@@ -135,9 +133,15 @@ public class UserServiceImpl implements UserService {
         if (user.getIdentityStatus().getIdentity().equals(Identity.APPROVED)) {
             throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
         } else if (userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
-            userToBeVerified.getIdentityStatus().setIdentity(Identity.REJECTED);
+            IdentityStatus identityStatus = new IdentityStatus();
+            identityStatus.setId(Identity.REJECTED.ordinal() + 1);
+            identityStatus.setIdentity(Identity.REJECTED);
+            userToBeVerified.setIdentityStatus(identityStatus);
         } else {
-            user.getIdentityStatus().setIdentity(Identity.APPROVED);
+            IdentityStatus identityStatus = new IdentityStatus();
+            identityStatus.setId(Identity.APPROVED.ordinal() + 1);
+            identityStatus.setIdentity(Identity.APPROVED);
+            user.setIdentityStatus(identityStatus);
             user.setStatus(UserStatus.ACTIVE);
             userRepository.confirmRegistration(user);
 

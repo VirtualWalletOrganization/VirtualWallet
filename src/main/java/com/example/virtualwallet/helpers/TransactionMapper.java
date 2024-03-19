@@ -1,13 +1,17 @@
 package com.example.virtualwallet.helpers;
 
 import com.example.virtualwallet.models.*;
+import com.example.virtualwallet.models.dtos.CardDto;
+import com.example.virtualwallet.models.dtos.MockBankDto;
 import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.models.enums.Interval;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.TransactionType;
+import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -30,7 +34,7 @@ public class TransactionMapper {
         transaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
 
         TransactionsStatus transactionsStatus = new TransactionsStatus();
-        transactionsStatus.setId(Status.PENDING.ordinal()+1);
+        transactionsStatus.setId(Status.PENDING.ordinal() + 1);
         transactionsStatus.setTransactionStatus(Status.PENDING);
         transaction.setTransactionsStatus(transactionsStatus);
 
@@ -38,7 +42,7 @@ public class TransactionMapper {
 //        transaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
         TransactionsType transactionsType = new TransactionsType();
-        transactionsType.setId(TransactionType.SINGLE.ordinal()+1);
+        transactionsType.setId(TransactionType.SINGLE.ordinal() + 1);
         transactionsType.setTransactionType(TransactionType.SINGLE);
         transaction.setTransactionsType(transactionsType);
 

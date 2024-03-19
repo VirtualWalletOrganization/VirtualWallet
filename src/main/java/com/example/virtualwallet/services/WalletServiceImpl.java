@@ -3,14 +3,15 @@ package com.example.virtualwallet.services;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
-import com.example.virtualwallet.models.Card;
+import com.example.virtualwallet.models.Transfer;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.WalletsRole;
+import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
-import com.example.virtualwallet.services.contracts.CardService;
+import com.example.virtualwallet.services.contracts.TransferService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,13 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
     private final UserService userService;
+    private final TransferService transferService;
 
     @Autowired
-    public WalletServiceImpl(WalletRepository walletRepository, UserService userService) {
+    public WalletServiceImpl(WalletRepository walletRepository, UserService userService, TransferService transferService) {
         this.walletRepository = walletRepository;
         this.userService = userService;
+        this.transferService = transferService;
     }
 
     @Override
@@ -215,5 +218,19 @@ public class WalletServiceImpl implements WalletService {
         } else {
             wallet.setDefault(true);
         }
+    }
+
+    @Override
+    public void addMoneyFromCardToWallet(Transfer transfer, Wallet receiverWallet, User user) {
+        receiverWallet.setBalance(receiverWallet.getBalance().add(transfer.getAmount()));
+        walletRepository.update(receiverWallet);
+        user.getWallets().stream()
+                .filter(wallet -> wallet.getId() == receiverWallet.getId())
+                .forEach(wallet -> {
+                    wallet.setBalance(receiverWallet.getBalance());
+                });
+        userService.updateUser(user, user);
+        transfer.setStatus(Status.COMPLETED);
+        transferService.createTransfer(transfer);
     }
 }

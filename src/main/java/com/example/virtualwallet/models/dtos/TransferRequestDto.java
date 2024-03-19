@@ -1,13 +1,17 @@
 package com.example.virtualwallet.models.dtos;
 
+import jakarta.validation.constraints.Positive;
+
 import java.math.BigDecimal;
 
 public class TransferRequestDto {
 
     private String accountNumber;
+    private int receiverWalletId;
+    @Positive(message = "Amount must be positive.")
     private BigDecimal amount;
     private String currency;
-    private String spendingCategory;
+    private String description;
 
     public TransferRequestDto() {
     }
@@ -36,11 +40,19 @@ public class TransferRequestDto {
         this.currency = currency;
     }
 
-    public String getSpendingCategory() {
-        return spendingCategory;
+    public int getReceiverWalletId() {
+        return receiverWalletId;
     }
 
-    public void setSpendingCategory(String spendingCategory) {
-        this.spendingCategory = spendingCategory;
+    public void setReceiverWalletId(int receiverWalletId) {
+        this.receiverWalletId = receiverWalletId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

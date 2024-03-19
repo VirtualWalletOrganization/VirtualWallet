@@ -3,6 +3,7 @@ package com.example.virtualwallet.services;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.exceptions.InsufficientBalanceException;
 import com.example.virtualwallet.models.Transaction;
+import com.example.virtualwallet.models.TransactionsStatus;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.enums.Status;
@@ -92,7 +93,7 @@ public class TransactionServiceImpl implements TransactionService {
         //TODO implement check for overdraft
 
         if (transaction.getTransactionsStatus().getTransactionStatus() == (Status.PENDING)
-        || transaction.getTransactionsStatus().getTransactionStatus()==(Status.DECLINED)) {
+                || transaction.getTransactionsStatus().getTransactionStatus() == (Status.DECLINED)) {
             isValidRequestTransferMoney(transaction);
             transactionRepository.update(transaction);
         } else {
@@ -116,7 +117,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     public void delete(Transaction transaction, User sender) {
         checkPermissionExistingUsersInWallet(transaction.getWalletSender(), sender, ERROR_TRANSACTION);
-        transactionRepository.delete(transaction);
+        TransactionsStatus transactionsStatus = new TransactionsStatus();
+        transactionsStatus.setId(Status.REJECT.ordinal() + 1);
+        transactionsStatus.setTransactionStatus(Status.REJECT);
+        transaction.setTransactionsStatus(transactionsStatus);
+        transactionRepository.update(transaction);
     }
 
     public void createRecurringTransaction(Transaction transaction) {

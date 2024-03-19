@@ -1,5 +1,6 @@
 package com.example.virtualwallet.services.contracts;
 
+import com.example.virtualwallet.models.Transfer;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 
@@ -30,4 +31,6 @@ public interface WalletService {
     void addUsersToWallet(int walletId, int userId, User user);
 
     void removeUsersFromWallet(int walletId, int userId, User user);
+
+    void addMoneyFromCardToWallet(Transfer transfer, Wallet receiverWallet, User user);
 }

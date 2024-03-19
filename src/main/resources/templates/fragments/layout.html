@@ -36,7 +36,7 @@
                     <form class="logout-form" th:if="${isAuthenticated}" th:action="@{/auth/logout}"
                           method="get"><input
                             class="btn btn-outline-primary" th:type="submit" th:value="Logout"></form>
-                    <a href="#" th:if="${isAuthenticated}" th:href="@{/users/profile}"  class="btn btn-primary"
+                    <a href="#" th:if="${isAuthenticated}" th:href="@{/users/profile}" class="btn btn-primary"
                        th:text="#{header.menu.myProfile}"></a></div>
             </div><!--end login button-->
             <!-- End Logo container-->
@@ -71,34 +71,44 @@
 
                     </li>
                     <li class="has-submenu">
-                        <a href="#" th:if="${isAuthenticated}" th:href="@{/wallets}" th:text="#{header.menu.wallets}"></a><span
+                        <a href="#" th:if="${isAuthenticated}" th:href="@{/wallets}"
+                           th:text="#{header.menu.wallets}"></a><span
                             class="menu-arrow"></span>
                         <ul class="submenu">
-                            <li><a  href="#" th:if="${isAuthenticated}" th:text="#{header.menu.addWallet}" th:href="@{/wallets/new}">Add wallet</a></li>
+                            <li><a href="#" th:if="${isAuthenticated}" th:text="#{header.menu.addWallet}"
+                                   th:href="@{/wallets/new}">Add wallet</a></li>
                             <!--                            <li><a th:href="@{/transaction/create-funding}" th:text="#{header.menu.topUpWallet}"></a></li>-->
-                            <li class="has-submenu"><a href="#" th:if="${isAuthenticated}" th:text="#{header.menu.cards}"
+                            <li class="has-submenu"><a href="#" th:if="${isAuthenticated}"
+                                                       th:text="#{header.menu.cards}"
                                                        th:href="@{/cards}">Cards</a>
-<!--                                <span-->
-<!--                                    class="submenu-arrow"></span>-->
-<!--                                <ul class="submenu">-->
-<!--                                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add(walletId=${walletId})}">Add card</a></li>-->
-<!--                                </ul>-->
+                                <!--                                <span-->
+                                <!--                                    class="submenu-arrow"></span>-->
+                                <!--                                <ul class="submenu">-->
+                                <!--                                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add(walletId=${walletId})}">Add card</a></li>-->
+                                <!--                                </ul>-->
                             </li>
                         </ul>
                     </li>
-                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/user-history}" th:text="#{header.menu.transactionHistory}"></a></li>
-                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/send-money}" th:text="#{header.menu.sendMoney}"></a></li>
-                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/transactions/request-money}" th:text="#{header.menu.requestMoney}"></a></li>
+                    <li><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/user-history}"
+                           th:text="#{header.menu.transactionHistory}"></a></li>
+                    <li><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/send-money}"
+                           th:text="#{header.menu.sendMoney}"></a></li>
+                    <li><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/request-money}"
+                           th:text="#{header.menu.requestMoney}"></a></li>
                     <li>
-                        <a href="#" th:if="${isAuthenticated && transactionList != null && !transactionList.isEmpty()}" th:href="@{/transactions/notifications}" style="position:relative" >
-                            <i style="color: red;position: absolute;width: 20px;height: 20px;top: 15px;right: 10px;background: #2f55d4;color: #fff;text-align: center;border-radius: 50%;" th:text="${transactionList.size()}"></i>
+                        <a href="#" th:if="${isAuthenticated && transactionList != null && !transactionList.isEmpty()}"
+                           th:href="@{/transactions/notifications}" style="position:relative">
+                            <i style="color: red;position: absolute;width: 20px;height: 20px;top: 15px;right: 10px;background: #2f55d4;color: #fff;text-align: center;border-radius: 50%;"
+                               th:text="${transactionList.size()}"></i>
                             <i class="far fa-bell fa-2x" style="color: blue;"></i>
                         </a>
-                        <a href="#" th:if="${isAuthenticated && (transactionList == null || transactionList.isEmpty())}" th:href="@{/transactions/notifications}">
+                        <a href="#" th:if="${isAuthenticated && (transactionList == null || transactionList.isEmpty())}"
+                           th:href="@{/transactions/notifications}">
                             <i class="far fa-bell fa-2x" style="color: blue;"></i>
                         </a>
                     </li>
-                    <li class="hide-desktop"><a  href="#" th:if="${isAuthenticated}" th:href="@{/users/profile}"  th:text="#{header.menu.myProfile}"></a></li>
+                    <li class="hide-desktop"><a href="#" th:if="${isAuthenticated}" th:href="@{/users/profile}"
+                                                th:text="#{header.menu.myProfile}"></a></li>
                     <li class="hide-desktop">
                         <form class="logout-form" th:if="${isAuthenticated}" th:action="@{/logout}"
                               method="post"><input class="btn btn-outline-primary margin-left-extra" th:type="submit"
@@ -120,19 +130,19 @@
                 <div class="col-lg-4 col-12 mb-0 mb-md-4 pb-0 pb-md-2">
                     <a class="logo-footer" href="#">VirtualWallet<span class="text-primary">.</span></a>
                     <p class="mt-4" th:text="#{footer.description}"></p>
-<!--                    <ul class="list-unstyled social-icon social mb-0 mt-4">-->
-<!--                        <li class="list-inline-item"><a href="https://www.facebook.com/TelerikAcademy/" target="_blank"-->
-<!--                                                        class="rounded"><i-->
-<!--                                class="mdi mdi-facebook" title="Facebook"></i></a></li>-->
-<!--                        <li class="list-inline-item"><a href="https://www.instagram.com/telerikacademy/" target="_blank"-->
-<!--                                                        class="rounded"><i-->
-<!--                                class="mdi mdi-instagram" title="Instagram"></i></a></li>-->
-<!--                        <li class="list-inline-item"><a href="https://twitter.com/TelerikAcademy" target="_blank"-->
-<!--                                                        class="rounded"><i-->
-<!--                                class="mdi mdi-twitter"-->
-<!--                                title="Twitter"></i></a>-->
-<!--                        </li>-->
-<!--                    </ul>&lt;!&ndash;end icon&ndash;&gt;-->
+                    <!--                    <ul class="list-unstyled social-icon social mb-0 mt-4">-->
+                    <!--                        <li class="list-inline-item"><a href="https://www.facebook.com/TelerikAcademy/" target="_blank"-->
+                    <!--                                                        class="rounded"><i-->
+                    <!--                                class="mdi mdi-facebook" title="Facebook"></i></a></li>-->
+                    <!--                        <li class="list-inline-item"><a href="https://www.instagram.com/telerikacademy/" target="_blank"-->
+                    <!--                                                        class="rounded"><i-->
+                    <!--                                class="mdi mdi-instagram" title="Instagram"></i></a></li>-->
+                    <!--                        <li class="list-inline-item"><a href="https://twitter.com/TelerikAcademy" target="_blank"-->
+                    <!--                                                        class="rounded"><i-->
+                    <!--                                class="mdi mdi-twitter"-->
+                    <!--                                title="Twitter"></i></a>-->
+                    <!--                        </li>-->
+                    <!--                    </ul>&lt;!&ndash;end icon&ndash;&gt;-->
                 </div><!--end col-->
 
                 <div class="col-lg-2 col-md-4 col-12 mt-4 mt-sm-0 pt-2 pt-sm-0">

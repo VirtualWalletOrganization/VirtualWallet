@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class TransactionDto {
+
     private int senderWalletId;
     private int receiver;
     @Positive(message = "Amount must be positive.")

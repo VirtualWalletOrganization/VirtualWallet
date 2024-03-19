@@ -94,8 +94,7 @@ VALUES ('DECLINED'),
 
 -- Example data for transactions_types
 INSERT INTO transactions_types (transaction_type_name)
-VALUES
-       ('SINGLE'),
+VALUES ('SINGLE'),
        ('RECURRING');
 
 -- Example data for transactions
@@ -152,9 +151,10 @@ INSERT INTO spending_categories (category_name) VALUES
                                                     ('Transportation');
 
 -- Example data for transfers
-INSERT INTO transfers (wallet_id, account_number, amount, currency, direction, date, status, category_id)
-VALUES (1, '1234567812345678', 50.00, 'USD', 'OUTGOING', '2024-03-11 15:00:00', 'COMPLETED', 1),
-       (2, '9876543298765432', 25.00, 'EUR', 'INCOMING', '2024-03-11 16:30:00', 'PENDING', 2);
+INSERT INTO transfers (receiver_wallet_id, receiver_id, card_id, sender_id, amount, currency, date, status, description, category_id)
+VALUES (1, 1, 1, 1, 50.00, 'USD', '2024-03-11 15:00:00', 'COMPLETED', 'Bank Deposit', 1),
+       (2, 1, 2, 1, 25.00, 'USD', '2024-03-11 16:30:00', 'PENDING', 'Bank Deposit', 2),
+       (3, 2, 3, 2, 25.00, 'USD', '2024-03-11 16:30:00', 'PENDING', 'Bank Deposit', 2);
 
 -- -- Example data for overdrafts_types
 -- INSERT INTO overdrafts_types (overdraft_name, overdraft_limit, overdraft_interest, duration)

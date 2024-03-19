@@ -151,8 +151,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     public Optional<List<Transaction>> getAllTransactionsByStatus(User user) {
         try (Session session = sessionFactory.openSession()) {
             Query<Transaction> query = session.createQuery(
-                    "FROM Transaction as t WHERE t.transactionsStatus.id = :statusId" +
-                            " and t.transactionsStatus.id= :statusId2 and t.userSender.id = :userId " +
+                    "FROM Transaction as t WHERE (t.transactionsStatus.id = :statusId" +
+                            " or t.transactionsStatus.id= :statusId2) and t.userSender.id = :userId " +
                             "ORDER BY t.date", Transaction.class);
             query.setParameter("statusId", "4");
             query.setParameter("statusId2", "1");

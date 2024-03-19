@@ -239,17 +239,25 @@ create table spending_categories
 
 create table transfers
 (
-    transfer_id    int auto_increment primary key,
-    wallet_id      int                not null,
-    account_number varchar(16) unique not null,
-    amount         decimal            not null,
-    currency       varchar(3)         not null,
-    direction      enum ('INCOMING', 'OUTGOING') not null,
-    date           datetime           not null,
-    status         enum ('COMPLETED', 'FAILED', 'PENDING') not null,
-    category_id    int                not null,
+    transfer_id        int auto_increment primary key,
+    receiver_wallet_id int          not null,
+    receiver_id        int          not null,
+    card_id         int unique   not null,
+    sender_id          int          not null,
+    amount             decimal      not null,
+    currency           varchar(3)   not null,
+    date               datetime     not null,
+    status             enum ('COMPLETED', 'FAILED', 'PENDING') not null,
+    description        varchar(250) not null,
+    category_id        int          not null,
+    constraint transfers_cards_card_id_fk
+        foreign key (card_id) references cards (card_id),
     constraint transfers_wallets_wallet_id_fk
-        foreign key (wallet_id) references wallets (wallet_id),
+        foreign key (receiver_wallet_id) references wallets (wallet_id),
+    constraint transfers_users_users_id_fk
+        foreign key (receiver_id) references users (user_id),
+    constraint transfers_users_users_id_fk2
+        foreign key (sender_id) references users (user_id),
     constraint transfers_spending_categories_category_id_fk
         foreign key (category_id) references spending_categories (category_id)
 );

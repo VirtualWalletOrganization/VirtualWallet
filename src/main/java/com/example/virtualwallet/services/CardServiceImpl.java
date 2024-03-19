@@ -1,6 +1,5 @@
 package com.example.virtualwallet.services;
 
-import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.CardMismatchException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
@@ -16,7 +15,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,16 +40,17 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public List<Card> getAllCardsByCurrentUser( User executingUser) {
-        List<Card> cards= cardRepository.getAllCardsByCurrentUser(executingUser.getId())
+    public List<Card> getAllCardsByCurrentUser(User executingUser) {
+        List<Card> cards = cardRepository.getAllCardsByCurrentUser(executingUser.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Cards"));
         checkPermissionShowingCardsByUser(cards, executingUser, SEARCH_CARD_ERROR_MESSAGE);
         return cards;
 
     }
+
     @Override
     public Card getCardById(int cardId, User executingUser) {
-        Card card= cardRepository.getCardById(cardId)
+        Card card = cardRepository.getCardById(cardId)
                 .orElseThrow(() -> new EntityNotFoundException("Card", "id", String.valueOf(cardId)));
         checkAccessPermissionsUser(card.getUser().getId(), executingUser, SEARCH_CARD_ERROR_MESSAGE);
         return card;
@@ -65,19 +64,19 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void addCard(Card card, int walletId, User user) {
-        throwIfCardWithSameNumberAlreadyExistsInSystem(card,user);
+        throwIfCardWithSameNumberAlreadyExistsInSystem(card, user);
         Wallet wallet = walletService.getWalletById(walletId, user.getId());
         checkPermissionExistingUsersInWallet(wallet, user, ADD_CARD_ERROR_MESSAGE);
 
         // checkAccessPermissionsUser(wallet.getCreator().getId(), user, ADD_CARD_ERROR_MESSAGE);
         throwIfCardWithSameNumberAlreadyExistsInWallet(card, wallet);
         validateCard(card, user);
-        Optional<Card> existingCard=cardRepository.getByCardNumber(card.getCardNumber());
-        if(existingCard.isEmpty()){
+        Optional<Card> existingCard = cardRepository.getByCardNumber(card.getCardNumber());
+        if (existingCard.isEmpty()) {
             cardRepository.addCard(card);
             wallet.getCards().add(card);
             walletService.update(wallet, user);
-        }else{
+        } else {
             wallet.getCards().add(existingCard.get());
             walletService.update(wallet, user);
         }
@@ -87,7 +86,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void updateCard(Card cardToUpdate, User user) {
-        throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(cardToUpdate,user);
+        throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(cardToUpdate, user);
         getCardById(cardToUpdate.getId(), user);
         checkAccessPermissionsUser(cardToUpdate.getUser().getId(), user, MODIFY_CARD_ERROR_MESSAGE);
         List<Wallet> wallets = walletService.getWalletsByCardId(cardToUpdate.getId(), user.getId());
@@ -104,7 +103,7 @@ public class CardServiceImpl implements CardService {
 //        walletService.update(wallet,user);
         List<Wallet> wallets = walletService.getWalletsByCardId(cardToDelete.getId(), user.getId());
         wallets.forEach(wallet -> wallet.getCards().removeIf(c -> c.getId() == cardToDelete.getId()));
-        wallets.forEach(wallet -> walletService.update(wallet,user));
+        wallets.forEach(wallet -> walletService.update(wallet, user));
         cardRepository.deleteCard(cardToDelete);
     }
 
@@ -120,7 +119,7 @@ public class CardServiceImpl implements CardService {
         });
     }
 
-    private void throwIfCardWithSameNumberAlreadyExistsInSystem(Card card,User user) {
+    private void throwIfCardWithSameNumberAlreadyExistsInSystem(Card card, User user) {
         if (cardRepository.getByCardNumber(card.getCardNumber()).isPresent()) {
             for (Card existingCard : user.getCards()) {
                 if (existingCard.getCardNumber().equals(card.getCardNumber()) && !existingCard.getUser().equals(user)) {
@@ -130,13 +129,13 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private void throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(Card card,User user) {
+    private void throwIfAnotherCardWithSameNumberAlreadyExistsInSystem(Card card, User user) {
         Optional<Card> existingCardOptional = getAllCards().stream()
                 .filter(c -> c.getCardNumber().equals(card.getCardNumber()))
                 .findFirst();
 
         existingCardOptional.ifPresent(existingCard -> {
-            if (existingCard.getId() != card.getId() && existingCard.getUser()!=user) {
+            if (existingCard.getId() != card.getId() && existingCard.getUser() != user) {
                 throw new DuplicateEntityException("Card", "card number", card.getCardNumber());
             }
         });
@@ -170,8 +169,8 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private void updateCardInWallets(Card cardToUpdate, User user,List<Wallet>  wallets) {
-        for(Wallet wallet:wallets){
+    private void updateCardInWallets(Card cardToUpdate, User user, List<Wallet> wallets) {
+        for (Wallet wallet : wallets) {
             for (Card cardInWallet : wallet.getCards()) {
                 if (cardInWallet.getId() == cardToUpdate.getId()) {
                     cardToUpdate.setCardsType(cardToUpdate.getCardsType());
@@ -183,10 +182,8 @@ public class CardServiceImpl implements CardService {
                     cardToUpdate.setCurrency(cardToUpdate.getCurrency());
                     cardToUpdate.setCardStatus(cardToUpdate.getCardStatus());
                 }
-                walletService.update(wallet, user);}
-
+                walletService.update(wallet, user);
+            }
         }
-
-
     }
 }

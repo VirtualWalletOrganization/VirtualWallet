@@ -1,7 +1,6 @@
 package com.example.virtualwallet.utils;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 
 public class Messages {
 
@@ -39,7 +38,10 @@ public class Messages {
     public static final String SUCCESS_TRANSFER = "Transfer successful";
     public static final String INVALID_REQUEST = "Invalid request data";
     public static final String ERROR_TRANSACTION = "You are not authorized to complete this transaction.";
-    public static final String REMOVE_YOURSELF_FROM_WALLET= "You can not remove yourself from wallet";
-
+    public static final String REMOVE_YOURSELF_FROM_WALLET = "You can not remove yourself from wallet";
+    public static final String WRONG_WALLET_ACCESS = "Wrong wallet access!";
+    public static final String REQUEST_HTTP_STATUS_ERROR = "Wrong request!";
+    public static final String GENERAL_HTTP_STATUS_ERROR = "Wrong request!";
+    public static final String UNKNOWN_HTTP_STATUS_ERROR = "Something went wrong!";
 
 }

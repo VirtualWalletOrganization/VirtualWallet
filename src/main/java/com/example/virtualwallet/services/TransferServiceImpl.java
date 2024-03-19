@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,6 +40,12 @@ public class TransferServiceImpl implements TransferService {
     public Transfer getTransferById(int transferId) {
         return transferRepository.getTransferById(transferId)
                 .orElseThrow(() -> new EntityNotFoundException("Transfer", "id", String.valueOf(transferId)));
+    }
+
+    @Override
+    public List<Transfer> getAllTransfersByStatus(Status status) {
+        return transferRepository.getAllTransfersByStatus(status)
+                .orElseThrow(() -> new EntityNotFoundException("Transfers", "status", String.valueOf(status)));
     }
 
     @Override
@@ -75,7 +82,7 @@ public class TransferServiceImpl implements TransferService {
         transfer.setAmount(amount);
         transfer.setCurrency(wallet.getCurrency());
         transfer.setDirection(Direction.OUTGOING);
-        transfer.setDate(LocalDateTime.now());
+        transfer.setDate(Timestamp.valueOf(LocalDateTime.now()));
         transfer.setStatus(Status.PENDING);
         // transfer.setDescription("Transfer from " + sender.getUsername() + " to " + recipient.getUsername());
         transferRepository.create(transfer);

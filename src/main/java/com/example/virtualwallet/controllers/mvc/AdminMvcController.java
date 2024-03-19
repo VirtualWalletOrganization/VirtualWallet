@@ -15,9 +15,11 @@ import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,49 +48,15 @@ public class AdminMvcController {
         return request.getRequestURI();
     }
 
-    @GetMapping
-    public String showAllUsers(@ModelAttribute("userFilterOptions") UserFilterDto filterDto,
-                               HttpSession session, Model model) {
-        UserFilterOptions userFilterOptions = new UserFilterOptions(
-                filterDto.getUsername(),
-                filterDto.getFirstName(),
-                filterDto.getLastName(),
-                filterDto.getEmail(),
-                filterDto.getPhoneNumber(),
-                filterDto.getRole(),
-                filterDto.getStatus(),
-                filterDto.getSortBy(),
-                filterDto.getSortOrder());
-
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            List<User> users = userService.getAll( userFilterOptions);
-            model.addAttribute("users", users);
-            model.addAttribute("user", user);
-//            model.addAttribute("currentUser", user);
-            model.addAttribute("filterOptions", filterDto);
-//            model.addAttribute("isAuthenticated", true);
-            return "admin-users";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
     @GetMapping("/users")
-    public String showUsers(@ModelAttribute("userFilterOptions") UserFilterDto filterDto,
-                            HttpSession session, Model model) {
+    public String showAllUsers(@ModelAttribute("userFilterOptions") @Valid UserFilterDto filterDto,
+                               @RequestParam(name = "contactType", defaultValue = "") String recipientContactType,
+                               @RequestParam(name = "contact", defaultValue = "") String recipientContactInfo,
+                               BindingResult bindingResult, HttpSession session, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "admin-users";
+        }
+
         UserFilterOptions userFilterOptions = new UserFilterOptions(
                 filterDto.getUsername(),
                 filterDto.getFirstName(),
@@ -107,28 +75,112 @@ public class AdminMvcController {
             return "redirect:/auth/login";
         }
 
-        try {
-            List<User> users = userService.getAll(userFilterOptions);
-            model.addAttribute("users", users);
-            model.addAttribute("user", user);
-//            model.addAttribute("currentUser", user);
-            model.addAttribute("filterOptions", filterDto);
-//            model.addAttribute("isAuthenticated", true);
-            return "admin-users";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
+        if (!recipientContactInfo.isEmpty()) {
+            User recipientUser = userService.getByContact(recipientContactInfo);
+            model.addAttribute("recipientUser", recipientUser);
         }
+
+        List<User> users = userService.getAll(userFilterOptions);
+        model.addAttribute("user", user);
+        model.addAttribute("users", users);
+        return "admin-users";
+
+//        if (bindingResult.hasErrors()) {
+//            return "admin-users";
+//        }
+//
+//        UserFilterOptions userFilterOptions = new UserFilterOptions(
+//                filterDto.getUsername(),
+//                filterDto.getFirstName(),
+//                filterDto.getLastName(),
+//                filterDto.getEmail(),
+//                filterDto.getPhoneNumber(),
+//                filterDto.getRole(),
+//                filterDto.getStatus(),
+//                filterDto.getSortBy(),
+//                filterDto.getSortOrder());
+//
+//        User user;
+//        try {
+//            user = authenticationHelper.tryGetCurrentUser(session);
+//        } catch (AuthorizationException e) {
+//            return "redirect:/auth/login";
+//        }
+//
+//        try {
+//            List<User> users = userService.getAll(userFilterOptions);
+//            model.addAttribute("users", users);
+//            model.addAttribute("user", user);
+////            model.addAttribute("currentUser", user);
+//            model.addAttribute("filterOptions", filterDto);
+////            model.addAttribute("isAuthenticated", true);
+//            return "admin-users";
+//        } catch (EntityNotFoundException e) {
+//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+//            model.addAttribute("error", e.getMessage());
+//            return "error";
+//        } catch (AuthorizationException e) {
+//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+//            model.addAttribute("error", e.getMessage());
+//            return "error";
+//        }
     }
+
+//    @GetMapping("/users")
+//    public String showUsers(@ModelAttribute("userFilterOptions") @Valid UserFilterDto filterDto,
+//                            BindingResult bindingResult,
+//                            HttpSession session,
+//                            Model model) {
+//        if (bindingResult.hasErrors()) {
+//            return "admin-users";
+//        }
+//
+//        UserFilterOptions userFilterOptions = new UserFilterOptions(
+//                filterDto.getUsername(),
+//                filterDto.getFirstName(),
+//                filterDto.getLastName(),
+//                filterDto.getEmail(),
+//                filterDto.getPhoneNumber(),
+//                filterDto.getRole(),
+//                filterDto.getStatus(),
+//                filterDto.getSortBy(),
+//                filterDto.getSortOrder());
+//
+//        User user;
+//        try {
+//            user = authenticationHelper.tryGetCurrentUser(session);
+//        } catch (AuthorizationException e) {
+//            return "redirect:/auth/login";
+//        }
+//
+//        try {
+//            List<User> users = userService.getAll(userFilterOptions);
+//            model.addAttribute("users", users);
+//            model.addAttribute("user", user);
+////            model.addAttribute("currentUser", user);
+//            model.addAttribute("filterOptions", filterDto);
+////            model.addAttribute("isAuthenticated", true);
+//            return "admin-users";
+//        } catch (EntityNotFoundException e) {
+//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+//            model.addAttribute("error", e.getMessage());
+//            return "error";
+//        } catch (AuthorizationException e) {
+//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+//            model.addAttribute("error", e.getMessage());
+//            return "error";
+//        }
+//    }
 
     @GetMapping("/transactions")
-    public String showTransactions(@ModelAttribute("transactionFilterOptions") TransactionFilterDto filterDto,
-                                   HttpSession session, Model model) {
+    public String showTransactions(@ModelAttribute("transactionFilterOptions") @Valid TransactionFilterDto filterDto,
+                                   BindingResult bindingResult,
+                                   HttpSession session,
+                                   Model model) {
+        if (bindingResult.hasErrors()) {
+            return "admin-transactions";
+        }
+
         TransactionFilterOptions transactionFilterOptions = new TransactionFilterOptions(
                 filterDto.getSender(),
                 filterDto.getRecipient(),
@@ -152,7 +204,6 @@ public class AdminMvcController {
             model.addAttribute("amount", filterDto.getAmount());
             model.addAttribute("date", filterDto.getDate());
             model.addAttribute("filterOptions", filterDto);
-//            model.addAttribute("isAuthenticated", true);
             return "admin-transactions";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -160,126 +211,6 @@ public class AdminMvcController {
             return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @GetMapping("/users/{id}/update-to-admin")
-    public String updateToAdminForm(@PathVariable int id, Model model,
-                                    HttpSession session) {
-        try {
-            User user = authenticationHelper.tryGetCurrentUser(session);
-            User userToUpdate = userService.getById(id);
-            userService.updateToAdmin(userToUpdate, user);
-            return "redirect:/admin/users";
-        } catch (jakarta.persistence.EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @PostMapping("/users/{id}/update-to-admin")
-    public String updateToAdmin(@PathVariable int id,
-                                Model model,
-                                HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            User userToUpdate = userService.getById(id);
-            userService.updateToAdmin(userToUpdate, user);
-            return "redirect:/admin/users";
-        } catch (jakarta.persistence.EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @GetMapping("/users/{id}/update-to-user")
-    public String updateToUserForm(@PathVariable int id, Model model,
-                                   HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            User userToUpdate = userService.getById(id);
-            userService.updateToUser(userToUpdate, user);
-            return "redirect:/admin/users";
-        } catch (jakarta.persistence.EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DeletionRestrictedException e) {
-            model.addAttribute("statusCode", HttpStatus.FORBIDDEN.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-    @PostMapping("/users/{id}/update-to-user")
-    public String updateToUser(@PathVariable int id,
-                               Model model,
-                               HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetCurrentUser(session);
-        } catch (AuthorizationException e) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            User userToUpdate = userService.getById(id);
-            userService.updateToUser(userToUpdate, user);
-            return "redirect:/admin/users";
-        } catch (jakarta.persistence.EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (DeletionRestrictedException e) {
-            model.addAttribute("statusCode", HttpStatus.FORBIDDEN.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "error";
         }
@@ -404,11 +335,22 @@ public class AdminMvcController {
     }
 
     @PostMapping("/users/{id}/confirm-registration")
-    public String confirmUserRegistration(@PathVariable int id, HttpSession session, Model model) {
+    public String confirmUserRegistration(@PathVariable int id, @ModelAttribute("user") User user,
+                                          BindingResult bindingResult, HttpSession session, Model model) {
         try {
-            User currentUser = authenticationHelper.tryGetCurrentUser(session);
+            user = authenticationHelper.tryGetCurrentUser(session);
+        } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("currentUser", user);
+            return "admin-users";
+        }
+
+        try {
             User userToBeConfirmed = userService.getById(id);
-            userService.confirmUserRegistration(currentUser, userToBeConfirmed);
+            userService.confirmUserRegistration(user, userToBeConfirmed);
             return "redirect:/admin/users";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());

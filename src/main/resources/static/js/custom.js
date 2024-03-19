@@ -177,7 +177,6 @@ $(document).ready(function () {
     });
 });
 
-// Addition by Petar to make User wallet amounts in currency format and with two decimal digits
 $(document).ready(function () {
         var amount = document.getElementsByClassName('currency-format');
         var formatter = new Intl.NumberFormat('bg-BG', {
@@ -191,7 +190,6 @@ $(document).ready(function () {
     }
 );
 
-// Addition by Petar to make Transactions show plus and negative signs
 $(document).ready(function () {
         var amount = document.getElementsByClassName('transactions-amount-format');
         var formatter = new Intl.NumberFormat('bg-BG', {
@@ -206,7 +204,6 @@ $(document).ready(function () {
     }
 );
 
-// Addition by Petar to make Admin transactions sign-neutral
 $(document).ready(function () {
         var amount = document.getElementsByClassName('admin-transactions-amount-format');
         var formatter = new Intl.NumberFormat('bg-BG', {
@@ -220,7 +217,6 @@ $(document).ready(function () {
     }
 );
 
-// Addition by Petar to add transaction details when creating transaction to the confirmation modal for previewing the transaction details
 $(document).ready(function () {
     var body = $('body');
     body.on('change', '#wallet', function () {
