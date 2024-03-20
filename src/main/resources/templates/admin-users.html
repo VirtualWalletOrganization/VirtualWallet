@@ -173,7 +173,7 @@
                             <form th:action="@{${'/admin/users/' + user.getId() + '/confirm-registration'}}"
                                   method="post">
                                 <button class="btn btn-outline-danger" type="submit"
-                                        th:text="${user.getIdentityStatus().getIdentity().name().equals('PENDING') ? 'PENDING' : 'APPROVED'}">
+                                        th:text="${user.getIdentityStatus().getIdentity().name().equals('PENDING') ? 'APPROVED' : 'PENDING'}">
                                 </button>
                             </form>
                         </td>

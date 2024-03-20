@@ -5,13 +5,13 @@ import java.sql.Timestamp;
 import java.util.Optional;
 
 public class TransactionHistoryFilterOptions {
+
     private Optional<Timestamp> startDate;
     private Optional<Timestamp> endDate;
     private Optional<String> counterparty;
     private Optional<BigDecimal> amount;
     private Optional<String> sortBy;
     private Optional<String> sortOrder;
-
 
     public TransactionHistoryFilterOptions() {
         this(null, null,null, null, null, null);

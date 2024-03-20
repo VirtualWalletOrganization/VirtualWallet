@@ -49,6 +49,7 @@ public class RecurringTransactionRepositoryImpl implements RecurringTransactionR
             query.setParameter("userId", userId);
 
             List<RecurringTransaction> transactions = query.list();
+
             if (!transactions.isEmpty()) {
                 return Optional.ofNullable(transactions);
             } else {

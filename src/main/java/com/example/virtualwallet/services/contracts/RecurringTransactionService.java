@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface RecurringTransactionService {
 
     List<RecurringTransaction>getAllRecurringTransactions();
+
     RecurringTransaction getRecurringTransactionById(int transactionId);
 
    Optional<List< RecurringTransaction>> getRecurringTransactionByUserId(int userId);

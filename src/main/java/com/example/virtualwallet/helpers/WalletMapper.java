@@ -1,6 +1,5 @@
 package com.example.virtualwallet.helpers;
 
-import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.WalletsType;
@@ -20,8 +19,6 @@ public class WalletMapper {
     public WalletMapper(WalletService walletService) {
         this.walletService = walletService;
     }
-
-
 
     public Wallet fromDto(WalletDto dto, User user) {
         Wallet wallet = new Wallet();
@@ -50,17 +47,16 @@ public class WalletMapper {
         return walletDto;
     }
 
-    public Wallet fromDtoCreateWallet(RegisterDto registerDto,User user) {
+    public Wallet fromDtoCreateWallet(RegisterDto registerDto, User user) {
         Wallet wallet = new Wallet();
         wallet.setCreator(user);
         wallet.setBalance(BigDecimal.ZERO);
         wallet.setCurrency(registerDto.getCurrency());
-        WalletsType walletsType=new WalletsType();
-        walletsType.setId(WalletType.MAIN.ordinal()+1);
+        WalletsType walletsType = new WalletsType();
+        walletsType.setId(WalletType.MAIN.ordinal() + 1);
         walletsType.setWalletType(WalletType.MAIN);
         wallet.setWalletsType(walletsType);
         wallet.setDefault(true);
-
 
         return wallet;
     }

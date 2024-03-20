@@ -49,6 +49,7 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
         return recurringTransactionRepository.getAllRecurringTransactions()
                 .orElseThrow(() -> new EntityNotFoundException("Recurring Transactions"));
     }
+
     @Override
     public RecurringTransaction getRecurringTransactionById(int transactionId) {
         return recurringTransactionRepository.getRecurringTransactionById(transactionId)
@@ -57,8 +58,8 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
 
     @Override
     public Optional<List<RecurringTransaction>> getRecurringTransactionByUserId(int userId) {
-        return recurringTransactionRepository.getRecurringTransactionByUserId(userId);}
-
+        return recurringTransactionRepository.getRecurringTransactionByUserId(userId);
+    }
 
     @Override
     public void createRecurringTransaction(RecurringTransaction recurringTransaction, Wallet walletSender,
@@ -75,6 +76,7 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
     public void updateRecurringTransaction(RecurringTransaction recurringTransaction, User user) {
         checkBlockOrDeleteUser(user, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         checkPermissionExistingUsersInWallet(recurringTransaction.getWalletSender(), user, ERROR_TRANSACTION);
+
         if (recurringTransaction.getStartDate().isBefore(LocalDate.now()) && recurringTransaction.getEndDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Start date and end date can not be in the past");
         }
@@ -107,20 +109,19 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
         LocalDate startDate = transaction.getStartDate();
         LocalDate endDate = transaction.getEndDate();
 
-        // Checking if the current date is within the start and end date range
         if (currentDate.isBefore(startDate) || currentDate.isAfter(endDate)) {
             return false;
         }
-        // Checking if the interval is 1 day
+
         if (transaction.getFrequency() == Frequency.DAILY) {
             return true;
         }
-        // Checking if the interval is 1 week
+
         if (transaction.getFrequency() == Frequency.WEEKLY) {
             long daysDifference = ChronoUnit.DAYS.between(startDate, currentDate);
             return daysDifference % 7 == 0;
         }
-        // Checking if the interval is 1 month
+
         if (transaction.getFrequency() == Frequency.MONTHLY) {
             return startDate.getDayOfMonth() == currentDate.getDayOfMonth();
         }
@@ -133,7 +134,7 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
         Transaction newTransaction = transactionMapper.fromDtoRecurring(transaction);
 
         if (isValidRequestEnoughMoney(newTransaction, newTransaction.getWalletSender())) {
-            newTransaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal()+1);
+            newTransaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal() + 1);
             newTransaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);
             transactionService.createRecurringTransaction(newTransaction);
 
@@ -144,7 +145,7 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
             walletService.updateRecurringTransaction(newTransaction.getWalletSender());
             walletService.updateRecurringTransaction(newTransaction.getWalletReceiver());
         } else {
-            newTransaction.getTransactionsStatus().setId(Status.FAILED.ordinal()+1);
+            newTransaction.getTransactionsStatus().setId(Status.FAILED.ordinal() + 1);
             newTransaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
             transactionService.createRecurringTransaction(newTransaction);
             throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
@@ -153,7 +154,6 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
     }
 
     private boolean isValidRequestEnoughMoney(Transaction transaction, Wallet walletSender) {
-
         BigDecimal balanceAfterTransfer = walletSender.getBalance().subtract(transaction.getAmount());
         return balanceAfterTransfer.compareTo(BigDecimal.ZERO) >= 0;
     }

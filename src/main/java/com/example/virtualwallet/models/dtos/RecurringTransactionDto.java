@@ -9,7 +9,6 @@ public class RecurringTransactionDto extends TransactionDto {
 
     private LocalDate endDate;
 
-
     public RecurringTransactionDto() {
     }
 

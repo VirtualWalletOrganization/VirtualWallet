@@ -67,6 +67,7 @@ public class CheckPermissions {
             }
         }
     }
+
     public static void checkPermissionShowingWalletsByUser(List<Wallet> wallets, User user, String message) {
         Set<Integer> userWallets = user.getWallets().stream()
                 .map(Wallet::getId)

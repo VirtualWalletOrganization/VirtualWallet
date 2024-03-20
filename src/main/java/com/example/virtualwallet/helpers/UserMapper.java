@@ -3,12 +3,13 @@ package com.example.virtualwallet.helpers;
 
 import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.*;
-import com.example.virtualwallet.models.enums.*;
+import com.example.virtualwallet.models.enums.Identity;
+import com.example.virtualwallet.models.enums.Role;
+import com.example.virtualwallet.models.enums.UserStatus;
+import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 
 @Component
 public class UserMapper {
@@ -20,13 +21,14 @@ public class UserMapper {
         this.userService = userService;
     }
 
-    public ReturnDto fromDtoShow(User user){
+    public ReturnDto fromDtoShow(User user) {
         ReturnDto dto = new ReturnDto();
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setUsername(user.getUsername());
         return dto;
     }
+
     public User fromDtoRegister(RegisterDto dto) {
         User user = new User();
         user.setUsername(dto.getUsername());
@@ -37,22 +39,25 @@ public class UserMapper {
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setProfilePicture(dto.getProfilePicture());
         user.setEmailVerified(false);
-        IdentityStatus identityStatus=new IdentityStatus();
-        identityStatus.setId(Identity.PENDING.ordinal()+1);
+
+        IdentityStatus identityStatus = new IdentityStatus();
+        identityStatus.setId(Identity.PENDING.ordinal() + 1);
         identityStatus.setIdentity(Identity.PENDING);
         user.setIdentityStatus(identityStatus);
-//        Photo photo = new Photo();
-//        photo.setId(photo.getId());
-        UsersRole role=new UsersRole();
-        role.setId(Role.USER.ordinal()+1);
+
+        UsersRole role = new UsersRole();
+        role.setId(Role.USER.ordinal() + 1);
         role.setRole(Role.USER);
         user.setUsersRole(role);
+
         user.setDeleted(false);
         user.setStatus(UserStatus.PENDING);
-        WalletsRole walletsRole=new WalletsRole();
-        walletsRole.setId(WalletRole.USER.ordinal()+1);
+
+        WalletsRole walletsRole = new WalletsRole();
+        walletsRole.setId(WalletRole.USER.ordinal() + 1);
         walletsRole.setWalletRole(WalletRole.USER);
         user.setWalletsRole(walletsRole);
+
         return user;
     }
 
@@ -60,6 +65,7 @@ public class UserMapper {
         Photo photo = new Photo();
         photo.setSelfie(registerDto.getSelfie());
         photo.setCardId(registerDto.getCardId());
+
         return photo;
     }
 
@@ -73,6 +79,7 @@ public class UserMapper {
         user.setPassword(dto.getPassword());
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setProfilePicture(dto.getProfilePicture());
+
         return user;
     }
 
@@ -85,9 +92,9 @@ public class UserMapper {
         userResponseDto.setEmail(user.getEmail());
         userResponseDto.setRole(user.getUsersRole().getRole());
         userResponseDto.setPhoneNumber(user.getPhoneNumber());
+
         return userResponseDto;
     }
-
 
 
     public UserDto userToDto(User user) {
@@ -95,6 +102,7 @@ public class UserMapper {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
+
         return userDto;
     }
 
@@ -107,17 +115,18 @@ public class UserMapper {
     public User fromDtoUpdatePhoneNumber(int id, PhoneNumberDto dto, UpdateUserDto userDto) {
         User updatedUser = fromDtoUpdate(id, userDto);
         updatedUser.setPhoneNumber(dto.getPhoneNumber());
+
         return updatedUser;
     }
 
     public User fromDto(RegisterDto dto) {
         User user = new User();
-//        user.setUsername(dto.getUsername());
         user.setPassword(dto.getPassword());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.getUsersRole().setRole(Role.USER);
+
         return user;
     }
 

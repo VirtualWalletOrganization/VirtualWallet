@@ -35,7 +35,6 @@ public class WalletServiceImpl implements WalletService {
     private final CardMapper cardMapper;
     private final WebClient dummyApi;
 
-
     @Autowired
     public WalletServiceImpl(WalletRepository walletRepository, UserService userService,
                              TransferService transferService,
@@ -59,43 +58,14 @@ public class WalletServiceImpl implements WalletService {
                 .orElseThrow(() -> new EntityNotFoundException("Cards"));
         checkPermissionShowingWalletsByUser(wallets, user, SEARCH_WALLET_ERROR_MESSAGE);
         return wallets;
-
     }
-
-//    @Override
-//    public Wallet getWalletById(int walletId, int userId) {
-////        if (walletRepository.existsUserWithWallet(userId, walletId).isEmpty()) {
-////            throw new EntityNotFoundException("Users", "wallet id", String.valueOf(walletId));
-////        }
-//
-//        User user = userService.getById(userId);
-//        user.getWallets().stream()
-//                .filter(wallet -> wallet.getId() == walletId)
-//                .findFirst()
-//                .orElseThrow(() -> new EntityNotFoundException("Wallet", "creator", String.valueOf(userId)));
-//
-//        return walletRepository.getWalletById(walletId)
-//                .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
-//    }
 
     @Override
     public Wallet getWalletById(int walletId, int userId) {
-//        User user = userService.getById(userId);
-//        user.getCreatedWallets().stream()
-//                .filter(wallet -> wallet.getId() == walletId)
-//                .findFirst()
-//                .orElseThrow(() -> new AuthorizationException(SEARCH_WALLET_ERROR_MESSAGE));
-//
-//        return walletRepository.getWalletById(walletId)
-//                .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
-
         User user = userService.getById(userId);
         Wallet wallet = walletRepository.getWalletById(walletId)
                 .orElseThrow(() -> new EntityNotFoundException("Wallet", "id", String.valueOf(walletId)));
         checkPermissionExistingUsersInWallet(wallet, user, SEARCH_WALLET_ERROR_MESSAGE);
-//        if (!user.getCreatedWallets().stream().anyMatch(w -> w.getId() == walletId)) {
-//            throw new AuthorizationException(SEARCH_WALLET_ERROR_MESSAGE);
-//        }
 
         return wallet;
     }
@@ -159,8 +129,10 @@ public class WalletServiceImpl implements WalletService {
         if (walletToDelete.getWalletsType().getWalletType() == WalletType.JOINT) {
             checkUserWalletAdmin(walletToDelete, currentUser, DELETE_WALLET);
         }
+
         walletToDelete.setDeleted(true);
         List<User> users = userService.getAllUsersByWalletId(walletToDelete.getId());
+
         for (User user : users) {
             user.getWallets().forEach(wallet -> {
                 if (wallet.getId() == walletToDelete.getId()) {
@@ -179,14 +151,17 @@ public class WalletServiceImpl implements WalletService {
     public void addUsersToWallet(int walletId, int userToAddId, User executingUser) {
         Wallet wallet = getWalletById(walletId, executingUser.getId());
         User userToAdd = userService.getById(userToAddId);
+
         if (!wallet.getWalletsType().getWalletType().equals(WalletType.JOINT)) {
             throw new EntityNotFoundException("Joint wallet", "id", String.valueOf(walletId));
         }
 
         checkUserWalletAdmin(wallet, executingUser, ADD_USER_TO_WALLET);
+
         if (wallet.getUsers().contains(userToAdd)) {
             throw new DuplicateEntityException("User", "id", "one of the provided user IDs");
         }
+
         userToAdd.getWallets().stream()
                 .filter(w -> wallet.getId() == walletId && wallet.getDeleted())
                 .forEach(w -> wallet.setDeleted(false));
@@ -202,9 +177,11 @@ public class WalletServiceImpl implements WalletService {
     public void removeUsersFromWallet(int walletId, int userId, User executingUser) {
         Wallet wallet = getWalletById(walletId, executingUser.getId());
         User userToRemove = userService.getById(userId);
+
         if (executingUser.getId() == userId) {
             throw new AuthorizationException(REMOVE_YOURSELF_FROM_WALLET);
         }
+
         checkUserWalletAdmin(wallet, executingUser, REMOVE_USER_FROM_WALLET);
 
         wallet.getUsers().remove(userToRemove);
@@ -215,16 +192,13 @@ public class WalletServiceImpl implements WalletService {
 
     private void checkDefaultWallets(Wallet wallet, User user) {
         Optional<Wallet> currentDefaultWallet = walletRepository.getDefaultWallet(user.getId());
+
         if (currentDefaultWallet.isPresent()) {
             if (currentDefaultWallet.get().getId() != wallet.getId()) {
                 currentDefaultWallet.get().setDefault(false);
                 walletRepository.update(currentDefaultWallet.get());
                 wallet.setDefault(true);
             }
-//            } else {
-//                throw new DuplicateEntityException("Wallet", "id", String.valueOf(wallet.getId()),
-//                        "has already been set as default.");
-//            }
         } else {
             wallet.setDefault(true);
         }
@@ -248,8 +222,7 @@ public class WalletServiceImpl implements WalletService {
             newTransfer.setStatus(Status.COMPLETED);
             transferService.updateTransfer(newTransfer);
         } else if (response.equals("REJECTED")) {
-            newTransfer.setStatus(Status.REJECTED);
-            transferService.updateTransfer(newTransfer);
+            response = "REJECTED";
         }
 
         return response;
@@ -260,7 +233,6 @@ public class WalletServiceImpl implements WalletService {
         WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
         CardDto cardDto = cardMapper.toDtoCard(card);
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
-//        WebClient.ResponseSpec responseSpec = populateResponseSpec(headersSpec);
         Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
         return response.block();
     }

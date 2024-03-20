@@ -43,16 +43,8 @@ public class Transaction {
     @Column(name = "currency")
     private String currency;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "direction")
-//    private Direction direction;
-
     @Column(name = "date")
     private Timestamp date;
-
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "transaction_status_id")
-//    private Status status;
 
     @ManyToOne
     @JoinColumn(name = "transaction_status_id")
@@ -61,16 +53,9 @@ public class Transaction {
     @Column(name = "description")
     private String description;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "transaction_type_id")
-//    private TransactionType transactionType;
-
     @ManyToOne
     @JoinColumn(name = "transaction_type_id")
     private TransactionsType transactionsType;
-
-//    @Column(name = "recurring_transaction_id", table = "recurring_transactions")
-//    private int recuringTransactionId;
 
     public Transaction() {
     }
@@ -91,12 +76,28 @@ public class Transaction {
         this.walletSender = walletSender;
     }
 
+    public User getUserSender() {
+        return userSender;
+    }
+
+    public void setUserSender(User userSender) {
+        this.userSender = userSender;
+    }
+
     public Wallet getWalletReceiver() {
         return walletReceiver;
     }
 
     public void setWalletReceiver(Wallet walletReceiver) {
         this.walletReceiver = walletReceiver;
+    }
+
+    public User getUserReceiver() {
+        return userReceiver;
+    }
+
+    public void setUserReceiver(User userReceiver) {
+        this.userReceiver = userReceiver;
     }
 
     public BigDecimal getAmount() {
@@ -114,14 +115,6 @@ public class Transaction {
     public void setCurrency(String currency) {
         this.currency = currency;
     }
-
-//    public Direction getDirection() {
-//        return direction;
-//    }
-//
-//    public void setDirection(Direction direction) {
-//        this.direction = direction;
-//    }
 
     public Timestamp getDate() {
         return date;
@@ -155,40 +148,11 @@ public class Transaction {
         this.transactionsType = transactionsType;
     }
 
-    //    public int getRecuringTransactionId() {
-//        return recuringTransactionId;
-//    }
-//
-//    public void setRecuringTransactionId(int recuringTransactionId) {
-//        this.recuringTransactionId = recuringTransactionId;
-//    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
         return transactionId == that.transactionId;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(transactionId);
-    }
-
-    public User getUserSender() {
-        return userSender;
-    }
-
-    public void setUserSender(User userSender) {
-        this.userSender = userSender;
-    }
-
-    public User getUserReceiver() {
-        return userReceiver;
-    }
-
-    public void setUserReceiver(User userReceiver) {
-        this.userReceiver = userReceiver;
     }
 }

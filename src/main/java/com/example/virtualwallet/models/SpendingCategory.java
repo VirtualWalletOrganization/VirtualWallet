@@ -17,10 +17,6 @@ public class SpendingCategory {
     @Column(name = "category_name")
     private String name;
 
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "spendingCategory", fetch = FetchType.EAGER)
-//    private Set<Transfer> transfers;
-
     public SpendingCategory() {
     }
 
@@ -39,12 +35,4 @@ public class SpendingCategory {
     public void setName(String name) {
         this.name = name;
     }
-
-//    public Set<Transfer> getTransfers() {
-//        return transfers;
-//    }
-//
-//    public void setTransfers(Set<Transfer> transfers) {
-//        this.transfers = transfers;
-//    }
 }

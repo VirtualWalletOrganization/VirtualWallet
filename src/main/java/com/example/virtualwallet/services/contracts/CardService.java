@@ -9,6 +9,7 @@ import java.util.List;
 public interface CardService {
 
     List<Card> getAllCards();
+
     List<Card> getAllCardsByCurrentUser( User user);
 
     Card getCardById(int cardId, User user);
@@ -20,5 +21,6 @@ public interface CardService {
     void updateCard(Card card, User user);
 
     void deleteCard(int cardId, User user);
+
     void deactivateExpiredCards();
 }

@@ -26,7 +26,6 @@ public class TransactionMapper {
         transaction.setUserReceiver(userReceiver);
         transaction.setAmount(transactionDto.getAmount());
         transaction.setCurrency("USD");
-        // transaction.setDirection(Direction.OUTGOING);
         transaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
 
         TransactionsStatus transactionsStatus = new TransactionsStatus();
@@ -35,7 +34,6 @@ public class TransactionMapper {
         transaction.setTransactionsStatus(transactionsStatus);
 
         transaction.setDescription(transactionDto.getDescription());
-//        transaction.setDescription("Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
         TransactionsType transactionsType = new TransactionsType();
         transactionsType.setId(TransactionType.SINGLE.ordinal() + 1);
@@ -57,20 +55,16 @@ public class TransactionMapper {
         recurringTransaction.setUserReceiver(userReceiver);
         recurringTransaction.setAmount(transaction.getAmount());
         recurringTransaction.setCurrency(transaction.getCurrency());
-        // transaction.setDirection(Direction.OUTGOING);
         recurringTransaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
 
         recurringTransaction.setTransactionsStatus(transaction.getTransactionsStatus());
-        recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal()+1);
+        recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal() + 1);
         recurringTransaction.getTransactionsStatus().setTransactionStatus(Status.PENDING_RECURRING_REQUEST);
         recurringTransaction.setTransactionsType(transaction.getTransactionsType());
-        recurringTransaction.getTransactionsType().setId(TransactionType.RECURRING.ordinal()+1);
+        recurringTransaction.getTransactionsType().setId(TransactionType.RECURRING.ordinal() + 1);
         recurringTransaction.getTransactionsType().setTransactionType(TransactionType.RECURRING);
 
         recurringTransaction.setDescription(recurringTransactionDto.getDescription());
-//        recurringTransaction.setDescription("Recurring Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
-
-
         recurringTransaction.setFrequency(Frequency.valueOf(recurringTransactionDto.getFrequency()));
         recurringTransaction.setStartDate(recurringTransactionDto.getStartDate());
         recurringTransaction.setEndDate(recurringTransactionDto.getEndDate());
@@ -80,7 +74,6 @@ public class TransactionMapper {
 
     public RecurringTransaction fromDtoTransactionUpdate(RecurringTransactionDto recurringTransactionDto,
                                                          RecurringTransaction recurringTransaction) {
-
         recurringTransaction.setFrequency(Frequency.valueOf(recurringTransactionDto.getFrequency()));
         recurringTransaction.setStartDate(recurringTransactionDto.getStartDate());
         recurringTransaction.setEndDate(recurringTransactionDto.getEndDate());
@@ -97,6 +90,7 @@ public class TransactionMapper {
         transaction.setCurrency(recurringTransaction.getCurrency());
         transaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
         transaction.setTransactionsStatus(recurringTransaction.getTransactionsStatus());
+
         recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal());
         recurringTransaction.getTransactionsStatus().setTransactionStatus(Status.PENDING_RECURRING_REQUEST);
 

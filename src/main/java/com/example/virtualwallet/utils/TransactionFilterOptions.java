@@ -38,12 +38,6 @@ public class TransactionFilterOptions {
         this.sortOrder = Optional.ofNullable(sortOrder);
     }
 
-    public TransactionFilterOptions(Timestamp startDate, Timestamp endDate, String counterparty) {
-        this.startDate = Optional.ofNullable(startDate);
-        this.endDate = Optional.ofNullable(endDate);
-        this.counterparty = Optional.ofNullable(counterparty);
-    }
-
     public Optional<String> getSender() {
         return sender;
     }

@@ -53,13 +53,13 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Transaction> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions) {
         return transactionRepository.getAllTransactionsByUserId(userId, transactionHistoryFilterOptions)
                 .orElseThrow(() -> new EntityNotFoundException("Transactions"));
-
     }
 
     @Override
     public Optional<List<Transaction>> getAllTransactionsByStatus(User user) {
         return transactionRepository.getAllTransactionsByStatus(user);
     }
+
     @Override
     public Optional<List<Transaction>> getAllTransactionsByTransactionType(User user) {
         return transactionRepository.getAllTransactionsByTransactionType(user);
@@ -74,7 +74,6 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction createTransaction(Transaction transaction, Wallet walletSender, User userSender,
                                          Wallet walletReceiver, User userReceiver) {
-
         checkBlockOrDeleteUser(userSender, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         checkPermissionExistingUsersInWallet(walletSender, userSender, ERROR_TRANSACTION);
         //TODO implement check for overdraft
@@ -145,19 +144,20 @@ public class TransactionServiceImpl implements TransactionService {
                     wallet.getReceiverTransactions().add(transaction);
                     walletService.update(wallet, userReceiver);
                 });
+
         return transactionRepository.
                 create(transaction);
     }
 
     private void isValidRequestTransferMoney(Transaction transaction) {
         if (!isValidRequestEnoughMoney(transaction, transaction.getWalletSender())) {
-            if(transaction.getTransactionsStatus().getTransactionStatus()==Status.PENDING||
-            transaction.getTransactionsStatus().getTransactionStatus()==Status.DECLINED){
+            if (transaction.getTransactionsStatus().getTransactionStatus() == Status.PENDING ||
+                    transaction.getTransactionsStatus().getTransactionStatus() == Status.DECLINED) {
                 transaction.getTransactionsStatus().setId(Status.DECLINED.ordinal() + 1);
                 transaction.getTransactionsStatus().setTransactionStatus(Status.DECLINED);
                 transactionRepository.update(transaction);
                 throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
-            }else {
+            } else {
                 transaction.getTransactionsStatus().setId(Status.FAILED.ordinal() + 1);
                 transaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
                 transactionRepository.update(transaction);
@@ -175,16 +175,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public List<Transaction> getAllTransactionsByWalletId(Wallet wallet) {
-//        Set<Transaction> sentTransactions = wallet.getSentTransactions();
-//        Set<Transaction> receivedTransactions = wallet.getSentTransactions();
-//        Set<Transaction> allTransactions = new HashSet<>();
-//        allTransactions.addAll(sentTransactions);
-//        allTransactions.addAll(receivedTransactions);
-//
-//        List<Transaction> sortedTransactions = allTransactions.stream()
-//                .sorted(Comparator.comparing(Transaction::getDate))
-//                .toList();
-//        return allTransactions;
         return transactionRepository.getAllTransactionsByWalletId(wallet.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Transactions", "wallet id", String.valueOf(wallet.getId())));
     }

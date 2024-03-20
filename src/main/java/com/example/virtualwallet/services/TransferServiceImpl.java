@@ -45,7 +45,6 @@ public class TransferServiceImpl implements TransferService {
     public List<Transfer> getAllTransfersByUserId(int userId) {
         return transferRepository.getAllTransfersByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Transfers"));
-
     }
 
     @Override
@@ -83,14 +82,10 @@ public class TransferServiceImpl implements TransferService {
         }
 
         Transfer transfer = new Transfer();
-//        transfer.setSender(sender);
-//        transfer.setRecipient(recipient);
         transfer.setAmount(amount);
         transfer.setCurrency(wallet.getCurrency());
-//        transfer.setDirection(Direction.OUTGOING);
         transfer.setDate(Timestamp.valueOf(LocalDateTime.now()));
         transfer.setStatus(Status.PENDING);
-        // transfer.setDescription("Transfer from " + sender.getUsername() + " to " + recipient.getUsername());
         transferRepository.create(transfer);
 
         wallet.setBalance(wallet.getBalance().subtract((amount)));
@@ -104,7 +99,6 @@ public class TransferServiceImpl implements TransferService {
         transferRepository.update(transfer);
 
         User sender = userService.getById(senderUserId);
-//        User recipient = transfer.getRecipient();
         User recipient = userService.getById(recipientId);
         Wallet wallet = recipient.getWallets().stream()
                 .filter(w -> w.getId() == recipientWalletId)

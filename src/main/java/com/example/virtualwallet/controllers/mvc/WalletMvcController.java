@@ -167,8 +167,6 @@ public class WalletMvcController {
         try {
             Wallet walletToUpdate = walletService.getWalletById(walletId, user.getId());
             WalletDto walletDto = walletMapper.toDto(walletToUpdate);
-
-
             model.addAttribute("walletId", walletId);
             model.addAttribute("wallet", walletDto);
             model.addAttribute("currentUser", user);
@@ -351,6 +349,7 @@ public class WalletMvcController {
         } catch (AuthorizationException e) {
             return "redirect:/auth/login";
         }
+
         if (bindingResult.hasErrors()) {
             return "wallet-remove-user";
         }
@@ -377,7 +376,6 @@ public class WalletMvcController {
             User user = authenticationHelper.tryGetCurrentUser(session);
             List<Card> cards = cardService.getAllCardsByCurrentUser(user);
             List<Wallet> wallets = walletService.getAllWalletsByUserId(user);
-
             model.addAttribute("user", user);
             model.addAttribute("cards", cards);
             model.addAttribute("wallets", wallets);

@@ -7,6 +7,7 @@ import com.example.virtualwallet.models.enums.UserStatus;
 import java.util.Optional;
 
 public class UserFilterOptions {
+
     private Optional<String> username;
     private Optional<String> firstName;
     private Optional<String> lastName;
@@ -19,22 +20,6 @@ public class UserFilterOptions {
 
     public UserFilterOptions() {
         this(null, null, null, null, null, null, null, null, null);
-    }
-
-    public UserFilterOptions(
-            String username,
-            String email,
-            String phoneNumber) {
-        this.username = Optional.ofNullable(username);
-        this.email = Optional.ofNullable(email);
-        this.phoneNumber = Optional.ofNullable(phoneNumber);
-        this.firstName = Optional.empty();
-        this.lastName = Optional.empty();
-        this.role = Optional.empty();
-        this.status = Optional.empty();
-        this.sortBy = Optional.empty();
-        this.sortOrder = Optional.empty();
-
     }
 
     public UserFilterOptions(
@@ -57,8 +42,6 @@ public class UserFilterOptions {
         this.sortBy = Optional.ofNullable(sortBy);
         this.sortOrder = Optional.ofNullable(sortOrder);
     }
-
-
 
     public Optional<String> getUsername() {
         return username;

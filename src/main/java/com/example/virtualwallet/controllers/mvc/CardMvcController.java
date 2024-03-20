@@ -53,27 +53,6 @@ public class CardMvcController {
         return request.getRequestURI();
     }
 
-//    @GetMapping
-//    public String showAllCards(Model model, HttpSession session) {
-//        try {
-//            User user = authenticationHelper.tryGetCurrentUser(session);
-//
-//            if (user != null) {
-//                model.addAttribute("currentUser", user);
-//            }
-//
-//            List<Card> cards = cardService.getAllCards();
-//            model.addAttribute("cards", cards);
-//            return "cards";
-//        } catch (AuthorizationException e) {
-//            return "cards";
-//        } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-//            model.addAttribute("error", e.getMessage());
-//            return "error";
-//        }
-//    }
-
     @GetMapping
     public String showAllCardsByCurrentUser(Model model, HttpSession session) {
         User user;
@@ -251,7 +230,6 @@ public class CardMvcController {
     @GetMapping("/{cardId}/delete")
     public String deleteCard(@PathVariable int cardId,
                              Model model, HttpSession session) {
-
         User user;
         try {
             user = authenticationHelper.tryGetCurrentUser(session);

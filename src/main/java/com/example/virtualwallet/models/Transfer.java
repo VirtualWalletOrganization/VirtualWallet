@@ -39,10 +39,6 @@ public class Transfer {
     @Column(name = "currency")
     private String currency;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "direction")
-//    private Direction direction;
-
     @Column(name = "date")
     private Timestamp date;
 
@@ -52,11 +48,6 @@ public class Transfer {
 
     @Column(name = "description")
     private String description;
-
-//    @JsonIgnore
-//    @ManyToOne
-//    @JoinColumn(name = "category_id")
-//    private SpendingCategory spendingCategory;
 
     public Transfer() {
     }
@@ -93,14 +84,6 @@ public class Transfer {
         this.currency = currency;
     }
 
-//    public Direction getDirection() {
-//        return direction;
-//    }
-//
-//    public void setDirection(Direction direction) {
-//        this.direction = direction;
-//    }
-
     public Timestamp getDate() {
         return date;
     }
@@ -124,14 +107,6 @@ public class Transfer {
     public void setDescription(String description) {
         this.description = description;
     }
-
-//    public SpendingCategory getSpendingCategory() {
-//        return spendingCategory;
-//    }
-//
-//    public void setSpendingCategory(SpendingCategory spendingCategory) {
-//        this.spendingCategory = spendingCategory;
-//    }
 
     public Wallet getReceiverWallet() {
         return receiverWallet;

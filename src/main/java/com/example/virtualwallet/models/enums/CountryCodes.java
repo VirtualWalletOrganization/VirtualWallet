@@ -1,6 +1,7 @@
 package com.example.virtualwallet.models.enums;
 
 public enum CountryCodes {
+
     BG,
     DE,
     FR,

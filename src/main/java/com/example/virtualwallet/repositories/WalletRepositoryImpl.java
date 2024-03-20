@@ -1,6 +1,6 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.models.*;
+import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -29,33 +29,13 @@ public class WalletRepositoryImpl implements WalletRepository {
         }
     }
 
-//    @Override
-//    public Optional<List<User>> getAllUsersByWalletId(int walletId) {
-//        try (Session session = sessionFactory.openSession()) {
-//            Query<User> query = session.createQuery(
-//                    "SELECT u FROM User u JOIN u.wallets w WHERE w.id = :walletId", User.class);
-//            query.setParameter("walletId", walletId);
-//            return Optional.ofNullable(query.list());
-//        }
-//    }
-
-//    @Override
-//    public Optional<User> existsUserWithWallet(int userId, int walletId) {
-//        try (Session session = sessionFactory.openSession()) {
-//            Query<User> query = session.createQuery(
-//                    "SELECT u FROM User u JOIN u.wallets w WHERE u.id = :userId AND w.id = :walletId", User.class);
-//            query.setParameter("userId", userId);
-//            query.setParameter("walletId", walletId);
-//            return Optional.ofNullable(query.uniqueResult());
-//        }
-//    }
-
     @Override
     public Optional<Wallet> getWalletById(int walletId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Wallet> query = session.createQuery(
                     "FROM Wallet as w where w.id = :walletId", Wallet.class);
             query.setParameter("walletId", walletId);
+
             List<Wallet> wallets = query.list();
 
             return Optional.ofNullable(wallets.get(0));
@@ -68,6 +48,7 @@ public class WalletRepositoryImpl implements WalletRepository {
             Query<Wallet> query = session.createQuery(
                     "SELECT w from Wallet w JOIN w.cards c where c.id = :cardId", Wallet.class);
             query.setParameter("cardId", cardId);
+
             List<Wallet> wallets = query.list();
 
             return Optional.ofNullable(wallets);
@@ -80,10 +61,8 @@ public class WalletRepositoryImpl implements WalletRepository {
             Query<Wallet> query = session.createQuery(
                     "SELECT w from Wallet w JOIN w.users u where u.id = :userId " +
                             "AND w.isDefault=true", Wallet.class);
-//
-//            "FROM Wallet as w where w.creator.id = :recipientUserId" +
-//                            " AND w.isDefault=true", Wallet.class);
             query.setParameter("userId", userId);
+
             List<Wallet> wallets = query.list();
 
             if (wallets.isEmpty()) {
@@ -100,15 +79,18 @@ public class WalletRepositoryImpl implements WalletRepository {
             Query<Wallet> query = session.createQuery(
                     "SELECT w FROM Wallet w WHERE w.creator.id = :creatorId", Wallet.class);
             query.setParameter("creatorId", creatorId);
+
             return Optional.ofNullable(query.list());
         }
     }
+
     @Override
     public Optional<List<Wallet>> getAllWalletsByUserId(int userId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Wallet> query = session.createQuery(
                     "SELECT w from Wallet w JOIN w.users u where u.id = :userId", Wallet.class);
             query.setParameter("userId", userId);
+
             return Optional.ofNullable(query.list());
         }
     }
@@ -119,6 +101,7 @@ public class WalletRepositoryImpl implements WalletRepository {
             Query<Wallet> query = session.createQuery(
                     "SELECT w FROM Wallet w WHERE w.creator.id = :creatorId", Wallet.class);
             query.setParameter("creatorId", creatorId);
+
             return query.list().get(0);
         }
     }

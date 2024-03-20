@@ -47,6 +47,7 @@ public class TransferRepositoryImpl implements TransferRepository {
             Query<Transfer> query = session.createQuery("select t From Transfer t WHERE t.receiver.id= :userId" +
                     " order by t.date", Transfer.class);
             query.setParameter("userId", userId);
+
             return Optional.ofNullable(query.list());
         }
     }
@@ -57,6 +58,7 @@ public class TransferRepositoryImpl implements TransferRepository {
             Query<Transfer> query = session.createQuery(
                     "FROM Transfer as t where t.status = :status ", Transfer.class);
             query.setParameter("status", status);
+
             return Optional.ofNullable(query.list());
         }
     }

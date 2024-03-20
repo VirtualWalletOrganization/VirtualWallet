@@ -13,13 +13,11 @@ public class CardMapper {
         Card card = fromDto(dto, user);
         card.setId(id);
 
-
         return card;
     }
 
     public Card fromDto(CardDto dto, User user) {
         Card card = new Card();
-
 
         CardsType cardsType = new CardsType();
         cardsType.setId(dto.getCardType().ordinal() + 1);
@@ -55,6 +53,7 @@ public class CardMapper {
         cardDto.setCardHolder(card.getCardHolder());
         cardDto.setCheckNumber(card.getCheckNumber());
         cardDto.setCardType(card.getCardsType().getCardType());
+
         return cardDto;
     }
 }

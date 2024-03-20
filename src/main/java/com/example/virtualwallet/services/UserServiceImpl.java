@@ -93,7 +93,6 @@ public class UserServiceImpl implements UserService {
             userRepository.updateUser(existingUser);
         } else {
             checkDuplicateEntity(user);
-
             userRepository.registerUser(user);
         }
     }
@@ -111,9 +110,7 @@ public class UserServiceImpl implements UserService {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);
-
             List<User> result = query.list();
-
             return result.isEmpty() ? null : result.get(0);
         }
     }
@@ -213,9 +210,6 @@ public class UserServiceImpl implements UserService {
         }
 
         checkAccessPermissionsAdmin(executingUser, UPDATE_TO_ADMIN_ERROR_MESSAGE);
-//        UsersRole usersRole = new UsersRole();
-//        usersRole.setRole(Role.ADMIN);
-//        targetUser.setUsersRole(usersRole);
         userRepository.updateUserToAdmin(targetUser, executingUser);
     }
 
@@ -329,6 +323,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.getByEmail(user.getEmail()).isPresent()) {
             throw new DuplicateEntityException("User", "email", user.getEmail());
         }
+
         if (userRepository.getByPhoneNumber(user.getPhoneNumber()).isPresent()) {
             throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
         }

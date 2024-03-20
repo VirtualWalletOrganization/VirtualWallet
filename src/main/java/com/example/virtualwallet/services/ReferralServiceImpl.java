@@ -65,9 +65,6 @@ public class ReferralServiceImpl implements ReferralService {
         Optional<String> email = referralRepository.getReferralEmail(friendEmail);
 
         if (email.isEmpty()) {
-            //send referral email and set scheduled for 7 days.
-            // If email expired we need to change status to expired
-
             Referral referral = new Referral();
             referral.setUser(user);
             referral.setReferredEmail(friendEmail);

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "identity_statuses")
 public class IdentityStatus {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "identity_status_id")
@@ -17,7 +18,6 @@ public class IdentityStatus {
 
     public IdentityStatus() {
     }
-
 
     public int getId() {
         return id;

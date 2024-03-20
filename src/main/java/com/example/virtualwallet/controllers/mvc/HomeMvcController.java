@@ -57,19 +57,4 @@ public class HomeMvcController {
             return "index";
         }
     }
-
-//    @GetMapping("/about")
-//    public String showAboutPage(Model model, HttpSession session) {
-//        try {
-//            User user = authenticationHelper.tryGetCurrentUser(session);
-//
-//            if (user != null) {
-//                model.addAttribute("currentUser", user);
-//            }
-//
-//            return "AboutView";
-//        } catch (AuthorizationException e) {
-//            return "AboutView";
-//        }
-//    }
 }

@@ -2,7 +2,6 @@ package com.example.virtualwallet.repositories;
 
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransactionRepository;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
@@ -27,8 +26,6 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Override
     public Optional<List<Transaction>> getAllTransactions(TransactionFilterOptions transactionFilterOptions) {
         try (Session session = sessionFactory.openSession()) {
-            // Query<Transaction> query = session.createQuery("FROM Transaction", Transaction.class);
-            // return Optional.ofNullable(query.list());
             List<String> filters = new ArrayList<>();
             Map<String, Object> params = new HashMap<>();
 
@@ -66,10 +63,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             }
 
             queryString.append(generateOrderBy(transactionFilterOptions));
-
             Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
             query.setProperties(params);
-
 
             return Optional.ofNullable(query.list());
         }
@@ -93,35 +88,31 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         try (Session session = sessionFactory.openSession()) {
             String baseQuery = "FROM Transaction as t WHERE t.userSender.id = :userId OR t.userReceiver.id = :userId";
 
-            // Apply additional filters if provided
             List<String> filters = new ArrayList<>();
             Map<String, Object> params = new HashMap<>();
             StringBuilder queryString = new StringBuilder(baseQuery);
             params.put("userId", userId);
 
-            // Add filter conditions based on provided options
             transactionHistoryFilterOptions.getStartDate().ifPresent(value -> {
                 filters.add("t.date >= :startDate");
                 params.put("startDate", value);
             });
+
             transactionHistoryFilterOptions.getEndDate().ifPresent(value -> {
                 filters.add("t.date <= :endDate");
                 params.put("endDate", value);
             });
+
             transactionHistoryFilterOptions.getCounterparty().ifPresent(value -> {
                 filters.add("(t.userSender.username = :counterparty OR t.userReceiver.username = :counterparty)");
                 params.put("counterparty", value);
             });
 
-            // Append filter conditions to the query
             if (!filters.isEmpty()) {
                 queryString.append(" AND ").append(String.join(" AND ", filters));
             }
 
-            // Apply ordering if needed
             queryString.append(generateOrderByUserId(transactionHistoryFilterOptions));
-
-            // Create and execute the final query
             Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
             query.setProperties(params);
 
@@ -159,6 +150,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             query.setParameter("userId", user.getId());
 
             List<Transaction> transactions = query.list();
+
             if (!transactions.isEmpty()) {
                 return Optional.ofNullable(transactions);
             } else {
@@ -166,6 +158,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             }
         }
     }
+
     @Override
     public Optional<List<Transaction>> getAllTransactionsByTransactionType(User user) {
         try (Session session = sessionFactory.openSession()) {
@@ -177,6 +170,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             query.setParameter("userId", user.getId());
 
             List<Transaction> transactions = query.list();
+
             if (!transactions.isEmpty()) {
                 return Optional.ofNullable(transactions);
             } else {
