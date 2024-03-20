@@ -3,10 +3,10 @@ package com.example.virtualwallet.services;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
-import com.example.virtualwallet.models.Transfer;
-import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.WalletsRole;
+import com.example.virtualwallet.helpers.CardMapper;
+import com.example.virtualwallet.models.*;
+import com.example.virtualwallet.models.dtos.CardDto;
+import com.example.virtualwallet.models.dtos.MockBankDto;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
@@ -15,8 +15,12 @@ import com.example.virtualwallet.services.contracts.TransferService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,12 +33,17 @@ public class WalletServiceImpl implements WalletService {
     private final WalletRepository walletRepository;
     private final UserService userService;
     private final TransferService transferService;
+    private final CardMapper cardMapper;
+    private final WebClient dummyApiWebClient;
+
 
     @Autowired
-    public WalletServiceImpl(WalletRepository walletRepository, UserService userService, TransferService transferService) {
+    public WalletServiceImpl(WalletRepository walletRepository, UserService userService, TransferService transferService, CardMapper cardMapper, WebClient dummyApiWebClient) {
         this.walletRepository = walletRepository;
         this.userService = userService;
         this.transferService = transferService;
+        this.cardMapper = cardMapper;
+        this.dummyApiWebClient = dummyApiWebClient;
     }
 
     @Override
@@ -232,5 +241,40 @@ public class WalletServiceImpl implements WalletService {
         userService.updateUser(user, user);
         transfer.setStatus(Status.COMPLETED);
         transferService.createTransfer(transfer);
+    }
+
+    @Override
+    public String moneyFromCardToWallet(Transfer transfer, Wallet receiverWallet, User user, Card card) {
+        Transfer newTransfer = transferService.createTransfer(transfer);
+
+        String response = sendTransferRequest(card);
+
+        if (response.equals("COMPLETED")) {
+            receiverWallet.setBalance(receiverWallet.getBalance().add(newTransfer.getAmount()));
+            walletRepository.update(receiverWallet);
+            user.getWallets().stream()
+                    .filter(wallet -> wallet.getId() == receiverWallet.getId())
+                    .forEach(wallet -> {
+                        wallet.setBalance(receiverWallet.getBalance());
+                    });
+            userService.updateUser(user, user);
+            newTransfer.setStatus(Status.COMPLETED);
+            transferService.updateTransfer(newTransfer);
+        } else if (response.equals("REJECTED")) {
+            newTransfer.setStatus(Status.REJECT);
+            transferService.updateTransfer(newTransfer);
+        }
+
+        return response;
+    }
+
+    private String sendTransferRequest(Card card) {
+        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = dummyApiWebClient.method(HttpMethod.POST);
+        WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
+        CardDto cardDto = cardMapper.toDtoCard(card);
+        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
+//        WebClient.ResponseSpec responseSpec = populateResponseSpec(headersSpec);
+        Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
+        return response.block();
     }
 }

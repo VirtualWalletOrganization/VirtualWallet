@@ -41,7 +41,7 @@ public class Messages {
     public static final String REMOVE_YOURSELF_FROM_WALLET = "You can not remove yourself from wallet";
     public static final String WRONG_WALLET_ACCESS = "Wrong wallet access!";
     public static final String REQUEST_HTTP_STATUS_ERROR = "Wrong request!";
-    public static final String GENERAL_HTTP_STATUS_ERROR = "Wrong request!";
+    public static final String GENERAL_HTTP_STATUS_ERROR = "General request!";
     public static final String UNKNOWN_HTTP_STATUS_ERROR = "Something went wrong!";
-
+    public static final String DUMMY_API_COMPLETE_URL = "http://localhost:8081/api/mock-bank/withdraw";
 }

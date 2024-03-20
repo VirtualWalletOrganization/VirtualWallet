@@ -6,17 +6,15 @@ import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.DuplicateEntityException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
+import com.example.virtualwallet.helpers.CardMapper;
 import com.example.virtualwallet.helpers.TransferMapper;
 import com.example.virtualwallet.helpers.WalletMapper;
 import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.Transfer;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.dtos.CardDto;
-import com.example.virtualwallet.models.dtos.MockBankDto;
 import com.example.virtualwallet.models.dtos.TransferRequestDto;
 import com.example.virtualwallet.models.dtos.WalletDto;
-import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.services.contracts.CardService;
 import com.example.virtualwallet.services.contracts.PaymentManager;
 import com.example.virtualwallet.services.contracts.UserService;
@@ -26,19 +24,12 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
-
-import static com.example.virtualwallet.helpers.ExternalQuery.createExternalTransferRequestQuery;
-import static com.example.virtualwallet.utils.Messages.*;
 
 @Controller
 @RequestMapping("/wallets")
@@ -53,11 +44,12 @@ public class WalletMvcController {
     private final ExternalApiUrlConfig externalApiUrlConfig;
     private final PaymentManager paymentManager;
     private int requestsLeft = 2;
+    private final CardMapper cardMapper;
 
     @Autowired
     public WalletMvcController(WalletService walletService, UserService userService,
                                AuthenticationHelper authenticationHelper, WalletMapper walletMapper,
-                               CardService cardService, TransferMapper transferMapper, ExternalApiUrlConfig externalApiUrlConfig, PaymentManager paymentManager) {
+                               CardService cardService, TransferMapper transferMapper, ExternalApiUrlConfig externalApiUrlConfig, PaymentManager paymentManager, CardMapper cardMapper) {
         this.walletService = walletService;
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
@@ -66,6 +58,7 @@ public class WalletMvcController {
         this.transferMapper = transferMapper;
         this.externalApiUrlConfig = externalApiUrlConfig;
         this.paymentManager = paymentManager;
+        this.cardMapper = cardMapper;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -388,94 +381,148 @@ public class WalletMvcController {
         }
     }
 
-    @PostMapping("/{walletId}/add-money")
-    public String addMoneyFromCardTransfer(@PathVariable int walletId, Model model, HttpSession session,
-                                           @Valid @ModelAttribute("cardDto") CardDto cardDto,
-                                           BindingResult cardBindingResult,
-                                           @Valid @ModelAttribute("transferValue") TransferRequestDto transferRequestDto,
-                                           BindingResult valueBindingResult) {
-        User user;
+    @GetMapping("/add-money")
+    public String getAddMoneyFromCardTransfer(Model model, HttpSession session) {
         try {
-            user = authenticationHelper.tryGetCurrentUser(session);
+            User user = authenticationHelper.tryGetCurrentUser(session);
+            List<Card> cards = cardService.getAllCardsByCurrentUser(user);
+            List<Wallet> wallets = walletService.getAllWalletsByUserId(user);
+//            Card card = cardService.getCardByCardNumber(recipientContactInfo);
+
+//            model.addAttribute("recipientUser", recipientUser);
+            model.addAttribute("user", user);
+            model.addAttribute("cards", cards);
+            model.addAttribute("wallets", wallets);
+            model.addAttribute("transferValue", new TransferRequestDto());
+            return "transaction-create-funding";
         } catch (AuthorizationException e) {
             return "redirect:/auth/login";
         }
+    }
 
-        if (!walletService.getAllWalletsByUserId(user).contains(walletService.getWalletById(walletId, user.getId()))) {
-            model.addAttribute("error", WRONG_WALLET_ACCESS);
-            return "error";
-        }
-
-        if (valueBindingResult.hasErrors()) return "error";
-
-        Card selectedCard = cardService.getCardByCardNumber(cardDto.getCardNumber());
-        int cardCurrentCvv = Integer.parseInt(selectedCard.getCheckNumber());
-
-        if (cardCurrentCvv != Integer.parseInt(cardDto.getCheckNumber())) {
-            model.addAttribute("userWallet", walletService.getWalletById(walletId, user.getId()));
-            cardBindingResult.rejectValue("cvv", "cvv.mismatch", "Wrong CVV");
-            return "error";
-        } else if (!selectedCard.getCardHolder().equals(user)) {
-            cardBindingResult.rejectValue("user", "user.mismatch", "Wrong user");
-            return "error";
-        } else if (selectedCard.getExpirationDate().isBefore(LocalDate.now())) {
-            cardBindingResult.rejectValue("date", "date.expiration", "Expired card");
-            return "error";
-        }
-
-        MockBankDto mockBankDto = transferMapper.toDto(cardDto, transferRequestDto);
-        String url = externalApiUrlConfig.getMockBankUrl();
-
-        ResponseEntity<String> response = null;
-
-        try {
-            response = createExternalTransferRequestQuery(mockBankDto, url);
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().value() == 408) {
-                if (requestsLeft > 0) {
-                    --requestsLeft;
-                    addMoneyFromCardTransfer(walletId, model, session, cardDto, cardBindingResult,
-                            transferRequestDto, valueBindingResult);
-                } else {
-                    requestsLeft = 2;
-                    model.addAttribute("error", REQUEST_HTTP_STATUS_ERROR);
-                }
-            } else {
-                model.addAttribute("error", GENERAL_HTTP_STATUS_ERROR);
-                requestsLeft = 2;
-                return "error";
-            }
-
-            requestsLeft = 2;
-
+    @PostMapping("/add-money")
+    public String addMoneyFromCardTransfer(Model model, HttpSession session,
+                                           @Valid @ModelAttribute("transferValue") TransferRequestDto transferRequestDto,
+                                           BindingResult result) {
+        if (result.hasErrors()) {
+            return ("transaction-create-funding");
+        } else {
             try {
-                Transfer transfer;
+                User user = authenticationHelper.tryGetCurrentUser(session);
+                Wallet wallet = walletService.getWalletById(transferRequestDto.getReceiverWalletId(), user.getId());
+                Card card = cardService.getCardById(transferRequestDto.getCardId(), user);
+                Transfer transfer = transferMapper.fromDto(transferRequestDto, user, card);
+                String response = walletService.moneyFromCardToWallet(transfer, wallet, user, card);
 
-                switch (Objects.requireNonNull(response).getStatusCode().value()) {
-                    case 202:
-                        transfer = transferMapper.fromDtoMoney(transferRequestDto, Status.PENDING, walletId, selectedCard, user);
-                        paymentManager.setCardPaymentIn(walletId, transfer, user);
-                        return "redirect:/wallets";
-                    case 200:
-                        switch (Objects.requireNonNull(response.getBody()).toUpperCase()) {
-                            case "COMPLETED":
-                                transfer = transferMapper.fromDtoMoney(transferRequestDto, Status.COMPLETED, walletId, selectedCard, user);
-                                paymentManager.setCardPaymentIn(walletId, transfer, user);
-                                return "redirect:/wallets";
-                            case "REJECT":
-                                transfer = transferMapper.fromDtoMoney(transferRequestDto, Status.REJECT, walletId, selectedCard, user);
-                                paymentManager.setCardPaymentIn(walletId, transfer, user);
-                                return "error";
-                        }
-                    default:
-                        model.addAttribute("error", UNKNOWN_HTTP_STATUS_ERROR);
-                        return "error";
+                if (response.equals("COMPLETED")) {
+                    return "transaction-funding-completed";
+                } else {
+                    return "transaction-funding-rejected";
                 }
-            } catch (AuthorizationException ex) {
-                return "error";
+            } catch (AuthorizationException e) {
+                return "redirect:/auth/login";
             }
         }
 
-        return "error";
+//    @PostMapping("/add-money")
+//    public String addMoneyFromCardTransfer(Model model, HttpSession session,
+//                                           @Valid @ModelAttribute("cardDto") CardDto cardDto,
+//                                           BindingResult cardBindingResult,
+//                                           @Valid @ModelAttribute("transferValue") TransferRequestDto transferRequestDto,
+//                                           BindingResult valueBindingResult) {
+//        User user;
+//        try {
+//            user = authenticationHelper.tryGetCurrentUser(session);
+//        } catch (AuthorizationException e) {
+//            return "redirect:/auth/login";
+//        }
+//
+//        Wallet receiverWallet = walletService.getWalletById(transferRequestDto.getReceiverWalletId(), user.getId());
+//
+//        if (!walletService.getAllWalletsByUserId(user).contains(walletService.getWalletById(receiverWallet.getId(), user.getId()))) {
+//            model.addAttribute("error", WRONG_WALLET_ACCESS);
+//            return "error";
+//        }
+//
+//        if (valueBindingResult.hasErrors()) return "error";
+//
+//        String[] cardInfo = cardDto.getCardNumber().split(",");
+//
+//        String cardNumber = cardInfo[0];
+//        String checkNumber = cardInfo[1];
+//        cardDto.setCardNumber(cardNumber);
+//        cardDto.setCheckNumber(checkNumber);
+//
+//        Card selectedCard = cardService.getCardByCardNumber(cardNumber);
+//        int cardCurrentCvv = Integer.parseInt(checkNumber);
+//
+//        if (cardCurrentCvv != Integer.parseInt(checkNumber)) {
+//            model.addAttribute("userWallet", walletService.getWalletById(receiverWallet.getId(), user.getId()));
+//            cardBindingResult.rejectValue("cvv", "cvv.mismatch", "Wrong CVV");
+//            return "error";
+//        } else if (!selectedCard.getCardHolder().equals(user.getFirstName() + " " + user.getLastName())) {
+//            cardBindingResult.rejectValue("user", "user.mismatch", "Wrong user");
+//            return "error";
+//        } else if (selectedCard.getExpirationDate().isBefore(LocalDate.now())) {
+//            cardBindingResult.rejectValue("date", "date.expiration", "Expired card");
+//            return "error";
+//        }
+//
+//        MockBankDto mockBankDto = transferMapper.toDto(cardDto, transferRequestDto);
+//        String url = externalApiUrlConfig.getMockBankUrl();
+//
+//        ResponseEntity<String> response = null;
+//
+//        try {
+//            response = createExternalTransferRequestQuery(mockBankDto, url);
+//        } catch (HttpClientErrorException e) {
+//
+//            if (e.getStatusCode().value() == 408) {
+//                if (requestsLeft > 0) {
+//                    --requestsLeft;
+//                    addMoneyFromCardTransfer(model, session, cardDto, cardBindingResult,
+//                            transferRequestDto, valueBindingResult);
+//                } else {
+//                    requestsLeft = 2;
+//                    model.addAttribute("error", REQUEST_HTTP_STATUS_ERROR);
+//                }
+//            } else {
+//                model.addAttribute("error", GENERAL_HTTP_STATUS_ERROR);
+//                requestsLeft = 2;
+//                return "error";
+//            }
+//
+//            requestsLeft = 2;
+//
+//            try {
+//                Transfer transfer;
+//
+//                switch (Objects.requireNonNull(response).getStatusCode().value()) {
+//                    case 202:
+//                        transfer = transferMapper.fromDtoMoney(transferRequestDto, Status.PENDING, receiverWallet.getId(), selectedCard, user);
+//                        paymentManager.setCardPaymentIn(receiverWallet.getId(), transfer, user);
+//                        return "redirect:/wallets";
+//                    case 200:
+//                        switch (Objects.requireNonNull(response.getBody()).toUpperCase()) {
+//                            case "COMPLETED":
+//                                transfer = transferMapper.fromDtoMoney(transferRequestDto, Status.COMPLETED, receiverWallet.getId(), selectedCard, user);
+//                                paymentManager.setCardPaymentIn(receiverWallet.getId(), transfer, user);
+//                                return "transaction-funding-completed";
+//                            case "REJECT":
+//                                transfer = transferMapper.fromDtoMoney(transferRequestDto, Status.REJECT, receiverWallet.getId(), selectedCard, user);
+//                                paymentManager.setCardPaymentIn(receiverWallet.getId(), transfer, user);
+//                                return "error";
+//                        }
+//                    default:
+//                        model.addAttribute("error", UNKNOWN_HTTP_STATUS_ERROR);
+//                        return "error";
+//                }
+//            } catch (AuthorizationException ex) {
+//                return "error";
+//            }
+//        }
+//
+//        return "error";
+//    }
     }
 }

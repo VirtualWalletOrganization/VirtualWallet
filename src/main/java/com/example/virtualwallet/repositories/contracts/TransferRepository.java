@@ -12,6 +12,8 @@ public interface TransferRepository {
 
     Optional<Transfer> getTransferById(int transferId);
 
+    Optional<List<Transfer>> getAllTransfersByUserId(int userId);
+
     Optional<List<Transfer>> getAllTransfersByStatus(Status status);
 
     Transfer create(Transfer transfer);

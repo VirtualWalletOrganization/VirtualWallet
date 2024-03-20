@@ -5,6 +5,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class MockBankDto {
 
@@ -13,7 +14,7 @@ public class MockBankDto {
     private String cardNumber;
 
     @NotEmpty(message = "Date cannot be empty.")
-    private String expireDate;
+    private LocalDate expireDate;
 
     @NotEmpty(message = "CVV cannot be empty.")
     @Size(min = 3, max = 3, message = "CVV has to be 3 digits only.")
@@ -23,6 +24,8 @@ public class MockBankDto {
     private BigDecimal value;
 
     private int walletId;
+    private String cardHolder;
+    private String cardType;
 
     public MockBankDto() {
     }
@@ -35,11 +38,11 @@ public class MockBankDto {
         this.cardNumber = cardNumber;
     }
 
-    public String getExpireDate() {
+    public LocalDate getExpireDate() {
         return expireDate;
     }
 
-    public void setExpireDate(String expireDate) {
+    public void setExpireDate(LocalDate expireDate) {
         this.expireDate = expireDate;
     }
 
@@ -65,5 +68,21 @@ public class MockBankDto {
 
     public void setWalletId(int walletId) {
         this.walletId = walletId;
+    }
+
+    public String getCardHolder() {
+        return cardHolder;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
+    }
+
+    public String getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
     }
 }

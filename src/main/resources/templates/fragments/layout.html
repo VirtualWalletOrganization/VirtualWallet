@@ -93,8 +93,10 @@
                            th:text="#{header.menu.transactionHistory}"></a></li>
                     <li><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/send-money}"
                            th:text="#{header.menu.sendMoney}"></a></li>
-                    <li><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/request-money}"
-                           th:text="#{header.menu.requestMoney}"></a></li>
+                    <li class="submenu"><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/request-money}"
+                           th:text="#{header.menu.requestMoney}"></a>
+                    <ul><li><a th:href="@{/wallets/add-money}" th:text="#{header.menu.topUpWallet}"></a></ul>
+                    </li>
                     <li>
                         <a href="#" th:if="${isAuthenticated && transactionList != null && !transactionList.isEmpty()}"
                            th:href="@{/transactions/notifications}" style="position:relative">

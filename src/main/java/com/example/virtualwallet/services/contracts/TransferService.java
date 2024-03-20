@@ -12,6 +12,8 @@ public interface TransferService {
 
     Transfer getTransferById(int transferId);
 
+    List<Transfer> getAllTransfersByUserId(int userId);
+
     List<Transfer> getAllTransfersByStatus(Status status);
 
     Transfer createTransfer(Transfer transfer);

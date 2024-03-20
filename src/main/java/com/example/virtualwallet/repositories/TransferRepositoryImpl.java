@@ -42,6 +42,16 @@ public class TransferRepositoryImpl implements TransferRepository {
     }
 
     @Override
+    public Optional<List<Transfer>> getAllTransfersByUserId(int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Transfer> query = session.createQuery("select t From Transfer t WHERE t.receiver.id= :userId" +
+                    " order by t.date", Transfer.class);
+            query.setParameter("userId", userId);
+            return Optional.ofNullable(query.list());
+        }
+    }
+
+    @Override
     public Optional<List<Transfer>> getAllTransfersByStatus(Status status) {
         try (Session session = sessionFactory.openSession()) {
             Query<Transfer> query = session.createQuery(

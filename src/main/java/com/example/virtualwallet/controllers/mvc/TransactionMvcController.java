@@ -6,18 +6,12 @@ import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.exceptions.InsufficientBalanceException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.TransactionMapper;
-import com.example.virtualwallet.models.RecurringTransaction;
-import com.example.virtualwallet.models.Transaction;
-import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionFilterDto;
 import com.example.virtualwallet.models.dtos.TransactionHistoryDto;
-import com.example.virtualwallet.services.contracts.RecurringTransactionService;
-import com.example.virtualwallet.services.contracts.TransactionService;
-import com.example.virtualwallet.services.contracts.UserService;
-import com.example.virtualwallet.services.contracts.WalletService;
+import com.example.virtualwallet.services.contracts.*;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,8 +24,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/transactions")
@@ -43,18 +36,20 @@ public class TransactionMvcController {
     private final RecurringTransactionService recurringTransactionService;
     private final UserService userService;
     private final WalletService walletService;
+    private final TransferService transferService;
 
     @Autowired
     public TransactionMvcController(TransactionService transactionService,
                                     TransactionMapper transactionMapper,
                                     AuthenticationHelper authenticationHelper, RecurringTransactionService recurringTransactionService,
-                                    UserService userService, WalletService walletService) {
+                                    UserService userService, WalletService walletService, TransferService transferService) {
         this.transactionService = transactionService;
         this.transactionMapper = transactionMapper;
         this.authenticationHelper = authenticationHelper;
         this.recurringTransactionService = recurringTransactionService;
         this.userService = userService;
         this.walletService = walletService;
+        this.transferService = transferService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -162,9 +157,12 @@ public class TransactionMvcController {
                     transactionHistoryDto.getAmount(),
                     transactionHistoryDto.getSortBy(),
                     transactionHistoryDto.getSortOrder());
-            List<Transaction> transactions = transactionService.getAllTransactionsByUserId(user.getId(), filterOptions);
+            List<Transaction> transactionsList = transactionService.getAllTransactionsByUserId(user.getId(), filterOptions);
+            List<Transfer> transfersList = transferService.getAllTransfersByUserId(user.getId());
+            List<Object> combinedList = new ArrayList<>(transactionsList);
+            combinedList.addAll(transfersList);
             model.addAttribute("transactionHistoryDto", transactionHistoryDto);
-            model.addAttribute("transactions", transactions);
+            model.addAttribute("transactions", combinedList);
             model.addAttribute("currentUser", user);
             return "transaction-history";
         } catch (EntityNotFoundException e) {

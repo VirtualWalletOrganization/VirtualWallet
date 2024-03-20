@@ -10,30 +10,30 @@ import java.time.LocalDateTime;
 
 public class CardDto {
 
-    @NotNull(message = "Card type content can't be empty")
+//    @NotNull(message = "Card type content can't be empty")
     private CardType cardType;
 
-    @Pattern(regexp = "\\d{16}",
-            message = "Invalid card number")
-    @NotNull(message = "Card number content can't be empty")
+//    @Pattern(regexp = "\\d{16}",
+//            message = "Invalid card number")
+//    @NotNull(message = "Card number content can't be empty")
     private String cardNumber;
 
     // @Pattern(regexp = "(0[1-9]|1[0-2])/[0-9]{2}")
-    @Future(message = "Expiration date must be in the future")
-    @NotNull(message = "Expiration date content can't be empty")
+//    @Future(message = "Expiration date must be in the future")
+//    @NotNull(message = "Expiration date content can't be empty")
     private LocalDate expirationDate;
 
-    @Pattern(regexp = ".{2,30}",
-            message = "Invalid card holder name")
-    @NotNull(message = "Card holder content can't be empty")
+//    @Pattern(regexp = ".{2,30}",
+//            message = "Invalid card holder name")
+//    @NotNull(message = "Card holder content can't be empty")
     private String cardHolder;
 
-    @Pattern(regexp = "\\d{3}")
-    @NotNull(message = "Check number content can't be empty")
+//    @Pattern(regexp = "\\d{3}")
+//    @NotNull(message = "Check number content can't be empty")
     private String checkNumber;
 
-    @Pattern(regexp = ".{3,}",
-            message = "Invalid currency format")
+//    @Pattern(regexp = ".{3,}",
+//            message = "Invalid currency format")
     private String currency;
 
     public CardDto() {

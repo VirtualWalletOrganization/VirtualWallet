@@ -4,7 +4,6 @@ import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.CardsType;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.dtos.CardDto;
-import com.example.virtualwallet.models.enums.CardType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,7 +22,7 @@ public class CardMapper {
 
 
         CardsType cardsType = new CardsType();
-        cardsType.setId(dto.getCardType().ordinal()+1);
+        cardsType.setId(dto.getCardType().ordinal() + 1);
         cardsType.setCardType(dto.getCardType());
         card.setCardsType(cardsType);
 
@@ -46,6 +45,16 @@ public class CardMapper {
         cardDto.setExpirationDate(card.getExpirationDate());
         cardDto.setCurrency(card.getCurrency());
 
+        return cardDto;
+    }
+
+    public CardDto toDtoCard(Card card) {
+        CardDto cardDto = new CardDto();
+        cardDto.setCardNumber(card.getCardNumber());
+        cardDto.setExpirationDate(card.getExpirationDate());
+        cardDto.setCardHolder(card.getCardHolder());
+        cardDto.setCheckNumber(card.getCheckNumber());
+        cardDto.setCardType(card.getCardsType().getCardType());
         return cardDto;
     }
 }

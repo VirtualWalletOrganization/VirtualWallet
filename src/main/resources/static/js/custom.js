@@ -1,4 +1,3 @@
-
 $(document).ready(
     function () {
         var radioButtons = document.getElementsByClassName("radio-buttons");
@@ -70,7 +69,6 @@ $(document).ready(function () {
         $('#recipient-id').val(recipientId);
     })
 });
-
 
 
 $(document).ready(function () {
@@ -240,5 +238,43 @@ $(document).ready(function () {
         var chosenRecipientId = "recipient" + $('input[name="recipient"]:checked').val();
         var chosenRecipientUsername = $('label[for="' + chosenRecipientId + '"]').text();
         $('#recipient-confirm').val(chosenRecipientUsername);
+    });
+});
+
+$(document).ready(function () {
+    var body = $('body');
+
+    body.on('change', '#wallet', function () {
+        var receiverWalletId = $(this).val(); // Get the selected wallet ID
+        $('input[name="receiverWalletId"]').val(receiverWalletId); // Set the selected wallet ID as the value of senderWalletId input field
+    });
+
+    body.on('change', '#card', function () {
+        var cardId = $(this).val(); // Get the selected card ID
+        $('input[name="cardId"]').val(cardId); // Set the selected card ID as the value of the cardId input field
+    });
+
+    body.on('change', '#amount', function () {
+        $('#amount-confirm').val(this.value);
+    });
+
+    body.on('change', '#description', function () {
+        $('#description-confirm').val(this.value);
+    });
+
+    var select = document.getElementById("wallet");
+    var chosenWallet = select.options[select.selectedIndex].text;
+    $('#wallet-confirm').val(chosenWallet);
+    body.on('change', '#wallet', function () {
+        var newChosenWallet = select.options[select.selectedIndex].text;
+        $('#wallet-confirm').val(newChosenWallet);
+    });
+
+    var selectCard = document.getElementById("card");
+    var chosenCard = selectCard.options[selectCard.selectedIndex].text;
+    $('#card-confirm').val(chosenCard);
+    body.on('change', '#card', function () {
+        var newChosenCard = selectCard.options[selectCard.selectedIndex].text;
+        $('#card-confirm').val(newChosenCard);
     });
 });

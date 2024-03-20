@@ -5,7 +5,6 @@ import com.example.virtualwallet.exceptions.InsufficientBalanceException;
 import com.example.virtualwallet.models.Transfer;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.enums.Direction;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.repositories.contracts.TransferRepository;
 import com.example.virtualwallet.services.contracts.TransferService;
@@ -40,6 +39,13 @@ public class TransferServiceImpl implements TransferService {
     public Transfer getTransferById(int transferId) {
         return transferRepository.getTransferById(transferId)
                 .orElseThrow(() -> new EntityNotFoundException("Transfer", "id", String.valueOf(transferId)));
+    }
+
+    @Override
+    public List<Transfer> getAllTransfersByUserId(int userId) {
+        return transferRepository.getAllTransfersByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Transfers"));
+
     }
 
     @Override
@@ -81,7 +87,7 @@ public class TransferServiceImpl implements TransferService {
 //        transfer.setRecipient(recipient);
         transfer.setAmount(amount);
         transfer.setCurrency(wallet.getCurrency());
-        transfer.setDirection(Direction.OUTGOING);
+//        transfer.setDirection(Direction.OUTGOING);
         transfer.setDate(Timestamp.valueOf(LocalDateTime.now()));
         transfer.setStatus(Status.PENDING);
         // transfer.setDescription("Transfer from " + sender.getUsername() + " to " + recipient.getUsername());

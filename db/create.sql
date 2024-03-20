@@ -249,7 +249,7 @@ create table transfers
     date               datetime     not null,
     status             enum ('COMPLETED', 'FAILED', 'PENDING') not null,
     description        varchar(250) not null,
-    category_id        int          not null,
+--     category_id        int          not null,
     constraint transfers_cards_card_id_fk
         foreign key (card_id) references cards (card_id),
     constraint transfers_wallets_wallet_id_fk
@@ -257,7 +257,7 @@ create table transfers
     constraint transfers_users_users_id_fk
         foreign key (receiver_id) references users (user_id),
     constraint transfers_users_users_id_fk2
-        foreign key (sender_id) references users (user_id),
-    constraint transfers_spending_categories_category_id_fk
-        foreign key (category_id) references spending_categories (category_id)
+        foreign key (sender_id) references users (user_id)
+--     constraint transfers_spending_categories_category_id_fk
+--         foreign key (category_id) references spending_categories (category_id)
 );

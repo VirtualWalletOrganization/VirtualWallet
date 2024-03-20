@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 public class TransferRequestDto {
 
-    private String accountNumber;
+    private int cardId;
     private int receiverWalletId;
-    @Positive(message = "Amount must be positive.")
+//    @Positive(message = "Amount must be positive.")
     private BigDecimal amount;
     private String currency;
     private String description;
@@ -16,12 +16,12 @@ public class TransferRequestDto {
     public TransferRequestDto() {
     }
 
-    public String getAccountNumber() {
-        return accountNumber;
+    public int getCardId() {
+        return cardId;
     }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+    public void setCardId(int cardId) {
+        this.cardId = cardId;
     }
 
     public BigDecimal getAmount() {

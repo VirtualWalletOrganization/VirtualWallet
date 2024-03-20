@@ -16,7 +16,7 @@ public class ExternalQuery {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-//        headers.set("Authorization", "Bearer: JWT");
+//        headers.setBasicAuth("kris", "Pass1$");
         HttpEntity<MockBankDto> entity = new HttpEntity<>(mockBankDto, headers);
 
         ResponseEntity<String> response;
