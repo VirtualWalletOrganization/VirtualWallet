@@ -6,12 +6,19 @@ import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.exceptions.InsufficientBalanceException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.TransactionMapper;
-import com.example.virtualwallet.models.*;
+import com.example.virtualwallet.models.RecurringTransaction;
+import com.example.virtualwallet.models.Transaction;
+import com.example.virtualwallet.models.User;
+import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionFilterDto;
 import com.example.virtualwallet.models.dtos.TransactionHistoryDto;
-import com.example.virtualwallet.services.contracts.*;
+import com.example.virtualwallet.models.enums.TransactionType;
+import com.example.virtualwallet.services.contracts.RecurringTransactionService;
+import com.example.virtualwallet.services.contracts.TransactionService;
+import com.example.virtualwallet.services.contracts.UserService;
+import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +31,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/transactions")
@@ -36,20 +44,18 @@ public class TransactionMvcController {
     private final RecurringTransactionService recurringTransactionService;
     private final UserService userService;
     private final WalletService walletService;
-    private final TransferService transferService;
 
     @Autowired
     public TransactionMvcController(TransactionService transactionService,
                                     TransactionMapper transactionMapper,
                                     AuthenticationHelper authenticationHelper, RecurringTransactionService recurringTransactionService,
-                                    UserService userService, WalletService walletService, TransferService transferService) {
+                                    UserService userService, WalletService walletService) {
         this.transactionService = transactionService;
         this.transactionMapper = transactionMapper;
         this.authenticationHelper = authenticationHelper;
         this.recurringTransactionService = recurringTransactionService;
         this.userService = userService;
         this.walletService = walletService;
-        this.transferService = transferService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -157,12 +163,9 @@ public class TransactionMvcController {
                     transactionHistoryDto.getAmount(),
                     transactionHistoryDto.getSortBy(),
                     transactionHistoryDto.getSortOrder());
-            List<Transaction> transactionsList = transactionService.getAllTransactionsByUserId(user.getId(), filterOptions);
-            List<Transfer> transfersList = transferService.getAllTransfersByUserId(user.getId());
-            List<Object> combinedList = new ArrayList<>(transactionsList);
-            combinedList.addAll(transfersList);
+            List<Transaction> transactions = transactionService.getAllTransactionsByUserId(user.getId(), filterOptions);
             model.addAttribute("transactionHistoryDto", transactionHistoryDto);
-            model.addAttribute("transactions", combinedList);
+            model.addAttribute("transactions", transactions);
             model.addAttribute("currentUser", user);
             return "transaction-history";
         } catch (EntityNotFoundException e) {
@@ -239,6 +242,7 @@ public class TransactionMvcController {
                 model.addAttribute("walletList", walletList);
             }
             model.addAttribute("transaction", new TransactionDto());
+            model.addAttribute("recurringTransaction", new RecurringTransactionDto());
             model.addAttribute("currentUser", user);
             return "transaction-send-money";
         } catch (EntityNotFoundException e) {
@@ -251,6 +255,8 @@ public class TransactionMvcController {
     @PostMapping("/send-money")
     public String createTransaction(@Valid @ModelAttribute("transaction") TransactionDto transactionDto,
                                     BindingResult bindingResult,
+                                    @Valid @ModelAttribute("recurringTransaction") RecurringTransactionDto recurringTransactionDto,
+                                    BindingResult recurringBindingResult,
                                     Model model,
                                     HttpSession session) {
         User user;
@@ -260,7 +266,7 @@ public class TransactionMvcController {
             return "redirect:/auth/login";
         }
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors() || recurringBindingResult.hasErrors()) {
             model.addAttribute("currentUser", user);
             return "transaction-send-money";
         }
@@ -269,10 +275,19 @@ public class TransactionMvcController {
             Wallet walletSender = walletService.getWalletById(transactionDto.getSenderWalletId(), user.getId());
             User userReceiver = userService.getById(transactionDto.getReceiver());
             Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
-            Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, user,
-                    walletReceiver, userReceiver);
-            transactionService.createTransaction(transaction, walletSender, user, walletReceiver, userReceiver);
-            return "transaction-completed";
+            if(transactionDto.getTransactionType().equals(TransactionType.RECURRING.name())){
+                RecurringTransaction recurringTransaction = transactionMapper.fromDtoTransaction(recurringTransactionDto,
+                        walletSender,
+                        user, walletReceiver, userReceiver);
+                recurringTransactionService.createRecurringTransaction(recurringTransaction,
+                        walletSender, user, walletReceiver, userReceiver);
+                return "transaction-completed-recurring";
+            }else {
+                Transaction transaction = transactionMapper.fromDtoMoney(transactionDto, walletSender, user,
+                        walletReceiver, userReceiver);
+                transactionService.createTransaction(transaction, walletSender, user, walletReceiver, userReceiver);
+                return "transaction-completed";
+            }
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -353,10 +368,9 @@ public class TransactionMvcController {
             return "error";
         }
     }
-
-    @GetMapping("/wallets/{walletId}/recurring")
-    public String showNewRecurringTransactionPage(Model model, HttpSession session,
-                                                  @PathVariable int walletId) {
+    @GetMapping("/recurring-history")
+    public String showAllTransactionsByUserId(@ModelAttribute RecurringTransactionDto recurringTransactionDto,
+                                              Model model, HttpSession session) {
         User user;
         try {
             user = authenticationHelper.tryGetCurrentUser(session);
@@ -365,23 +379,20 @@ public class TransactionMvcController {
         }
 
         try {
-            Wallet wallet = walletService.getWalletById(walletId, user.getId());
-            model.addAttribute("transaction", new TransactionDto());
-            model.addAttribute("wallet", wallet);
+            Optional<List<Transaction>> requestedTransactions = transactionService.getAllTransactionsByTransactionType(user);
+            requestedTransactions.ifPresent(transactions -> model.addAttribute("transactions", transactions));
+            model.addAttribute("recurringTransactionDto", recurringTransactionDto);
             model.addAttribute("currentUser", user);
-            return "TransactionRequestView";
+            return "recurring-transaction-history";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
-    @PostMapping("/wallets/{walletId}/recurring")
-    public String requestTransaction(@PathVariable int walletId,
-                                     @RequestBody RecurringTransactionDto recurringTransactionDto,
-                                     Model model,
-                                     HttpSession session) {
+    @GetMapping("/recurring")
+    public String showAllRecurringTransactions(Model model, HttpSession session) {
         User user;
         try {
             user = authenticationHelper.tryGetCurrentUser(session);
@@ -390,31 +401,55 @@ public class TransactionMvcController {
         }
 
         try {
-            Wallet walletSender = walletService.getWalletById(walletId, user.getId());
-            User userReceiver = userService.getById(recurringTransactionDto.getReceiver());
-            Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
-            RecurringTransaction recurringTransaction = transactionMapper.fromDtoTransaction(recurringTransactionDto,
-                    walletSender,
-                    user, walletReceiver, userReceiver);
-            recurringTransactionService.createRecurringTransaction(recurringTransaction,
-                    walletSender, user, walletReceiver, userReceiver);
-            return "redirect:/transactions";
+            Optional<List<RecurringTransaction>> recurringTransactions = recurringTransactionService.getRecurringTransactionByUserId(user.getId());
+            recurringTransactions.ifPresent(transactions -> model.addAttribute("transactions", recurringTransactions.get()));
+            model.addAttribute("currentUser", user);
+            return "recurring-transaction";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (InsufficientBalanceException e) {
-            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (AuthorizationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
+//
+//    @PostMapping("/wallets/{walletId}/recurring")
+//    public String requestTransaction(@PathVariable int walletId,
+//                                     @RequestBody RecurringTransactionDto recurringTransactionDto,
+//                                     Model model,
+//                                     HttpSession session) {
+//        User user;
+//        try {
+//            user = authenticationHelper.tryGetCurrentUser(session);
+//        } catch (AuthorizationException e) {
+//            return "redirect:/auth/login";
+//        }
+//
+//        try {
+//            Wallet walletSender = walletService.getWalletById(walletId, user.getId());
+//            User userReceiver = userService.getById(recurringTransactionDto.getReceiver());
+//            Wallet walletReceiver = walletService.getDefaultWallet(userReceiver.getId());
+//            RecurringTransaction recurringTransaction = transactionMapper.fromDtoTransaction(recurringTransactionDto,
+//                    walletSender,
+//                    user, walletReceiver, userReceiver);
+//            recurringTransactionService.createRecurringTransaction(recurringTransaction,
+//                    walletSender, user, walletReceiver, userReceiver);
+//            return "redirect:/transactions";
+//        } catch (EntityNotFoundException e) {
+//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+//            model.addAttribute("error", e.getMessage());
+//            return "ErrorView";
+//        } catch (InsufficientBalanceException e) {
+//            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+//            model.addAttribute("error", e.getMessage());
+//            return "ErrorView";
+//        } catch (AuthorizationException e) {
+//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+//            model.addAttribute("error", e.getMessage());
+//            return "ErrorView";
+//        }
+//    }
 
-    @GetMapping("/recurring/{recurringId}")
+    @GetMapping("/recurring/{recurringId}/update")
     public String showEditRecurringTransactionPage(Model model, HttpSession session,
                                                    @PathVariable int recurringId) {
         User user;
@@ -430,15 +465,15 @@ public class TransactionMvcController {
             model.addAttribute("recurringId", recurringId);
             model.addAttribute("transaction", transaction);
             model.addAttribute("currentUser", user);
-            return "TransactionUpdateView";
+            return "recurring-transaction-update";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         }
     }
 
-    @PostMapping("/recurring/{recurringId}")
+    @PostMapping("/recurring/{recurringId}/update")
     public String updateRecurringTransaction(@PathVariable int recurringId,
                                              @RequestBody RecurringTransactionDto recurringTransactionDto,
                                              Model model,
@@ -455,19 +490,49 @@ public class TransactionMvcController {
             RecurringTransaction recurringTransaction = transactionMapper
                     .fromDtoTransactionUpdate(recurringTransactionDto, existingRecurring);
             recurringTransactionService.updateRecurringTransaction(recurringTransaction, user);
-            return "redirect:/transactions";
+            return "redirect:/transactions/recurring";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (InsufficientBalanceException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
         } catch (AuthorizationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "error";
+        }
+    }
+
+    @GetMapping("/recurring/{recurringId}/cancel")
+    public String cancelRecurringTransaction(@PathVariable int recurringId,
+                                             Model model,
+                                             HttpSession session) {
+        User user;
+        try {
+            user = authenticationHelper.tryGetCurrentUser(session);
+        } catch (AuthorizationException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            RecurringTransaction recurringTransaction = recurringTransactionService.getRecurringTransactionById(recurringId);
+            recurringTransactionService.cancelRecurringTransaction(recurringTransaction, user);
+            return "redirect:/transactions/recurring";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (InsufficientBalanceException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (AuthorizationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
     }
 

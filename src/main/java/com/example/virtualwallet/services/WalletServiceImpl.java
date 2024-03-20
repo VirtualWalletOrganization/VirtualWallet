@@ -248,7 +248,7 @@ public class WalletServiceImpl implements WalletService {
             newTransfer.setStatus(Status.COMPLETED);
             transferService.updateTransfer(newTransfer);
         } else if (response.equals("REJECTED")) {
-            newTransfer.setStatus(Status.REJECT);
+            newTransfer.setStatus(Status.REJECTED);
             transferService.updateTransfer(newTransfer);
         }
 

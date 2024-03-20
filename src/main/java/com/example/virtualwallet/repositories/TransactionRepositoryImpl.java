@@ -166,6 +166,24 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             }
         }
     }
+    @Override
+    public Optional<List<Transaction>> getAllTransactionsByTransactionType(User user) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Transaction> query = session.createQuery(
+                    "FROM Transaction as t WHERE t.transactionsType.id = :typeId " +
+                            "and t.userSender.id = :userId " +
+                            "ORDER BY t.date", Transaction.class);
+            query.setParameter("typeId", "2");
+            query.setParameter("userId", user.getId());
+
+            List<Transaction> transactions = query.list();
+            if (!transactions.isEmpty()) {
+                return Optional.ofNullable(transactions);
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
 
     @Override
     public Transaction create(Transaction transaction) {

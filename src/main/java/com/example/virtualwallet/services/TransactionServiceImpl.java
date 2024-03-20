@@ -60,6 +60,10 @@ public class TransactionServiceImpl implements TransactionService {
     public Optional<List<Transaction>> getAllTransactionsByStatus(User user) {
         return transactionRepository.getAllTransactionsByStatus(user);
     }
+    @Override
+    public Optional<List<Transaction>> getAllTransactionsByTransactionType(User user) {
+        return transactionRepository.getAllTransactionsByTransactionType(user);
+    }
 
     @Override
     public void confirmTransaction(Transaction transaction, Wallet walletSender, User sender) {
@@ -118,8 +122,8 @@ public class TransactionServiceImpl implements TransactionService {
     public void delete(Transaction transaction, User sender) {
         checkPermissionExistingUsersInWallet(transaction.getWalletSender(), sender, ERROR_TRANSACTION);
         TransactionsStatus transactionsStatus = new TransactionsStatus();
-        transactionsStatus.setId(Status.REJECT.ordinal() + 1);
-        transactionsStatus.setTransactionStatus(Status.REJECT);
+        transactionsStatus.setId(Status.REJECTED.ordinal() + 1);
+        transactionsStatus.setTransactionStatus(Status.REJECTED);
         transaction.setTransactionsStatus(transactionsStatus);
         transactionRepository.update(transaction);
     }
@@ -147,10 +151,18 @@ public class TransactionServiceImpl implements TransactionService {
 
     private void isValidRequestTransferMoney(Transaction transaction) {
         if (!isValidRequestEnoughMoney(transaction, transaction.getWalletSender())) {
-            transaction.getTransactionsStatus().setId(Status.DECLINED.ordinal() + 1);
-            transaction.getTransactionsStatus().setTransactionStatus(Status.DECLINED);
-            transactionRepository.update(transaction);
-            throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
+            if(transaction.getTransactionsStatus().getTransactionStatus()==Status.PENDING||
+            transaction.getTransactionsStatus().getTransactionStatus()==Status.DECLINED){
+                transaction.getTransactionsStatus().setId(Status.DECLINED.ordinal() + 1);
+                transaction.getTransactionsStatus().setTransactionStatus(Status.DECLINED);
+                transactionRepository.update(transaction);
+                throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
+            }else {
+                transaction.getTransactionsStatus().setId(Status.FAILED.ordinal() + 1);
+                transaction.getTransactionsStatus().setTransactionStatus(Status.FAILED);
+                transactionRepository.update(transaction);
+                throw new InsufficientBalanceException(ERROR_INSUFFICIENT_BALANCE);
+            }
         } else {
             transaction.getTransactionsStatus().setId(Status.COMPLETED.ordinal() + 1);
             transaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);

@@ -1,6 +1,6 @@
 package com.example.virtualwallet.models.enums;
 
-public enum Interval {
+public enum Frequency {
 
     DAILY("DAILY"),
     WEEKLY("WEEKLY"),
@@ -8,7 +8,7 @@ public enum Interval {
 
     private String name;
 
-    Interval(String name) {
+    Frequency(String name) {
         this.name = name;
     }
 }

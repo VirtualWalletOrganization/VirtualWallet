@@ -1,3 +1,4 @@
+
 $(document).ready(
     function () {
         var radioButtons = document.getElementsByClassName("radio-buttons");
@@ -69,6 +70,7 @@ $(document).ready(function () {
         $('#recipient-id').val(recipientId);
     })
 });
+
 
 
 $(document).ready(function () {
@@ -276,5 +278,27 @@ $(document).ready(function () {
     body.on('change', '#card', function () {
         var newChosenCard = selectCard.options[selectCard.selectedIndex].text;
         $('#card-confirm').val(newChosenCard);
+    });
+});
+$(document).ready(function () {
+    $('#start-date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+
+    $('#end-date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+});
+
+$(document).ready(function () {
+    $('#transactionType').change(function () {
+        var selectedType = $(this).val();
+        if (selectedType === 'RECURRING') {
+            $('#additionalFields').show();
+        } else {
+            $('#additionalFields').hide();
+        }
     });
 });

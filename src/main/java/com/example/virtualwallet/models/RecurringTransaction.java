@@ -1,10 +1,9 @@
 package com.example.virtualwallet.models;
 
-import com.example.virtualwallet.models.enums.Interval;
+import com.example.virtualwallet.models.enums.Frequency;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "recurring_transactions")
@@ -12,8 +11,8 @@ import java.time.LocalDateTime;
 public class RecurringTransaction extends Transaction {
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "intervals")
-    private Interval intervals;
+    @Column(name = "frequency")
+    private Frequency frequency;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -24,12 +23,12 @@ public class RecurringTransaction extends Transaction {
     public RecurringTransaction() {
     }
 
-    public Interval getIntervals() {
-        return intervals;
+    public Frequency getFrequency() {
+        return frequency;
     }
 
-    public void setIntervals(Interval intervals) {
-        this.intervals = intervals;
+    public void setFrequency(Frequency frequency) {
+        this.frequency = frequency;
     }
 
     public LocalDate getStartDate() {

@@ -3,7 +3,7 @@ package com.example.virtualwallet.helpers;
 import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
-import com.example.virtualwallet.models.enums.Interval;
+import com.example.virtualwallet.models.enums.Frequency;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.TransactionType;
 import org.springframework.stereotype.Component;
@@ -61,16 +61,17 @@ public class TransactionMapper {
         recurringTransaction.setDate(Timestamp.valueOf(LocalDateTime.now()));
 
         recurringTransaction.setTransactionsStatus(transaction.getTransactionsStatus());
-        recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal());
+        recurringTransaction.getTransactionsStatus().setId(Status.PENDING_RECURRING_REQUEST.ordinal()+1);
         recurringTransaction.getTransactionsStatus().setTransactionStatus(Status.PENDING_RECURRING_REQUEST);
         recurringTransaction.setTransactionsType(transaction.getTransactionsType());
-        recurringTransaction.getTransactionsType().setId(TransactionType.RECURRING.ordinal());
+        recurringTransaction.getTransactionsType().setId(TransactionType.RECURRING.ordinal()+1);
         recurringTransaction.getTransactionsType().setTransactionType(TransactionType.RECURRING);
 
-        recurringTransaction.setDescription("Recurring Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
+        recurringTransaction.setDescription(recurringTransactionDto.getDescription());
+//        recurringTransaction.setDescription("Recurring Transaction from " + userSender.getUsername() + " to " + userReceiver.getUsername());
 
 
-        recurringTransaction.setIntervals(Interval.valueOf(recurringTransactionDto.getInterval()));
+        recurringTransaction.setFrequency(Frequency.valueOf(recurringTransactionDto.getFrequency()));
         recurringTransaction.setStartDate(recurringTransactionDto.getStartDate());
         recurringTransaction.setEndDate(recurringTransactionDto.getEndDate());
 
@@ -80,7 +81,7 @@ public class TransactionMapper {
     public RecurringTransaction fromDtoTransactionUpdate(RecurringTransactionDto recurringTransactionDto,
                                                          RecurringTransaction recurringTransaction) {
 
-        recurringTransaction.setIntervals(Interval.valueOf(recurringTransactionDto.getInterval()));
+        recurringTransaction.setFrequency(Frequency.valueOf(recurringTransactionDto.getFrequency()));
         recurringTransaction.setStartDate(recurringTransactionDto.getStartDate());
         recurringTransaction.setEndDate(recurringTransactionDto.getEndDate());
         return recurringTransaction;
@@ -101,6 +102,7 @@ public class TransactionMapper {
 
         transaction.setDescription(recurringTransaction.getDescription());
         transaction.setTransactionsType(recurringTransaction.getTransactionsType());
+
 
         return transaction;
     }

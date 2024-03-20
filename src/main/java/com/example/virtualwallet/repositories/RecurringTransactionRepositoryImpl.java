@@ -36,8 +36,24 @@ public class RecurringTransactionRepositoryImpl implements RecurringTransactionR
             Query<RecurringTransaction> query = session.createQuery(
                     "FROM RecurringTransaction as t where t.transactionId = :transactionId", RecurringTransaction.class);
             query.setParameter("transactionId", transactionId);
-
             return Optional.ofNullable(query.list().get(0));
+        }
+    }
+
+
+    @Override
+    public Optional<List<RecurringTransaction>> getRecurringTransactionByUserId(int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<RecurringTransaction> query = session.createQuery(
+                    "FROM RecurringTransaction as t where t.userSender.id = :userId", RecurringTransaction.class);
+            query.setParameter("userId", userId);
+
+            List<RecurringTransaction> transactions = query.list();
+            if (!transactions.isEmpty()) {
+                return Optional.ofNullable(transactions);
+            } else {
+                return Optional.empty();
+            }
         }
     }
 

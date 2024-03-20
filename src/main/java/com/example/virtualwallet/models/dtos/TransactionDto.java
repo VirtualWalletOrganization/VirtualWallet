@@ -12,6 +12,7 @@ public class TransactionDto {
     private BigDecimal amount;
     private String currency;
     private String description;
+    private String transactionType;
 
     public TransactionDto() {
     }
@@ -54,5 +55,13 @@ public class TransactionDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
     }
 }

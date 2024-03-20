@@ -169,7 +169,7 @@ create table transactions
 create table recurring_transactions
 (
     transaction_id int primary key,
-    intervals      enum ('DAILY', 'MONTHLY', 'WEEKLY') not null,
+    frequency      enum ('DAILY', 'MONTHLY', 'WEEKLY') not null,
     start_date     datetime not null,
     end_date       datetime not null,
     constraint recurring_transactions_transactions_transaction_id_fk

@@ -3464,14 +3464,13 @@ p {
     .map.map-height-two iframe {
         height: 551px;
     }
-}
-
-.footer {
-    background: #202942;
-    padding: 60px 0;
-    position: relative;
-    color: #adb5bd;
-}
+}.footer {
+     background: #202942;
+     padding: 60px 0;
+     position: relative;
+     color: #adb5bd;
+     text-align: center; /* Center align the content */
+ }
 
 .footer .logo-footer {
     color: #f8f9fc;
@@ -3486,7 +3485,6 @@ p {
     letter-spacing: 1px;
     font-weight: 500;
 }
-
 .footer .foot-subscribe .form-control {
     background-color: #25304e;
     border: 1px solid #25304e;

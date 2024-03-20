@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Recurring Transaction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div th:replace="fragments/layout :: css-sheets"></div>
+</head>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+<section class="bg-half bg-light">
+    <div class="home-center">
+        <div class="home-desc-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12 text-center">
+                        <div th:if="${transactions == null or transactions.isEmpty()}">
+                            <div class="row justify-content-center">
+                                <h4 th:text="#{no.recurring.transactions.history.title}"></h4>
+                            </div>
+                        </div>
+                        <div th:unless="${transactions == null or transactions.isEmpty()}">
+                            <div class="page-next-level">
+                                <h4 class="title" th:text="#{recurringTransactions.title}"></h4>
+                            </div>
+                        </div>  <!--end col-->
+                    </div><!--end row-->
+                </div> <!--end container-->
+            </div>
+        </div>
+    </div>
+
+</section>
+<section class="section">
+    <div class="container">
+        <div th:unless="${transactions == null or transactions.isEmpty()}">
+            <div class="col-md-12">
+                <div th:if="${error} != null" class="alert alert-danger alert-pills">
+                    <span class="badge badge-danger rounded" th:text="#{transaction.error}"></span>
+                    <span class="alert-content" th:text="${error}"></span>
+                </div>
+            </div>
+            <div class="table-responsive bg-white shadow rounded">
+                <table class="table mb-0 table-center">
+                <thead>
+                <tr>
+                    <th th:text="#{recurring.transaction.start.date}">Start date</th>
+                    <th th:text="#{recurring.transaction.end.date}">End date</th>
+                    <th th:text="#{recurring.transaction.frequency}">Frequency</th>
+                    <th th:text="#{recurring.transaction.amount}">Amount</th>
+                    <th th:text="#{recurring.transaction.sender}">Sender</th>
+                    <th th:text="#{recurring.transaction.receiver}">Receiver</th>
+                    <th th:text="#{recurring.transaction.description}">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="transaction: ${transactions}">
+                    <td th:text="${transaction.startDate != null ? transaction.startDate : 'NA'}"></td>
+                    <td th:text="${transaction.endDate != null ? transaction.endDate : 'NA'}"></td>
+
+                    <td th:text="${transaction.frequency != null ? transaction.frequency.name() : #strings.toUpperCase('NA')}"
+                        style="font-size: 14px; font-weight: 400;">Frequency
+                    </td>
+                    <td th:text="${transaction.userSender.id == currentUser.id && transaction.userReceiver.id != currentUser.id} ? '-' + ${transaction.amount} : '+' + ${transaction.amount}"
+                        th:class="${transaction.userSender.id == currentUser.id && transaction.userReceiver.id != currentUser.id ? 'outgoing-style transactions-amount-format' : (transaction.userSender.id != currentUser.id && transaction.userReceiver.id == currentUser.id ? 'incoming-style transactions-amount-format' : 'funding-style transactions-amount-format')}">
+                        500.34
+                    </td>
+                    <!--                        <td th:text="${trans.userSender.username + (trans.userSender.id == currentUser.id ? '/' + trans.walletSender.getWalletsType().getWalletType().name() + ' wallet' : '')}">-->
+                    <td th:text="${transaction.userSender.username + '/ '  + transaction.walletSender.getWalletsType().getWalletType().name() + ' wallet'}">
+
+                        Jane/Jane's wallet
+                    </td>
+                    <!--                        <td th:text="${trans.userReceiver.username + (trans.userReceiver.id == currentUser.id ? '/' + trans.walletReceiver.getWalletsType().getWalletType().name() + ' wallet'  : '')}">-->
+                    <td th:text="${transaction.userReceiver.username +  '/ ' + transaction.walletReceiver.getWalletsType().getWalletType().name() + ' wallet'}">
+
+                        John/John's wallet
+                    </td>
+                    <td th:text="${transaction.description} ? ${transaction.description} : #{value.NA}">Reason for
+                        transfer
+                    </td>
+<!--                    <td>-->
+<!--                        <form th:if="${isAuthenticated}"-->
+<!--                              th:action="@{'/transactions/recurring/' + ${transaction.transactionId} + '/update'}" method="get">-->
+<!--                            <button type="submit" class="btn btn-outline-primary"-->
+<!--                                    th:text="#{recurring.transaction.update}">Update</button>-->
+<!--                        </form>-->
+<!--                    </td>-->
+                    <td>
+                        <form th:if="${isAuthenticated}"
+                              th:action="@{'/transactions/recurring/' + ${transaction.transactionId} + '/cancel'}" method="get">
+                            <button type="submit" class="btn btn-outline-primary"
+                                    th:text="#{recurring.transaction.cancel}">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</section>
+
+<div th:replace="fragments/layout :: footer"></div>
+<div th:replace="fragments/layout :: js-scripts"></div>
+
+</body>
+</html>
+

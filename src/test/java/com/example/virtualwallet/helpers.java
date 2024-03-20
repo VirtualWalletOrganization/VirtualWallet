@@ -86,7 +86,7 @@ public class helpers {
         mockTransaction.setTransactionsType(new TransactionsType());
         mockTransaction.getTransactionsType().setId(2);
         mockTransaction.getTransactionsType().setTransactionType(TransactionType.RECURRING);
-        mockTransaction.setIntervals(Interval.DAILY);
+        mockTransaction.setIntervals(Frequency.DAILY);
         mockTransaction.setStartDate(LocalDate.now());
         mockTransaction.setEndDate(LocalDate.now().plusMonths(6));
         return mockTransaction;

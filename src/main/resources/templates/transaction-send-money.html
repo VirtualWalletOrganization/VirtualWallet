@@ -215,11 +215,38 @@
                                                       required="required">
                                                     <option value="" disabled selected th:text="#{transaction.create.type}"></option>
                                                     <option th:each="type : ${T(com.example.virtualwallet.models.enums.TransactionType).values()}"
-                                                            th:value="${type}" th:text="${type}">
-                                                    </option>
+                                                            th:value="${type}" th:text="${type}"> </option>
                                                 </select>
                                             </div>
+
+                                            <div id="additionalFields" class="col-md-12" style="display: none;">
+                                                <!-- Additional fields for recurring transactions -->
+                                                <div class="form-group position-relative">
+                                                    <label for="frequency" th:text="#{transaction.create.frequency}"></label>
+                                                    <i class="mdi mdi-comment-text ml-3 icons"></i>
+                                                    <select id="frequency" name="frequency" class="form-control pl-5">
+                                                        <option value="" disabled selected th:text="#{transaction.create.frequency}"></option>
+                                                        <option th:each="frequency : ${T(com.example.virtualwallet.models.enums.Frequency).values()}"
+                                                                th:value="${frequency}" th:text="${frequency}"></option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group position-relative">
+                                                    <label for="start-date" th:text="#{transaction.create.startDate}"></label>
+                                                    <i class="mdi mdi-calendar ml-3 icons"></i>
+                                                    <input type="text" id="start-date" name="startDate" class="form-control pl-5"
+                                                           th:placeholder="#{transaction.create.startDatePlaceholder}" autocomplete="off">
+                                                </div>
+                                                <div class="form-group position-relative">
+                                                    <label for="end-date" th:text="#{transaction.create.endDate}"></label>
+                                                    <i class="mdi mdi-calendar ml-3 icons"></i>
+                                                    <input type="text" id="end-date" name="endDate" class="form-control pl-5"
+                                                           th:placeholder="#{transaction.create.endDatePlaceholder}" autocomplete="off">
+                                                </div>
+                                            </div>
+
+
                                         </div>
+
                                     </div>
                                     <input class="btn btn-light" type="reset" th:value="#{transaction.clearButton}"/>
                                     <a type="submit" class="submitBnt btn btn-primary"

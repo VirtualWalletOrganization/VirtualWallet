@@ -70,7 +70,7 @@
                                         <select id="card" class="form-control" name="cardId">
                                             <option th:each="card : ${cards}"
                                                     th:value="${card.getId()}"
-                                                    th:text="${card.getCardNumber()}">
+                                            th:text="${'************' + #strings.substring(card.cardNumber, card.cardNumber.length() - 4)}">Card number
                                             </option>
                                         </select>
                                     </div>
@@ -198,6 +198,7 @@
                                             </div><!--end row-->
                                         </div><!--end col-->
                                     </div><!--end row-->
+                                </div>
 
                         </form><!--end form-->
                     </div>

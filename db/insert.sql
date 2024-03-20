@@ -23,11 +23,16 @@ VALUES ('ADMIN'),
 -- Example data for users
 INSERT INTO users (first_name, last_name, username, password, email, phone_number, identity_status_id, role_id, status,
                    wallet_role_id)
-VALUES ('Kris', 'Adams', 'kris', 'Pass1$', 'kris.adams@example.com', '1234567890', 3, 1, 'ACTIVE', 1),
+VALUES ('Kris', 'Adams', 'kris', 'Pass$1', 'kris.adams@example.com', '1234567890', 3, 1, 'ACTIVE', 1),
        ('Alice', 'Johnson', 'alice', 'Pass$2', 'alice@example.com', '1112223333', 3, 2, 'ACTIVE', 2),
        ('Bob', 'Williams', 'bob', 'Pass$3', 'bob@example.com', '4445556666', 3, 2, 'ACTIVE', 2),
        ('Tom', 'Ford', 'tom', 'Pass$4', 'tom@example.com', '8885556666', 3, 2, 'ACTIVE', 2),
-       ('Eve', 'Brown', 'eve', 'Pass$5', 'eve@example.com', '7778889999', 2, 2, 'ACTIVE', 1);
+       ('Eve', 'Brown', 'eve', 'Pass$5', 'eve@example.com', '7778889999', 3, 2, 'ACTIVE', 1),
+       ('John', 'Doe', 'john', 'Pass$6', 'john.doe@example.com', '9998887777', 1, 2, 'BLOCKED', 2),
+       ('Emily', 'Smith', 'emily', 'Pass$7', 'emily.smith@example.com', '6667778888', 1, 2, 'ACTIVE', 2),
+       ('Michael', 'Johnson', 'michael', 'Pass$8', 'michael.johnson@example.com', '3332221111', 1, 2, 'ACTIVE', 2),
+       ('Jennifer', 'Brown', 'jennifer', 'Pass$9', 'jennifer.brown@example.com', '2223334444', 2, 2, 'ACTIVE', 2),
+       ('David', 'Miller', 'david', 'Pass$10', 'david.miller@example.com', '5554443333', 2, 2, 'ACTIVE', 2);
 
 -- Example data for contacts
 INSERT INTO contacts (user_id, username, phone_number)
@@ -55,13 +60,13 @@ VALUES ('JOINT'),
        ('MAIN');
 INSERT INTO wallets (wallet_id, creator_id, balance, currency, wallet_type_id, is_default, is_deleted,
                      overdraft_enabled, saving_enabled)
-VALUES (1, 1, 500.00, 'BGN', 2, true, false, true, false),
+VALUES (1, 1, 5000.00, 'BGN', 2, true, false, true, false),
        (2, 1, 1000.00, 'BGN', 1, false, false, false, true),
-       (3, 2, 1000.00, 'BGN', 2, true, false, false, true),
+       (3, 2, 5000.00, 'BGN', 2, true, false, false, true),
        (4, 3, 1000.00, 'BGN', 2, true, false, false, true),
-       (5, 4, 1000.00, 'BGN', 2, true, false, false, true),
+       (5, 4, 4000.00, 'BGN', 2, true, false, false, true),
        (6, 5, 1000.00, 'BGN', 2, true, false, false, true),
-       (7, 5, 0.00, 'USD', 1, false, false, false, false);
+       (7, 5, 2000.00, 'USD', 1, false, false, false, false);
 
 
 -- Example data for cards_wallets (linking cards to wallets)
@@ -100,13 +105,13 @@ VALUES ('SINGLE'),
 -- Example data for transactions
 INSERT INTO transactions (sender_wallet_id, user_sender_id, receiver_wallet_id, user_receiver_id, amount, currency,
                           date, transaction_status_id, description, transaction_type_id)
-VALUES (1, 1, 3, 2, 200.00, 'USD', '2024-03-11 12:30:00', 2, 'Payment for services', 2),
-       (2, 1, 4, 3, 200.00, 'USD', '2024-03-11 12:30:00', 2, 'Reimbursement for dinner', 2),
-       (3, 2, 5, 4, 200.00, 'USD', '2024-03-12 12:30:00', 2, 'Payment for services', 2),
-       (4, 3, 6, 5, 50.00, 'EUR', '2024-03-13 13:45:00', 2, 'Reimbursement for dinner', 2);
+VALUES (1, 1, 3, 2, 50.00, 'USD', '2024-03-11 12:30:00', 2, 'Payment for services', 2),
+       (2, 1, 4, 3, 200.00, 'USD', '2024-03-11 12:30:00', 2, 'Reimbursement for dinner', 1),
+       (3, 2, 5, 4, 100.00, 'USD', '2024-03-12 12:30:00', 2, 'Payment for services', 2),
+       (4, 3, 6, 5, 50.00, 'USD', '2024-03-13 13:45:00', 2, 'Reimbursement for dinner', 1);
 
 -- Example data for recurring_transactions
-INSERT INTO recurring_transactions (transaction_id, intervals, start_date, end_date)
+INSERT INTO recurring_transactions (transaction_id, frequency, start_date, end_date)
 VALUES (1, 'MONTHLY', '2024-03-15', '2024-12-01'),
        (3, 'MONTHLY', '2024-04-01', '2024-12-01');
 
@@ -154,7 +159,7 @@ INSERT INTO spending_categories (category_name) VALUES
 INSERT INTO transfers (receiver_wallet_id, receiver_id, card_id, sender_id, amount, currency, date, status, description)
 VALUES (1, 1, 1, 1, 50.00, 'USD', '2024-03-11 15:00:00', 'COMPLETED', 'Bank Deposit'),
        (2, 1, 2, 1, 25.00, 'USD', '2024-03-11 16:30:00', 'COMPLETED', 'Bank Deposit'),
-       (3, 2, 3, 2, 25.00, 'USD', '2024-03-11 16:30:00', 'REJECTED', 'Bank Deposit');
+       (3, 2, 3, 2, 25.00, 'USD', '2024-03-11 16:30:00', 'COMPLETED', 'Bank Deposit');
 
 -- -- Example data for overdrafts_types
 -- INSERT INTO overdrafts_types (overdraft_name, overdraft_limit, overdraft_interest, duration)

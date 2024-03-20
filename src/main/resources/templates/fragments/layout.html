@@ -57,9 +57,9 @@
             <div id="navigation" th:if="${isAuthenticated}">
                 <!-- Navigation Menu-->
                 <ul class="navigation-menu">
-                    <li class="has-submenu" th:text="${session.currentUser}" th:if="${isAuthenticated}">li>
 
                     <li><a href="/" th:text="#{header.menu.home}" th:if="${!session.isAdmin}">Home</a></li>
+
                     <li class="has-submenu" th:if="${session.isAdmin}">
                         <a th:href="@{/admin}" th:text="#{header.menu.admin}">Admin</a><span
                             class="menu-arrow"></span>
@@ -89,14 +89,47 @@
                             </li>
                         </ul>
                     </li>
-                    <li><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/user-history}"
-                           th:text="#{header.menu.transactionHistory}"></a></li>
+                    <li class="has-submenu">
+                        <a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/user-history}"
+                           th:text="#{header.menu.transactionHistory}"></a><span class="menu-arrow"></span>
+                        <ul class="submenu">
+                            <li class="has-submenu"><a href="#" th:if="${isAuthenticated}"
+                                                       th:text="#{header.menu.recurringTransactionHistory}"
+                                                       th:href="@{/transactions/recurring-history}">Recurring
+                                Transaction History</a>
+                                <span class="submenu-arrow"></span>
+                                <ul class="submenu"> <!--submenu-->
+                                    <li><a href="#" th:if="${isAuthenticated}"
+                                           th:text="#{header.menu.recurringTransaction}"
+                                           th:href="@{/transactions/recurring}">Recurring Transaction</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-submenu">
+                        <a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/request-money}"
+                           th:text="#{header.menu.requestMoney}"></a><span
+                            class="menu-arrow"></span>
+                        <ul class="submenu">
+                            <li><a href="#" th:if="${isAuthenticated}" th:text="#{header.menu.deposit}"
+                                   th:href="@{/wallets/add-money}">Deposit Money</a></li>
+                            <!--                            <li><a th:href="@{/transaction/create-funding}" th:text="#{header.menu.topUpWallet}"></a></li>-->
+<!--                            <li class="has-submenu"><a href="#" th:if="${isAuthenticated}"-->
+<!--                                                       th:text="#{header.menu.cards}"-->
+<!--                                                       th:href="@{/cards}">Cards</a>-->
+<!--                                &lt;!&ndash;                                <span&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                    class="submenu-arrow"></span>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                <ul class="submenu">&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add(walletId=${walletId})}">Add card</a></li>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                </ul>&ndash;&gt;-->
+<!--                            </li>-->
+                        </ul>
+                    </li>
+
+
                     <li><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/send-money}"
                            th:text="#{header.menu.sendMoney}"></a></li>
-                    <li class="submenu"><a href="#" th:if="${isAuthenticated}" th:href="@{/transactions/request-money}"
-                           th:text="#{header.menu.requestMoney}"></a>
-                    <ul><li><a th:href="@{/wallets/add-money}" th:text="#{header.menu.topUpWallet}"></a></ul>
-                    </li>
+
                     <li>
                         <a href="#" th:if="${isAuthenticated && transactionList != null && !transactionList.isEmpty()}"
                            th:href="@{/transactions/notifications}" style="position:relative">
@@ -104,7 +137,8 @@
                                th:text="${transactionList.size()}"></i>
                             <i class="far fa-bell fa-2x" style="color: blue;"></i>
                         </a>
-                        <a href="#" th:if="${isAuthenticated && (transactionList == null || transactionList.isEmpty())}"
+                        <a href="#"
+                           th:if="${isAuthenticated && (transactionList == null || transactionList.isEmpty())}"
                            th:href="@{/transactions/notifications}">
                             <i class="far fa-bell fa-2x" style="color: blue;"></i>
                         </a>
@@ -113,8 +147,12 @@
                                                 th:text="#{header.menu.myProfile}"></a></li>
                     <li class="hide-desktop">
                         <form class="logout-form" th:if="${isAuthenticated}" th:action="@{/logout}"
-                              method="post"><input class="btn btn-outline-primary margin-left-extra" th:type="submit"
+                              method="post"><input class="btn btn-outline-primary margin-left-extra"
+                                                   th:type="submit"
                                                    th:value="Logout"></form>
+                    </li>
+                    <li>
+                        <a href="#" th:if="${isAuthenticated}" th:text="${session.currentUser}" style="color: #2f55d4;"></a>
                     </li>
                 </ul><!--end navigation menu-->
             </div><!--end navigation-->
@@ -123,114 +161,18 @@
     <!-- Navbar End -->
 </div>
 
-
 <div th:fragment="footer">
     <!-- Footer Start -->
     <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-12 mb-0 mb-md-4 pb-0 pb-md-2">
-                    <a class="logo-footer" href="#">VirtualWallet<span class="text-primary">.</span></a>
+        <div class="container d-flex justify-content-center">
+            <div class="col-lg-4 col-md-6">
+                <div class="mb-4">
+                    <a class="logo-footer" href="#">Mukki Wallet 2024<span class="text-primary">:)</span></a>
                     <p class="mt-4" th:text="#{footer.description}"></p>
-                    <!--                    <ul class="list-unstyled social-icon social mb-0 mt-4">-->
-                    <!--                        <li class="list-inline-item"><a href="https://www.facebook.com/TelerikAcademy/" target="_blank"-->
-                    <!--                                                        class="rounded"><i-->
-                    <!--                                class="mdi mdi-facebook" title="Facebook"></i></a></li>-->
-                    <!--                        <li class="list-inline-item"><a href="https://www.instagram.com/telerikacademy/" target="_blank"-->
-                    <!--                                                        class="rounded"><i-->
-                    <!--                                class="mdi mdi-instagram" title="Instagram"></i></a></li>-->
-                    <!--                        <li class="list-inline-item"><a href="https://twitter.com/TelerikAcademy" target="_blank"-->
-                    <!--                                                        class="rounded"><i-->
-                    <!--                                class="mdi mdi-twitter"-->
-                    <!--                                title="Twitter"></i></a>-->
-                    <!--                        </li>-->
-                    <!--                    </ul>&lt;!&ndash;end icon&ndash;&gt;-->
-                </div><!--end col-->
-
-                <div class="col-lg-2 col-md-4 col-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                    <h4 class="text-light footer-head" th:text="#{footer.navigation}"></h4>
-                    <ul class="list-unstyled footer-list mt-4">
-                        <li>
-                            <a th:href="@{/auth/login}" th:text="#{footer.login}"
-                               class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i></a>
-                            <a th:if="${isAuthenticated}" th:href="@{/transactions/wallets/{walletId}/history}"
-                               class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span
-                                    th:text="#{footer.transactions}"></span> </a>
-                        </li>
-                        <li>
-                            <a th:href="@{/auth/register}" th:text="#{footer.signup}"
-                               class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i></a>
-                            <a th:if="${isAuthenticated}" th:href="@{/wallets}"
-                               class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span
-                                    th:text="#{footer.wallets}"></span> </a>
-                        </li>
-                        <li>
-                            <a th:if="${isAuthenticated}" th:href="@{/wallets/new}"
-                               class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span
-                                    th:text="#{footer.wallets.add}"></span>
-                            </a>
-                        </li>
-                        <li><a th:if="${isAuthenticated}" th:href="@{/cards}"
-                               class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span
-                                th:text="#{footer.cards}"></span></a>
-                        </li>
-                        <li><a th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add}"
-                               class="text-foot"><i class="mdi mdi-chevron-right mr-1"></i><span
-                                th:text="#{footer.cards.add}"></span></a>
-                        </li>
-                    </ul>
-                </div><!--end col-->
-
-                <div th:if="${isAuthenticated}" class="col-lg-3 col-md-4 col-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                    <h4 class="text-light footer-head" th:text="#{footer.profileNavigation}"></h4>
-                    <ul class="list-unstyled footer-list mt-4">
-                        <li>
-                            <a th:href="@{/users/profile}" class="text-foot">
-                                <i class="mdi mdi-chevron-right mr-1"></i><span th:text="#{footer.viewProfile}"></span></a>
-                        </li>
-                        <li><a th:href="@{/users/{userId}/update}"
-                               class="text-foot">
-                            <i class="mdi mdi-chevron-right mr-1"></i><span th:text="#{footer.editProfile}"></span>
-                        </a>
-                        </li>
-                        <li>
-                            <form class="logout-form" th:action="@{/logout}"
-                                  method="post"><input
-                                    class="btn btn-pills btn-secondary margin-left" th:type="submit" th:value="Logout">
-                            </form>
-                        </li>
-                    </ul>
-                </div><!--end col-->
-
-                <!--                <div th:if="${user.invitedUsers} < 3" class="col-lg-3 col-md-4 col-12 mt-4 mt-sm-0 pt-2 pt-sm-0"-->
-                <!--                     id="footer-referral" th:if="${isAuthenticated}"-->
-                <!--                >-->
-                <!--                    <h4 class="text-light footer-head" th:text="#{referral.invitation.footerTitle}"></h4>-->
-                <!--                    <p class="mt-4" th:text="#{referral.invitation.description}"></p>-->
-                <!--                    <form th:action="@{/referral-invitation}" method="post">-->
-                <!--                        <div class="row">-->
-                <!--                            <div class="col-lg-12">-->
-                <!--                                <div class="foot-subscribe form-group position-relative">-->
-                <!--                                    <label><span th:text="#{referral.invitation.emailField}"></span> <span-->
-                <!--                                            class="text-danger">*</span></label>-->
-                <!--                                    <i class="mdi mdi-email ml-3 icons"></i>-->
-                <!--                                    <input type="email" name="email" id="emailsubscribe"-->
-                <!--                                           class="form-control pl-5 rounded"-->
-                <!--                                           th:placeholder="#{referral.invitation.emailPlaceholder}" required>-->
-                <!--                                </div>-->
-                <!--                            </div>-->
-                <!--                            <div class="col-lg-12">-->
-                <!--                                <input type="submit" id="submitsubscribe" name="send"-->
-                <!--                                       class="btn btn-primary rounded w-100"-->
-                <!--                                       th:value="#{referral.invitation.button}">-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </form>-->
-                <!--                </div>&lt;!&ndash;end col&ndash;&gt;-->
-            </div><!--end row-->
+                </div>
+            </div>
         </div><!--end container-->
     </footer><!--end footer-->
-    <hr>
 </div>
 
 <div th:fragment="js-scripts">
@@ -247,6 +189,11 @@
     <script th:src="@{/js/owl.init.js}"></script>
     <!-- Main Js -->
     <script th:src="@{/js/app.js}"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Bootstrap Datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
     <script th:src="@{/js/custom.js}"></script>
 </div>

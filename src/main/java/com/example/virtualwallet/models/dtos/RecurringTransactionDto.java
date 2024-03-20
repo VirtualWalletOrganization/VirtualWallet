@@ -1,23 +1,24 @@
 package com.example.virtualwallet.models.dtos;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class RecurringTransactionDto extends TransactionDto {
 
-    private String interval;
+    private String frequency;
     private LocalDate startDate;
+
     private LocalDate endDate;
+
 
     public RecurringTransactionDto() {
     }
 
-    public String getInterval() {
-        return interval;
+    public String getFrequency() {
+        return frequency;
     }
 
-    public void setInterval(String interval) {
-        this.interval = interval;
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
     }
 
     public LocalDate getStartDate() {

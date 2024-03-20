@@ -22,6 +22,8 @@ public interface TransactionService {
 
     Optional<List<Transaction> >getAllTransactionsByStatus(User user);
 
+    Optional<List<Transaction> >getAllTransactionsByTransactionType(User user);
+
     List<Transaction> getAllTransactionsByWalletId(Wallet wallet);
 
     void confirmTransaction(Transaction transaction, Wallet walletSender, User sender);

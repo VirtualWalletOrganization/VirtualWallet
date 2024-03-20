@@ -22,6 +22,7 @@ public interface TransactionRepository {
     Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId);
 
     Optional<List<Transaction>> getAllTransactionsByStatus(User user);
+    Optional<List<Transaction>> getAllTransactionsByTransactionType(User user);
     Transaction create(Transaction transaction);
 
     void update(Transaction transaction);

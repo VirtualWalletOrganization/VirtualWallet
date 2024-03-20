@@ -57,7 +57,7 @@
                             th:style="${#strings.equalsIgnoreCase(card.cardStatus, 'ACTIVE') ? 'color: green;' : 'color: red;'}">
                             Card status
                         </td>
-                        <td th:text="${card.cardNumber}">Card number</td>
+                        <td th:text="${'************' + #strings.substring(card.cardNumber, card.cardNumber.length() - 4)}">Card number</td>
                         <td th:text="${card.cardHolder}">Cardholder Name</td>
                         <td th:text="${card.expirationDate}">Expiration date</td>
                         <td>
