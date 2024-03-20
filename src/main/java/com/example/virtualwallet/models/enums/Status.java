@@ -7,7 +7,7 @@ public enum Status {
     FAILED("FAILED"),
     PENDING("PENDING"),
     PENDING_RECURRING_REQUEST("PENDING_RECURRING_REQUEST"),
-    REJECT("REJECT");
+    REJECT("REJECTED");
 
     private String name;
 
