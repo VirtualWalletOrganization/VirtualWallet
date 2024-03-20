@@ -247,7 +247,7 @@ create table transfers
     amount             decimal      not null,
     currency           varchar(3)   not null,
     date               datetime     not null,
-    status             enum ('COMPLETED', 'FAILED', 'PENDING') not null,
+    status             enum ('COMPLETED', 'REJECTED') not null,
     description        varchar(250) not null,
 --     category_id        int          not null,
     constraint transfers_cards_card_id_fk
