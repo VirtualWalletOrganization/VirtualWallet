@@ -1,9 +1,6 @@
 package com.example.virtualwallet.services;
 
-import com.example.virtualwallet.exceptions.DeletionRestrictedException;
-import com.example.virtualwallet.exceptions.DuplicateEntityException;
-import com.example.virtualwallet.exceptions.EntityAlreadyDeleteException;
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
+import com.example.virtualwallet.exceptions.*;
 import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
@@ -132,26 +129,20 @@ public class UserServiceImpl implements UserService {
 
         if (user.getIdentityStatus().getIdentity().equals(Identity.APPROVED)) {
             throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
-        } else if (userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
+        } else if (userToBeVerified.getPhoto() == null || userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
             IdentityStatus identityStatus = new IdentityStatus();
             identityStatus.setId(Identity.REJECTED.ordinal() + 1);
             identityStatus.setIdentity(Identity.REJECTED);
             userToBeVerified.setIdentityStatus(identityStatus);
+            userRepository.updateUser(userToBeVerified);
+            throw new IdentityNotVerifiedException("User's identity not verified");
         } else {
             IdentityStatus identityStatus = new IdentityStatus();
-            identityStatus.setId(Identity.APPROVED.ordinal() + 1);
-            identityStatus.setIdentity(Identity.APPROVED);
+            identityStatus.setId(Identity.PENDING.ordinal() + 1);
+            identityStatus.setIdentity(Identity.PENDING);
             user.setIdentityStatus(identityStatus);
-            user.setStatus(UserStatus.ACTIVE);
+            user.setStatus(UserStatus.PENDING);
             userRepository.confirmRegistration(user);
-
-//            if (referralRepository.getReferralEmail(user.getEmail()).isPresent()) {
-//                if (referralRepository.getReferralStatusByEmail(user.getEmail()).equals(Status.PENDING)) {
-//                    User referrerUser = referralRepository.getReferrerUserIdByEmail(user.getEmail()).get();
-//                    addBonus(referrerUser);
-//                    addBonus(user);
-//                }
-//            }
         }
     }
 

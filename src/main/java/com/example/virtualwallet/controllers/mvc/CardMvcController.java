@@ -8,7 +8,6 @@ import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.CardMapper;
 import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.CardDto;
 import com.example.virtualwallet.services.contracts.CardService;
 import com.example.virtualwallet.services.contracts.WalletService;
@@ -76,7 +75,7 @@ public class CardMvcController {
 //    }
 
     @GetMapping
-    public String showAllCardsByCurrentUser( Model model, HttpSession session) {
+    public String showAllCardsByCurrentUser(Model model, HttpSession session) {
         User user;
         try {
             user = authenticationHelper.tryGetCurrentUser(session);
@@ -87,7 +86,7 @@ public class CardMvcController {
         try {
             List<Card> cards = cardService.getAllCardsByCurrentUser(user);
             model.addAttribute("cards", cards);
-            model.addAttribute("userId",user.getId());
+            model.addAttribute("userId", user.getId());
             model.addAttribute("currentUser", user);
             return "cards";
         } catch (EntityNotFoundException e) {
@@ -96,6 +95,7 @@ public class CardMvcController {
             return "error";
         }
     }
+
     @GetMapping("/{cardId}")
     public String showSingleCard(@PathVariable int cardId, Model model, HttpSession session) {
         User user;

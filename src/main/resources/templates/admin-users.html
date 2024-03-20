@@ -5,6 +5,31 @@
     <title>Admin Panel: Users List</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div th:replace="fragments/layout :: css-sheets"></div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        // Function to handle button click event
+        document.getElementById('confirmButton').addEventListener('click', function() {
+            // Send AJAX request to change user's status to "APPROVED"
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/admin/users/' + /* user's id */ + '/confirm-registration');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Update button text to "APPROVED" upon successful response
+                    document.getElementById('confirmButton').innerText = 'APPROVED';
+                } else {
+                    // Handle error case
+                    console.error('Error: ' + xhr.statusText);
+                }
+            };
+            xhr.send();
+        });
+
+        /*]]>*/
+    </script>
+
 </head>
 <body>
 <div th:replace="fragments/layout :: header"></div>
@@ -144,21 +169,11 @@
                                 </button>
                             </form>
                         </td>
-
                         <td>
                             <form th:action="@{${'/admin/users/' + user.getId() + '/confirm-registration'}}"
                                   method="post">
-                                <button class="btn btn-primary" type="submit"
-                                        th:text="${user.getIdentityStatus().getIdentity().name() == 'PENDING'} ? 'APPROVED' : 'REJECTED'">
-                                </button>
-                            </form>
-                        </td>
-
-                        <td>
-                            <form th:action="@{${'/admin/users/' + user.getId() + '/confirm-registration'}}"
-                                  method="post">
-                                <button class="btn btn-primary" type="submit"
-                                        th:text="${user.getIdentityStatus().getIdentity().name() == 'PENDING'} ? 'APPROVED' : 'REJECTED'">
+                                <button class="btn btn-outline-danger" type="submit"
+                                        th:text="${user.getIdentityStatus().getIdentity().name().equals('PENDING') ? 'PENDING' : 'APPROVED'}">
                                 </button>
                             </form>
                         </td>

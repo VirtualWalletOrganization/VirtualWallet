@@ -90,7 +90,7 @@ VALUES ('DECLINED'),
        ('FAILED'),
        ('PENDING'),
        ('PENDING_RECURRING_REQUEST'),
-       ('REJECT');
+       ('REJECTED');
 
 -- Example data for transactions_types
 INSERT INTO transactions_types (transaction_type_name)

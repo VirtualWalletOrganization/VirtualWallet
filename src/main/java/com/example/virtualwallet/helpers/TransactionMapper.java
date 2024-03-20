@@ -1,17 +1,13 @@
 package com.example.virtualwallet.helpers;
 
 import com.example.virtualwallet.models.*;
-import com.example.virtualwallet.models.dtos.CardDto;
-import com.example.virtualwallet.models.dtos.MockBankDto;
 import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.models.enums.Interval;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.TransactionType;
-import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 

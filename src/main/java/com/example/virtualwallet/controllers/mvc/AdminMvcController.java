@@ -1,9 +1,6 @@
 package com.example.virtualwallet.controllers.mvc;
 
-import com.example.virtualwallet.exceptions.AuthorizationException;
-import com.example.virtualwallet.exceptions.DeletionRestrictedException;
-import com.example.virtualwallet.exceptions.DuplicateEntityException;
-import com.example.virtualwallet.exceptions.EntityNotFoundException;
+import com.example.virtualwallet.exceptions.*;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
@@ -125,52 +122,6 @@ public class AdminMvcController {
 //            return "error";
 //        }
     }
-
-//    @GetMapping("/users")
-//    public String showUsers(@ModelAttribute("userFilterOptions") @Valid UserFilterDto filterDto,
-//                            BindingResult bindingResult,
-//                            HttpSession session,
-//                            Model model) {
-//        if (bindingResult.hasErrors()) {
-//            return "admin-users";
-//        }
-//
-//        UserFilterOptions userFilterOptions = new UserFilterOptions(
-//                filterDto.getUsername(),
-//                filterDto.getFirstName(),
-//                filterDto.getLastName(),
-//                filterDto.getEmail(),
-//                filterDto.getPhoneNumber(),
-//                filterDto.getRole(),
-//                filterDto.getStatus(),
-//                filterDto.getSortBy(),
-//                filterDto.getSortOrder());
-//
-//        User user;
-//        try {
-//            user = authenticationHelper.tryGetCurrentUser(session);
-//        } catch (AuthorizationException e) {
-//            return "redirect:/auth/login";
-//        }
-//
-//        try {
-//            List<User> users = userService.getAll(userFilterOptions);
-//            model.addAttribute("users", users);
-//            model.addAttribute("user", user);
-////            model.addAttribute("currentUser", user);
-//            model.addAttribute("filterOptions", filterDto);
-////            model.addAttribute("isAuthenticated", true);
-//            return "admin-users";
-//        } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-//            model.addAttribute("error", e.getMessage());
-//            return "error";
-//        } catch (AuthorizationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-//            model.addAttribute("error", e.getMessage());
-//            return "error";
-//        }
-//    }
 
     @GetMapping("/transactions")
     public String showTransactions(@ModelAttribute("transactionFilterOptions") @Valid TransactionFilterDto filterDto,
@@ -331,6 +282,10 @@ public class AdminMvcController {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "error";
+        } catch (IdentityNotVerifiedException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
     }
 
@@ -361,6 +316,10 @@ public class AdminMvcController {
             model.addAttribute("error", e.getMessage());
             return "error";
         } catch (DuplicateEntityException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (IdentityNotVerifiedException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "error";

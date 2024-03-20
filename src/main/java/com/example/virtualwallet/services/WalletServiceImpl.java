@@ -6,7 +6,6 @@ import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.CardMapper;
 import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.CardDto;
-import com.example.virtualwallet.models.dtos.MockBankDto;
 import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.models.enums.WalletRole;
 import com.example.virtualwallet.models.enums.WalletType;
@@ -34,16 +33,18 @@ public class WalletServiceImpl implements WalletService {
     private final UserService userService;
     private final TransferService transferService;
     private final CardMapper cardMapper;
-    private final WebClient dummyApiWebClient;
+    private final WebClient dummyApi;
 
 
     @Autowired
-    public WalletServiceImpl(WalletRepository walletRepository, UserService userService, TransferService transferService, CardMapper cardMapper, WebClient dummyApiWebClient) {
+    public WalletServiceImpl(WalletRepository walletRepository, UserService userService,
+                             TransferService transferService,
+                             CardMapper cardMapper, WebClient dummyApi) {
         this.walletRepository = walletRepository;
         this.userService = userService;
         this.transferService = transferService;
         this.cardMapper = cardMapper;
-        this.dummyApiWebClient = dummyApiWebClient;
+        this.dummyApi = dummyApi;
     }
 
     @Override
@@ -230,20 +231,6 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void addMoneyFromCardToWallet(Transfer transfer, Wallet receiverWallet, User user) {
-        receiverWallet.setBalance(receiverWallet.getBalance().add(transfer.getAmount()));
-        walletRepository.update(receiverWallet);
-        user.getWallets().stream()
-                .filter(wallet -> wallet.getId() == receiverWallet.getId())
-                .forEach(wallet -> {
-                    wallet.setBalance(receiverWallet.getBalance());
-                });
-        userService.updateUser(user, user);
-        transfer.setStatus(Status.COMPLETED);
-        transferService.createTransfer(transfer);
-    }
-
-    @Override
     public String moneyFromCardToWallet(Transfer transfer, Wallet receiverWallet, User user, Card card) {
         Transfer newTransfer = transferService.createTransfer(transfer);
 
@@ -269,7 +256,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     private String sendTransferRequest(Card card) {
-        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = dummyApiWebClient.method(HttpMethod.POST);
+        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = dummyApi.method(HttpMethod.POST);
         WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
         CardDto cardDto = cardMapper.toDtoCard(card);
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);

@@ -1,9 +1,7 @@
 package com.example.virtualwallet.repositories;
 
-import com.example.virtualwallet.models.IdentityStatus;
 import com.example.virtualwallet.models.Photo;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.UsersRole;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.utils.UserFilterOptions;
 import org.hibernate.Session;
@@ -139,9 +137,10 @@ public class UserRepositoryImpl implements UserRepository {
 //            return Optional.ofNullable(query.list().get(0));
         }
     }
+
     public Optional<User> getByContact(String contact) {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery(  "FROM User WHERE phoneNumber = :contact " +
+            Query<User> query = session.createQuery("FROM User WHERE phoneNumber = :contact " +
                     "OR email = :contact OR username = :contact", User.class);
             query.setParameter("contact", contact);
             List<User> userList = query.list();
@@ -152,6 +151,7 @@ public class UserRepositoryImpl implements UserRepository {
             }
         }
     }
+
     @Override
     public Optional<List<User>> getAllUsersByWalletId(int walletId) {
         try (Session session = sessionFactory.openSession()) {
@@ -234,20 +234,15 @@ public class UserRepositoryImpl implements UserRepository {
             session.getTransaction().commit();
         }
     }
-    @Override
-   public void confirmRegistration(User user){
 
-//       IdentityStatus identityStatus = new IdentityStatus();
-//       try (Session session = sessionFactory.openSession()) {
-//           identityStatus = session.get(IdentityStatus.class, 1);
-//       }
-//       user.setIdentityStatus(identityStatus);
-       try (Session session = sessionFactory.openSession()) {
-           session.beginTransaction();
-           session.merge(user);
-           session.getTransaction().commit();
-       }
-   }
+    @Override
+    public void confirmRegistration(User user) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.merge(user);
+            session.getTransaction().commit();
+        }
+    }
 
     public boolean existsByPhoneNumber(User userPhoneNumberToBeUpdate) {
         try (Session session = sessionFactory.openSession()) {

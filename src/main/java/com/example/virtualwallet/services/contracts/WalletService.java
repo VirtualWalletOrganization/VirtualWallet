@@ -33,7 +33,5 @@ public interface WalletService {
 
     void removeUsersFromWallet(int walletId, int userId, User user);
 
-    void addMoneyFromCardToWallet(Transfer transfer, Wallet receiverWallet, User user);
-
     String moneyFromCardToWallet(Transfer transfer, Wallet receiverWallet, User user, Card card);
 }

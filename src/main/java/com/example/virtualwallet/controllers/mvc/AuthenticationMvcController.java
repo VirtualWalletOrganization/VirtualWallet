@@ -35,7 +35,6 @@ public class AuthenticationMvcController {
     private final AuthenticationHelper authenticationHelper;
     private final UserMapper userMapper;
     private final WalletMapper walletMapper;
-
     private final WalletService walletService;
 
     @Autowired
@@ -79,6 +78,7 @@ public class AuthenticationMvcController {
                 session.setAttribute("isDelete", user.isDeleted());
                 throw new EntityAlreadyDeleteException("username", user.getUsername());
             }
+
             return "redirect:/";
         } catch (AuthorizationException e) {
             bindingResult.rejectValue("username", "auth_error", e.getMessage());
@@ -115,13 +115,9 @@ public class AuthenticationMvcController {
         }
 
         try {
-//            User user = userMapper.fromDto(register);
-//            userService.registerUser(user);
-
             User user = userMapper.fromDtoRegister(register);
-            Wallet wallet = walletMapper.fromDtoCreateWallet(register,user);
+            Wallet wallet = walletMapper.fromDtoCreateWallet(register, user);
             Photo photo = userMapper.fromDtoCreatePhoto(register);
-
             userService.registerUser(user);
             user.setPhoto(photo);
             userService.createPhoto(photo, user);

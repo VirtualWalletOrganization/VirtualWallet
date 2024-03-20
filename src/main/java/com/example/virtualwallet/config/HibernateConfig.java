@@ -30,7 +30,6 @@ public class HibernateConfig {
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setPackagesToScan("com.example.virtualwallet.models");
         sessionFactory.setHibernateProperties(hibernateProperties());
-
         return sessionFactory;
     }
 
@@ -41,7 +40,6 @@ public class HibernateConfig {
         dataSource.setUrl(dbUrl);
         dataSource.setUsername(dbUsername);
         dataSource.setPassword(dbPassword);
-
         return dataSource;
     }
 
@@ -49,7 +47,6 @@ public class HibernateConfig {
         Properties hibernateProperties = new Properties();
         hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
 //        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-
         return hibernateProperties;
     }
 }

@@ -62,7 +62,8 @@
                                         <label for="amount" th:text="#{user.amountToTopUp}"></label>
                                         <input id="amount" type="number" step=".01"
                                                class="form-control font-weight-bold" required
-                                               th:field="*{transferValue.amount}">
+                                               th:field="*{transferValue.amount}"
+                                               th:placeholder="#{amount.placeholder}">
                                     </div>
                                     <div class="form-group">
                                         <label for="card" th:text="#{user.cardToToTopUpFrom}"></label>
@@ -91,7 +92,8 @@
                                                th:text="#{wallet.top.up.description}">Description</label>
                                         <input type="text" autocomplete="off" id="description"
                                                class="form-control font-weight-bold" required
-                                               th:field="*{transferValue.description}">
+                                               th:field="*{transferValue.description}"
+                                               th:placeholder="#{transaction.create.descriptionPlaceholder}">
                                     </div>
                                     <div th:if="${#fields.hasErrors('transferValue.description')}"
                                          class="alert alert-danger alert-pills">
