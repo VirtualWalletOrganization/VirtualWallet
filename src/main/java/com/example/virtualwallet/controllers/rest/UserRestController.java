@@ -198,11 +198,8 @@ public class UserRestController {
             userService.createPhoto(photo, user);
             walletService.create(wallet, user);
 
-
-//            userService.updateUser(user, user);
             userMapper.toDtoRegisterAndUpdateUser(user);
             return userMapper.toDtoRegisterAndUpdateUser(user);
-//            return new UserResponseDto(user, HttpStatus.CREATED);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -224,7 +221,6 @@ public class UserRestController {
             User admin = authenticationHelper.tryGetUser(headers);
             User toBeVerified = userService.getById(id);
             userService.confirmUserRegistration(admin, toBeVerified);
-//            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (DuplicateEntityException e) {
@@ -283,39 +279,6 @@ public class UserRestController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
-
-//    @PutMapping("/{id}/profile-picture")
-//    public ResponseEntity<Void> saveProfilePictureUrl(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestParam String profilePictureUrl) {
-//        try {
-//            authenticationHelper.tryGetUser(headers);
-//            User currentUser = userService.getById(id);
-//            userService.saveProfilePictureUrl(currentUser.getUsername(), profilePictureUrl);
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        } catch (DuplicateEntityException e) {
-//            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        }
-//    }
-
-//    @GetMapping("/{id}/profile-picture")
-//
-//    public ResponseEntity<String> getProfilePictureUrl(@RequestHeader HttpHeaders headers, @PathVariable int id) {
-//        try {
-//            authenticationHelper.tryGetUser(headers);
-//            User currentUser = userService.getById(id);
-//            String profilePictureUrl = userService.getProfilePictureUrl(currentUser.getUsername());
-//            return new ResponseEntity<>(profilePictureUrl, HttpStatus.OK);
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        } catch (DuplicateEntityException e) {
-//            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        }
-//    }
 
     @PutMapping("/{id}/admins")
     @Operation(tags ={"Update a user to admin"},
@@ -413,38 +376,6 @@ public class UserRestController {
         }
     }
 
-//    @PutMapping("/{id}/phone-number")
-//    public UserResponseDto updateUserPhoneNumber(@RequestHeader HttpHeaders headers,
-//                                                 @PathVariable int id,
-//                                                 @Valid @RequestBody PhoneNumberDto phoneNumberDto, UpdateUserDto dto) {
-//        try {
-//            User user = authenticationHelper.tryGetUser(headers);
-//            User userPhoneNumberToBeUpdate = userMapper.fromDtoUpdatePhoneNumber(id, phoneNumberDto, dto);
-//            userService.addPhoneNumberToAdmin(user, userPhoneNumberToBeUpdate);
-//            return userMapper.toDto(userPhoneNumberToBeUpdate);
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        } catch (DuplicateEntityException e) {
-//            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        }
-//    }
-//
-//    @DeleteMapping("/{id}/phone-number")
-//    public void deleteUserPhoneNumber(@RequestHeader HttpHeaders headers, @PathVariable int id) {
-//        try {
-//            User user = authenticationHelper.tryGetUser(headers);
-//            userService.deletePhoneNumber(id, user);
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        } catch (EntityAlreadyDeleteException e) {
-//            throw new ResponseStatusException(HttpStatus.GONE, e.getMessage());
-//        }
-//    }
-
     @GetMapping(value = "/search", params = {"username"})
     @Operation(tags ={"Search for a user"},
             summary = "This method search for a user when user name is given.",
@@ -504,6 +435,5 @@ public class UserRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER_ERROR_MESSAGE);
         }
     }
-
 
 }

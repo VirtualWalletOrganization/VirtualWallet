@@ -192,8 +192,6 @@ public class TransactionRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
-    //TODO implement mvc view with option for update and go back
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
@@ -208,7 +206,6 @@ public class TransactionRestController {
         }
     }
 
-    //TODO getTransactionsStatusById
     @PostMapping("/wallets/{walletId}/request")
     public ResponseEntity<Transaction> requestTransaction(@RequestHeader HttpHeaders headers,
                                                           @PathVariable int walletId,
