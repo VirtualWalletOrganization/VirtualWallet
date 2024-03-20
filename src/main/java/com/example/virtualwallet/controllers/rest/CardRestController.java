@@ -44,17 +44,6 @@ public class CardRestController {
         this.authenticationHelper = authenticationHelper;
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<Card>> getAllCards(@RequestHeader HttpHeaders headers) {
-//        try {
-//            authenticationHelper.tryGetUser(headers);
-//            List<Card> cards = cardService.getAllCards();
-//            return new ResponseEntity<>(cards, HttpStatus.OK);
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        }
-//    }
-
     @GetMapping("/{cardId}")
     @Operation(tags ={"Get a card"},
             operationId = "Id to be searched for",

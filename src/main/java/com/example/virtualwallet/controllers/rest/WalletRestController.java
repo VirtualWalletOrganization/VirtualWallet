@@ -62,18 +62,6 @@ public class WalletRestController {
         }
     }
 
-//    @GetMapping("/default/{recipientUserId}")
-//    public ResponseEntity<Wallet> getDefaultWallet(@RequestHeader HttpHeaders headers, @PathVariable int recipientUserId) {
-//        try {
-//            authenticationHelper.tryGetUser(headers);
-//            Wallet wallet = walletService.getDefaultWallet(recipientUserId);
-//            return new ResponseEntity<>(wallet, HttpStatus.OK);
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        }
-//    }
 
     @PostMapping
     public ResponseEntity<Wallet> create(@RequestHeader HttpHeaders headers,

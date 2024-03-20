@@ -5,10 +5,7 @@ import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.exceptions.InsufficientBalanceException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.TransactionMapper;
-import com.example.virtualwallet.models.RecurringTransaction;
-import com.example.virtualwallet.models.Transaction;
-import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
+import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.dtos.RecurringTransactionDto;
 import com.example.virtualwallet.models.dtos.TransactionDto;
 import com.example.virtualwallet.services.contracts.RecurringTransactionService;
@@ -16,6 +13,11 @@ import com.example.virtualwallet.services.contracts.TransactionService;
 import com.example.virtualwallet.services.contracts.UserService;
 import com.example.virtualwallet.services.contracts.WalletService;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,6 +53,12 @@ public class TransactionRestController {
     }
 
     @GetMapping
+    @Operation(tags ={"Get all transactions"},
+            summary = "This method retrieve information about all transactions.",
+            description = "This method search for all transactions in the data base. When a person is authenticated and there are transactions, a list with them will be presented.",
+            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Transactions were found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "You are not allowed to access the list of transactions."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Transactions were not found.")})
     public ResponseEntity<List<Transaction>> getAllTransactions(@RequestHeader HttpHeaders headers,
                                                                 @RequestParam TransactionFilterOptions transactionFilterOptions) {
         try {
@@ -65,6 +73,14 @@ public class TransactionRestController {
     }
 
     @GetMapping("/{id}")
+    @Operation(tags = {"Get a transaction"},
+            operationId = "id to be searched for",
+            summary = "This method search for a particular transaction when id is given.",
+            description = "This method search for a transaction. A valid id must be given as an input. Proper authentication must be in place",
+            parameters = {@Parameter(name = "id", description = "contact id", example = "5")},
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "The transaction has been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "You are not allowed to access this transaction."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Transaction with this id was not found.")})
     public ResponseEntity<Transaction> getTransactionById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             authenticationHelper.tryGetUser(headers);
@@ -78,6 +94,14 @@ public class TransactionRestController {
     }
 
     @GetMapping("/wallets/{walletId}")
+    @Operation(tags = {"Get all transactions by wallet id"},
+            operationId = "id to be searched for",
+            summary = "This method search for all transactions when wallet id is given.",
+            description = "This method search for all transactions related to a particular id. A valid wallet id must be given as an input. Proper authentication must be in place",
+            parameters = {@Parameter(name = "id", description = "wallet id", example = "5")},
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "The transactions have been found successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "You are not allowed to access these transactions."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Wallet with this id was not found.")})
     public ResponseEntity<List<Transaction>> getAllTransactionsByWalletId(@RequestHeader HttpHeaders headers,
                                                                           @PathVariable int walletId) {
         try {
@@ -93,6 +117,15 @@ public class TransactionRestController {
     }
 
     @PostMapping("/{walletId}")
+    @Operation(tags = {"Confirm transaction"},
+            summary = "With this method a transaction is being confirmed.",
+            description = "With this method a transaction is being confirmed. A valid object must be given as an input and wallet id. Proper authentication must be in place",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request that accepts object parameters.",
+                    content = @Content(schema = @Schema(implementation = Transaction.class))),
+            operationId = "wallet id",
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "The transaction has been confirmed successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "You are not allowed to confirm this transaction."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Wallet with this id was not found.")})
     public ResponseEntity<Transaction> confirmTransaction(@RequestHeader HttpHeaders headers,
                                                           @PathVariable int walletId,
                                                           @RequestBody TransactionDto transactionDto) {
@@ -113,6 +146,15 @@ public class TransactionRestController {
     }
 
     @PostMapping("/wallets/{walletId}/send")
+    @Operation(tags = {"Create a transaction"},
+            summary = "This method creates a transaction when input is given.",
+            description = "This method creates a transaction. A valid object must be given as an input. Proper authentication must be in place",
+            operationId = "wallet id",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request that accepts object parameters.",
+                    content = @Content(schema = @Schema(implementation = Transaction.class))),
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "The transaction has been created successfully"),
+                    @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "You are not allowed to create a transaction."),
+                    @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Wallet with this id was not found.")})
     public ResponseEntity<Transaction> createTransaction(@RequestHeader HttpHeaders headers,
                                                          @PathVariable int walletId,
                                                          @RequestBody TransactionDto transactionDto) {
@@ -150,8 +192,6 @@ public class TransactionRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
-    //TODO implement mvc view with option for update and go back
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
@@ -166,7 +206,6 @@ public class TransactionRestController {
         }
     }
 
-    //TODO getTransactionsStatusById
     @PostMapping("/wallets/{walletId}/request")
     public ResponseEntity<Transaction> requestTransaction(@RequestHeader HttpHeaders headers,
                                                           @PathVariable int walletId,

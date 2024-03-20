@@ -130,8 +130,6 @@ public class ContactRestController {
             operationId = "id to be deleted",
             summary = "This method deletes a contact when id is given.",
             description = "This method deletes a contact. A valid id must be given as an input. Proper authentication must be in place",
-//            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "This is a request that accepts post id",
-//                    content = @Content(schema = @Schema(implementation = Post.class))),
             parameters = {@Parameter(name = "postId", description = "path variable", example = "5")},
             responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Contact.class)), description = "The post has been deleted successfully"),
                     @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Contact.class)), description = "The post with this id was not found."),
