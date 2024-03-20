@@ -69,10 +69,10 @@ public class TransferRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Transfer> updateTransfer(@RequestHeader HttpHeaders headers, @PathVariable int id, @RequestBody Transfer transfer) {
+    public ResponseEntity<Transfer> updateTransfer(@RequestHeader HttpHeaders headers,
+                                                   @PathVariable int id, @RequestBody Transfer transfer) {
         try {
             authenticationHelper.tryGetUser(headers);
-            // transfer.set(id);
             transferService.updateTransfer(transfer);
             return new ResponseEntity<>(transfer, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -114,7 +114,11 @@ public class TransferRestController {
     }
 
     @PostMapping("/confirm-transfer")
-    public ResponseEntity<Void> confirmTransfer(@RequestHeader HttpHeaders headers, @RequestParam int transferId, @RequestParam int senderId, @RequestParam int recipientId, @RequestParam int recipientWalletId) {
+    public ResponseEntity<Void> confirmTransfer(@RequestHeader HttpHeaders headers,
+                                                @RequestParam int transferId,
+                                                @RequestParam int senderId,
+                                                @RequestParam int recipientId,
+                                                @RequestParam int recipientWalletId) {
         try {
             authenticationHelper.tryGetUser(headers);
             transferService.confirmTransfer(transferId, senderId, recipientId, recipientWalletId);
@@ -127,7 +131,9 @@ public class TransferRestController {
     }
 
     @PostMapping("/edit-transfer")
-    public ResponseEntity<Void> editTransfer(@RequestHeader HttpHeaders headers, @RequestParam int transferId, @RequestParam BigDecimal newAmount) {
+    public ResponseEntity<Void> editTransfer(@RequestHeader HttpHeaders headers,
+                                             @RequestParam int transferId,
+                                             @RequestParam BigDecimal newAmount) {
         try {
             authenticationHelper.tryGetUser(headers);
             transferService.editTransfer(transferId, newAmount);

@@ -2,7 +2,6 @@ package com.example.virtualwallet.models.dtos;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.List;
 
 public class TransactionHistoryDto {
 

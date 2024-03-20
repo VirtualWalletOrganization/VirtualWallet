@@ -3,9 +3,7 @@ package com.example.virtualwallet.controllers.rest;
 import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
-import com.example.virtualwallet.models.Contact;
 import com.example.virtualwallet.models.Overdraft;
-import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.services.contracts.OverdraftService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,10 +33,10 @@ public class OverdraftRestController {
     }
 
     @GetMapping
-    @Operation(tags ={"Get all overdrafts"},
+    @Operation(tags = {"Get all overdrafts"},
             summary = "This method retrieve information about all overdrafts.",
             description = "This method search for all overdrafts in the data base. When a person is authorized and there are overdrafts, a list with all overdrafts will be presented.",
-            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "Overdraft(s) was/were found successfully"),
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "Overdraft(s) was/were found successfully"),
                     @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "You are not allowed to access the list of overdrafts."),
                     @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "Overdraft(s) is/were not found.")})
     public ResponseEntity<List<Overdraft>> getAllOverdrafts(@RequestHeader HttpHeaders headers) {
@@ -54,12 +52,12 @@ public class OverdraftRestController {
     }
 
     @GetMapping("/{id}")
-    @Operation(tags ={"Get an overdraft"},
+    @Operation(tags = {"Get an overdraft"},
             operationId = "Id to be searched for",
             summary = "This method search for a overdraft when id is given.",
             description = "This method search for an overdraft. A valid id must be given as an input.",
-            parameters = {@Parameter( name = "id", description = "path variable", example = "5")},
-            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "The overdraft has been found successfully"),
+            parameters = {@Parameter(name = "id", description = "path variable", example = "5")},
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "The overdraft has been found successfully"),
                     @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "You are not allowed to access this overdraft."),
                     @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Overdraft.class)), description = "Overdraft with this id was not found.")})
     public ResponseEntity<Overdraft> getOverdraftById(@RequestHeader HttpHeaders headers, @PathVariable int id) {

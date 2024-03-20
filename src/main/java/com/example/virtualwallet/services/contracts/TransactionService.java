@@ -3,11 +3,8 @@ package com.example.virtualwallet.services.contracts;
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
-import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,9 +17,9 @@ public interface TransactionService {
 
     List<Transaction> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions);
 
-    Optional<List<Transaction> >getAllTransactionsByStatus(User user);
+    Optional<List<Transaction>> getAllTransactionsByStatus(User user);
 
-    Optional<List<Transaction> >getAllTransactionsByTransactionType(User user);
+    Optional<List<Transaction>> getAllTransactionsByTransactionType(User user);
 
     List<Transaction> getAllTransactionsByWalletId(Wallet wallet);
 

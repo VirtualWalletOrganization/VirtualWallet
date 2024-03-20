@@ -96,7 +96,6 @@ public class UserMapper {
         return userResponseDto;
     }
 
-
     public UserDto userToDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setFirstName(user.getFirstName());
@@ -111,23 +110,4 @@ public class UserMapper {
         UserResponseDto userResponseDto = toDto(userToUpdate);
         return userResponseDto;
     }
-
-    public User fromDtoUpdatePhoneNumber(int id, PhoneNumberDto dto, UpdateUserDto userDto) {
-        User updatedUser = fromDtoUpdate(id, userDto);
-        updatedUser.setPhoneNumber(dto.getPhoneNumber());
-
-        return updatedUser;
-    }
-
-    public User fromDto(RegisterDto dto) {
-        User user = new User();
-        user.setPassword(dto.getPassword());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        user.getUsersRole().setRole(Role.USER);
-
-        return user;
-    }
-
 }

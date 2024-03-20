@@ -38,16 +38,16 @@ public class RegisterDto {
     @NotBlank(message = "Currency can't be blank.")
     private String currency;
 
-   // @NotEmpty(message = "Profile picture can't be empty")
-   // @NotBlank(message = "Profile picture can't be blank.")
+    // @NotEmpty(message = "Profile picture can't be empty")
+    // @NotBlank(message = "Profile picture can't be blank.")
     private String profilePicture;
 
-   // @NotEmpty(message = "CardId photo can`t be empty")
-   // @NotBlank(message = "CardId photo can't be blank.")
+    // @NotEmpty(message = "CardId photo can`t be empty")
+    // @NotBlank(message = "CardId photo can't be blank.")
     private String cardId;
 
     //@NotEmpty(message = "Selfie can`t be empty")
-   // @NotBlank(message = "Selfie can't be blank.")
+    // @NotBlank(message = "Selfie can't be blank.")
     private String selfie;
 
     public RegisterDto() {

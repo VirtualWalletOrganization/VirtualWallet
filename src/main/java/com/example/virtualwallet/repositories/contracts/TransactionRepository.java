@@ -2,11 +2,8 @@ package com.example.virtualwallet.repositories.contracts;
 
 import com.example.virtualwallet.models.Transaction;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.enums.Status;
 import com.example.virtualwallet.utils.TransactionFilterOptions;
 import com.example.virtualwallet.utils.TransactionHistoryFilterOptions;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +14,7 @@ public interface TransactionRepository {
 
     Optional<Transaction> getTransactionById(int transactionId);
 
-    Optional <List<Transaction>> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions);
+    Optional<List<Transaction>> getAllTransactionsByUserId(int userId, TransactionHistoryFilterOptions transactionHistoryFilterOptions);
 
     Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId);
 

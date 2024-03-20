@@ -34,9 +34,6 @@
 </section>
 <section class="section">
     <div class="container">
-        <!--        <div th:if="${transactions == null or transactions.isEmpty()}">-->
-        <!--            <h2>No Notifications</h2>-->
-        <!--        </div>-->
         <div th:unless="${transactionList == null or transactionList.isEmpty()}">
             <div class="table-responsive bg-white shadow rounded mt-4">
                 <table class="table mb-0 table-center"
@@ -73,35 +70,24 @@
                         </td>
 
                         <td>
-                            <form th:action="@{${'/transactions/' + transacton.transactionId + '/' + 'complete'}}" method="post">
-                                <button class="btn btn-outline-danger" type="submit" th:text="${transacton.getTransactionsType().getTransactionType().name().equals('COMPLETED') ? 'COMPLETED' : (transacton.getTransactionsType().getTransactionType().name().equals('DECLINED') ? 'DECLINED' : 'PENDING')}">
+                            <form th:action="@{${'/transactions/' + transacton.transactionId + '/' + 'complete'}}"
+                                  method="post">
+                                <button class="btn btn-outline-danger" type="submit"
+                                        th:text="${transacton.getTransactionsType().getTransactionType().name().equals('COMPLETED') ? 'COMPLETED' : (transacton.getTransactionsType().getTransactionType().name().equals('DECLINED') ? 'DECLINED' : 'PENDING')}">
                                 </button>
                             </form>
                         </td>
                         <td>
                             <form th:action="@{${'/transactions/' + transacton.transactionId + '/' + 'reject'}}"
                                   method="post">
-                                <!--                                <input class="btn btn-danger" type="submit" th:text="#{admin.block}">-->
                                 <button class="btn btn-danger" type="submit" th:text="#{transaction.reject}">
-                                    <!--                                        th:text="${transacton.getTransactionsType().getTransactionType().name().equals('BLOCKED') ? 'Unblock' : 'Block'}">-->
-                                    <!--                                    Toggle Block-->
                                 </button>
                             </form>
                         </td>
                     </tbody>
                 </table>
 
-
             </div>
-            <!--            <div class="p-4" th:if="${users} != null AND ${paginatedUserListDto.totalPages > 0}">-->
-            <!--                <ul class="pagination mb-0 list-unstyled">-->
-            <!--                    <li th:each="i : ${#numbers.sequence(paginatedUserListDto.beginIndex, paginatedUserListDto.endIndex)}">-->
-            <!--                        <a th:href="@{/admin/users/(size=${paginatedUserListDto.pageSize}, page=${i}, filterType=${filterType}, contact=${contact})}"-->
-            <!--                           th:text="${i}"-->
-            <!--                           th:class="'pr-3 pl-3 pt-2 pb-2' + (${i == paginatedUserListDto.page} ? ' active bg-primary text-light' : '')"></a>-->
-            <!--                    </li>-->
-            <!--                </ul>-->
-            <!--            </div>-->
         </div>
     </div>
 </section>

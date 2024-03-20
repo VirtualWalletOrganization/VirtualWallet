@@ -53,10 +53,10 @@ public class TransactionRestController {
     }
 
     @GetMapping
-    @Operation(tags ={"Get all transactions"},
+    @Operation(tags = {"Get all transactions"},
             summary = "This method retrieve information about all transactions.",
             description = "This method search for all transactions in the data base. When a person is authenticated and there are transactions, a list with them will be presented.",
-            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Transactions were found successfully"),
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Transactions were found successfully"),
                     @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "You are not allowed to access the list of transactions."),
                     @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Transaction.class)), description = "Transactions were not found.")})
     public ResponseEntity<List<Transaction>> getAllTransactions(@RequestHeader HttpHeaders headers,
@@ -192,6 +192,7 @@ public class TransactionRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {

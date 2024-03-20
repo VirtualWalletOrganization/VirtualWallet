@@ -387,7 +387,7 @@ public class WalletMvcController {
     }
 
     @PostMapping("/add-money")
-    public String addMoneyFromCardTransfer(Model model, HttpSession session,
+    public String addMoneyFromCardTransfer(HttpSession session,
                                            @Valid @ModelAttribute("transferValue") TransferRequestDto transferRequestDto,
                                            BindingResult result) {
         if (result.hasErrors()) {
@@ -403,7 +403,7 @@ public class WalletMvcController {
                 if (response.equals("COMPLETED")) {
                     return "transaction-funding-completed";
                 } else {
-                    return "transaction-funding-rejected.html";
+                    return "transaction-funding-rejected";
                 }
             } catch (AuthorizationException e) {
                 return "redirect:/auth/login";

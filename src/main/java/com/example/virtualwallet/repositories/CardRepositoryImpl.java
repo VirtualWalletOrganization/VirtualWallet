@@ -61,9 +61,10 @@ public class CardRepositoryImpl implements CardRepository {
     }
 
     @Override
-    public Optional<Card>getByCardNumber(String cardNumber) {
+    public Optional<Card> getByCardNumber(String cardNumber) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Card> query = session.createQuery("SELECT c FROM Card AS c WHERE c.cardNumber = :cardNumber", Card.class);
+            Query<Card> query = session.createQuery("SELECT c FROM Card AS c WHERE c.cardNumber = :cardNumber",
+                    Card.class);
             query.setParameter("cardNumber", cardNumber);
             return Optional.ofNullable(query.uniqueResult());
         }
@@ -91,6 +92,7 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public void deleteCard(Card cardToDelete) {
+
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.remove(cardToDelete);
@@ -101,7 +103,8 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public List<Card> findExpiredCards(Date currentDate) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Card> query = session.createQuery("FROM Card as c where c.expirationDate < :currentDate", Card.class);
+            Query<Card> query = session.createQuery("FROM Card as c where c.expirationDate < :currentDate",
+                    Card.class);
             query.setParameter("currentDate", currentDate);
             return query.list();
         }

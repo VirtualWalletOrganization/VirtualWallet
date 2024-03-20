@@ -44,12 +44,6 @@ public class CheckPermissions {
         }
     }
 
-    public static void checkAccessPermissionWalletUser(Wallet wallet, User user, String message) {
-        if (wallet.getCreator().getId() != user.getId()) {
-            throw new AuthorizationException(message);
-        }
-    }
-
     public static void checkPermissionExistingUsersInWallet(Wallet wallet, User user, String message) {
         wallet.getUsers().stream()
                 .filter(u -> u.getId() == user.getId())

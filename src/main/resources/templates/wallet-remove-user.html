@@ -31,17 +31,12 @@
 
                     <div class="p-4">
                         <form th:action="@{'/wallets/' + ${wallet.id}+'/users/delete'}" method="post">
-                            <!--              <div class="form-group">-->
-                            <!--                <label for="walletId" th:text="#{wallet.id}">Wallet ID:</label>-->
-                            <!--                <input type="text" id="walletId" name="walletId" class="form-control" required>-->
-                            <!--              </div>-->
 
                             <div class="form-group">
                                 <label for="userToRemove" th:text="#{user.name.to.remove}">Username to Remove:</label>
                                 <input type="text" id="userToRemove" name="userToRemove" class="form-control" required>
                             </div>
 
-                            <!-- You can add more input fields if needed -->
 
                             <button type="submit" class="btn btn-primary">Remove User from Wallet</button>
                         </form>
@@ -50,7 +45,6 @@
             </div>
         </div>
     </div>
-    <!-- Add Users to Wallet Form End -->
 </section>
 
 <div th:replace="fragments/layout :: footer"></div>

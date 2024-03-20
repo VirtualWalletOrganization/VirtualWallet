@@ -137,8 +137,6 @@ public class UserMvcController {
         try {
             User userToBeUpdated = userMapper.fromDtoUpdate(id, dto);
             userService.updateUser(user, userToBeUpdated);
-            User userToUpdate = userMapper.fromDtoUpdate(id, dto);
-            userService.updateUser(user, userToBeUpdated);
             return "redirect:/users/profile";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -159,7 +157,7 @@ public class UserMvcController {
     public String showDeleteUserPage(@PathVariable int id, Model model, HttpSession session) {
         User user;
         try {
-            user = authenticationHelper.tryGetCurrentUser(session);
+            authenticationHelper.tryGetCurrentUser(session);
         } catch (AuthorizationException e) {
             return "redirect:/auth/login";
         }

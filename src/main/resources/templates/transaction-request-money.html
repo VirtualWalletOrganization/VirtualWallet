@@ -139,16 +139,6 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                <!--                                <div class="p-4"-->
-                                <!--                                     th:if="${userList} != null AND ${userList.totalPages > 1}">-->
-                                <!--                                    <ul class="pagination mb-0 list-unstyled">-->
-                                <!--                                        <li th:each="i : ${#numbers.sequence(userList.beginIndex, userList.endIndex)}">-->
-                                <!--                                            <a th:href="@{/transactions/send-money/(pageSize=${userList.pageSize}, page=${i}, contactType=${userList}, contact=${userList})}"-->
-                                <!--                                               th:text="${i}"-->
-                                <!--                                               th:class="'pr-3 pl-3 pt-2 pb-2' + (${i == userList.page} ? ' active bg-primary text-light' : '')"></a>-->
-                                <!--                                        </li>-->
-                                <!--                                    </ul>-->
-                                <!--                                </div>-->
                             </div>
                             <div id="transaction-data" class="bg-white shadow rounded mt-4 p-4" style="display:none">
                                 <form id="external-transaction-form" th:action="@{/transactions/request-money}"
@@ -194,20 +184,7 @@
                                                        th:placeholder="#{transaction.create.descriptionPlaceholder}">
                                             </div>
                                         </div>
-<!--                                        <div class="col-md-12">-->
-<!--                                            <div class="form-group position-relative">-->
-<!--                                                <label for="transactionType"-->
-<!--                                                       th:text="#{transaction.create.transactionType}"></label>-->
-<!--                                                <i class="mdi mdi-comment-text ml-3 icons"></i>-->
-<!--                                                <select id="transactionType" class="form-control pl-5" name="transactionType"-->
-<!--                                                        required="required">-->
-<!--                                                    <option value="" disabled selected th:text="#{transaction.create.type}"></option>-->
-<!--                                                    <option th:each="type : ${T(com.example.virtualwallet.models.enums.TransactionType).values()}"-->
-<!--                                                            th:value="${type}" th:text="${type}">-->
-<!--                                                    </option>-->
-<!--                                                </select>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
+
                                     </div>
                                     <input class="btn btn-light" type="reset" th:value="#{transaction.clearButton}"/>
                                     <a type="submit" class="submitBnt btn btn-primary"

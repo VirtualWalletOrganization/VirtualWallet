@@ -40,7 +40,6 @@ public class RecurringTransactionRepositoryImpl implements RecurringTransactionR
         }
     }
 
-
     @Override
     public Optional<List<RecurringTransaction>> getRecurringTransactionByUserId(int userId) {
         try (Session session = sessionFactory.openSession()) {

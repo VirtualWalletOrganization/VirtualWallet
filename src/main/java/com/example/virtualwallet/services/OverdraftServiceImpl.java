@@ -23,7 +23,8 @@ public class OverdraftServiceImpl implements OverdraftService {
     private final UserService userService;
 
     @Autowired
-    public OverdraftServiceImpl(OverdraftRepository overdraftRepository, WalletService walletService, UserService userService) {
+    public OverdraftServiceImpl(OverdraftRepository overdraftRepository,
+                                WalletService walletService, UserService userService) {
         this.overdraftRepository = overdraftRepository;
         this.walletService = walletService;
         this.userService = userService;
@@ -79,11 +80,6 @@ public class OverdraftServiceImpl implements OverdraftService {
             LocalDate dueDate = LocalDate.parse(overdraft.getDueDate().toString());
 
             if (currentDate.isAfter(dueDate)) {
-//                BigDecimal balance = walletService.getWalletById(overdraft.getWallet().getId()).getBalance();
-//                BigDecimal interest = balance.multiply(BigDecimal.valueOf(overdraft.getOverdraftType().getInterestRate()));
-//                balance = balance.add(interest);
-//                walletService.updateBalance(overdraft.getWallet().getId(), balance);
-//                overdraft.setPaid(true);
                 overdraftRepository.update(overdraft);
             }
         }

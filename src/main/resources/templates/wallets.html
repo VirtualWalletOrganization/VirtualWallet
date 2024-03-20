@@ -74,12 +74,6 @@
                                         th:text="#{wallet.add.card}">Add card</button>
                             </form>
                         </td>
-<!--                        <td>-->
-<!--                            <form th:action="@{'/wallets/' + ${wallet.id} + '/update'}">-->
-<!--                                <button type="submit" class="btn btn-outline-primary"-->
-<!--                                        th:text="#{wallet.edit}">Edit wallet</button>-->
-<!--                            </form>-->
-<!--                        </td>-->
                         <td>
                             <button type="button" class="btn btn-light" data-toggle="modal"
                                    th:data-target="'#delete-card-' + ${wallet.id}" data-wallet-id="${wallet.id}">Delete

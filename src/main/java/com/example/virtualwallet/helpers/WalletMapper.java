@@ -6,7 +6,6 @@ import com.example.virtualwallet.models.WalletsType;
 import com.example.virtualwallet.models.dtos.RegisterDto;
 import com.example.virtualwallet.models.dtos.WalletDto;
 import com.example.virtualwallet.models.enums.WalletType;
-import com.example.virtualwallet.services.contracts.WalletService;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -14,11 +13,6 @@ import java.math.BigDecimal;
 @Component
 public class WalletMapper {
 
-    private final WalletService walletService;
-
-    public WalletMapper(WalletService walletService) {
-        this.walletService = walletService;
-    }
 
     public Wallet fromDto(WalletDto dto, User user) {
         Wallet wallet = new Wallet();

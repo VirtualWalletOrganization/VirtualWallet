@@ -1,6 +1,5 @@
 package com.example.virtualwallet.repositories.contracts;
 
-import com.example.virtualwallet.models.User;
 import com.example.virtualwallet.models.Wallet;
 
 import java.util.List;
@@ -19,8 +18,6 @@ public interface WalletRepository {
     Optional<List<Wallet>> getAllWalletsByCreatorId(int creatorId);
 
     Optional<List<Wallet>> getAllWalletsByUserId(int userId);
-
-    Wallet getByCreatorIdWhenRegistering(int creatorId);
 
     Wallet create(Wallet wallet);
 

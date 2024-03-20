@@ -1,7 +1,6 @@
 package com.example.virtualwallet.repositories.contracts;
 
 import com.example.virtualwallet.models.Contact;
-import com.example.virtualwallet.models.User;
 
 import java.util.List;
 import java.util.Optional;

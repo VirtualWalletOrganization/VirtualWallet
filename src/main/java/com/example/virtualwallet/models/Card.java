@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -48,8 +47,8 @@ public class Card {
     private CardStatus cardStatus = CardStatus.ACTIVE;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "cards",fetch = FetchType.EAGER)
-    private Set<Wallet> wallets= new HashSet<>();
+    @ManyToMany(mappedBy = "cards", fetch = FetchType.EAGER)
+    private Set<Wallet> wallets = new HashSet<>();
 
     public Card() {
     }

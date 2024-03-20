@@ -61,18 +61,6 @@
                                                            th:text="#{user.header.phone}"></label></div>
                                             </div>
                                         </div>
-<!--                                        <div id="search-form-country-code" class="col-md-4" style="display:none">-->
-<!--                                            <div class="form-group position-relative">-->
-<!--                                                <label th:text="#{user.header.countryCode}" for="country-code"></label>-->
-<!--                                                <select id="country-code" class="form-control font-weight-bold" required-->
-<!--                                                        name="countryCode">-->
-<!--&lt;!&ndash;                                                    <option th:each="country: ${T(a16team1.virtualwallet.utilities.Country).values()}"&ndash;&gt;-->
-<!--&lt;!&ndash;                                                            th:value="${country.getCode()}"&ndash;&gt;-->
-<!--&lt;!&ndash;                                                            th:text="${country.toString()}">BG (+359)&ndash;&gt;-->
-<!--&lt;!&ndash;                                                    </option>&ndash;&gt;-->
-<!--                                                </select>-->
-<!--                                            </div>-->
-<!--                                        </div>&lt;!&ndash;end col&ndash;&gt;-->
                                         <div id="contact-input-parent-column" class="col-md-12">
                                             <div class="form-group position-relative">
                                                 <label for="contact"
@@ -151,16 +139,6 @@
                                     </tr>
                                     </tbody>
                                 </table>
-<!--                                <div class="p-4"-->
-<!--                                     th:if="${userList} != null AND ${userList.totalPages > 1}">-->
-<!--                                    <ul class="pagination mb-0 list-unstyled">-->
-<!--                                        <li th:each="i : ${#numbers.sequence(userList.beginIndex, userList.endIndex)}">-->
-<!--                                            <a th:href="@{/transactions/send-money/(pageSize=${userList.pageSize}, page=${i}, contactType=${userList}, contact=${userList})}"-->
-<!--                                               th:text="${i}"-->
-<!--                                               th:class="'pr-3 pl-3 pt-2 pb-2' + (${i == userList.page} ? ' active bg-primary text-light' : '')"></a>-->
-<!--                                        </li>-->
-<!--                                    </ul>-->
-<!--                                </div>-->
                             </div>
                             <div id="transaction-data" class="bg-white shadow rounded mt-4 p-4" style="display:none">
                                 <form id="external-transaction-form" th:action="@{/transactions/send-money}"
@@ -169,8 +147,6 @@
                                     <input type="hidden" id="recipient-id" th:field="*{receiver}">
                                     <div class="row">
                                         <div class="col-md-12">
-<!--                                            <input type="hidden" id="selectedWalletIselectedWalletIdd" name="selectedWalletId" />-->
-
                                             <div class="form-group position-relative">
                                                 <label for="wallet"
                                                        th:text="#{transaction.create.chooseWallet}"></label>
@@ -178,7 +154,6 @@
                                                 <select id="wallet" class="form-control pl-5" name="senderWalletId"
                                                     required="required">
                                                     <option value="" disabled selected th:text="#{transaction.create.wallet}"></option>
-<!--                                                    th:placeholder="#{transaction.create.wallet}">-->
                                                     <option th:each="wallet : ${walletList}"
                                                             th:value="${wallet.id}"
                                                             th:text="${wallet.getWalletsType().getWalletType().name}"
@@ -220,7 +195,6 @@
                                             </div>
 
                                             <div id="additionalFields" class="col-md-12" style="display: none;">
-                                                <!-- Additional fields for recurring transactions -->
                                                 <div class="form-group position-relative">
                                                     <label for="frequency" th:text="#{transaction.create.frequency}"></label>
                                                     <i class="mdi mdi-comment-text ml-3 icons"></i>

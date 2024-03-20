@@ -1,4 +1,3 @@
-
 $(document).ready(
     function () {
         var radioButtons = document.getElementsByClassName("radio-buttons");
@@ -48,19 +47,6 @@ $(document).ready(
 
 
 $(document).ready(function () {
-    // $('form.format-phone-number-before-submission').submit(function () {
-    //     let countryCode = $('#search-form-country-code');
-    //     if ($(countryCode).css('display') !== 'none') {
-    //         let contactInput = $('#contact');
-    //         let contactInputValue = $(contactInput).val();
-    //         // Remove a single leading zero from the local phone number if the user has added it in error.
-    //         if (contactInputValue.startsWith('0')) {
-    //             contactInputValue = contactInputValue.substr(1);
-    //         }
-    //         $(contactInput).val('(+' + $('#country-code').val() + ')' + contactInputValue);
-    //     }
-    // });
-
     $('input[name="recipient"]').on('click', function () {
         $('#transaction-data').css('display', 'inline-block');
     });
@@ -70,7 +56,6 @@ $(document).ready(function () {
         $('#recipient-id').val(recipientId);
     })
 });
-
 
 
 $(document).ready(function () {
@@ -142,14 +127,6 @@ $(document).ready(function () {
         } else {
             $(direction).val('NONE');
         }
-        // // Sort criteria
-        // let sortAttributes = $('.sort-criterion input[type="checkbox"]:checked');
-        // let sortDirections = $('.sort-criterion input[type="radio"]:checked');
-        // let sortBy = [];
-        // for (let i = 0; i < sortAttributes.length; ++i) {
-        //     sortBy.push($(sortAttributes[i]).val() + '.' + $(sortDirections[i]).val());
-        // }
-        // $('input[name="sortBy"]').val(sortBy.join(','));
     });
 
 

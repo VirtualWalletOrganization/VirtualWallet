@@ -1,6 +1,5 @@
 package com.example.virtualwallet.models.dtos;
 
-import com.example.virtualwallet.models.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReturnDto {

@@ -45,7 +45,11 @@ public class UserRestController {
     private final WalletService walletService;
 
     @Autowired
-    public UserRestController(UserService userService, AuthenticationHelper authenticationHelper, UserMapper userMapper, WalletMapper walletMapper, WalletService walletService) {
+    public UserRestController(UserService userService,
+                              AuthenticationHelper authenticationHelper,
+                              UserMapper userMapper,
+                              WalletMapper walletMapper,
+                              WalletService walletService) {
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
         this.userMapper = userMapper;
@@ -71,7 +75,7 @@ public class UserRestController {
                                         @RequestParam(required = false) String sortBy,
                                         @RequestParam(required = false) String sortOrder) {
         try {
-            User user = authenticationHelper.tryGetUser(headers);
+            authenticationHelper.tryGetUser(headers);
             UserFilterOptions userFilterOptions =
                     new UserFilterOptions(
                             username, firstName, lastName, email, phoneNumber, role, status, sortBy, sortOrder);
@@ -245,8 +249,7 @@ public class UserRestController {
                                       @PathVariable int id, @Valid @RequestBody UpdateUserDto userDto) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            User userToBeUpdated = userService.getById(id);
-            userToBeUpdated = userMapper.fromDtoUpdate(id, userDto);
+            User userToBeUpdated =userMapper.fromDtoUpdate(id, userDto);
             userService.updateUser(user, userToBeUpdated);
             return userMapper.toDtoRegisterAndUpdateUser(userToBeUpdated);
         } catch (EntityNotFoundException e) {

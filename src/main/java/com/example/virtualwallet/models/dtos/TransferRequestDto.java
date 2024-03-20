@@ -8,7 +8,7 @@ public class TransferRequestDto {
 
     private int cardId;
     private int receiverWalletId;
-//    @Positive(message = "Amount must be positive.")
+    @Positive(message = "Amount must be positive.")
     private BigDecimal amount;
     private String currency;
     private String description;

@@ -63,13 +63,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             }
 
             queryString.append(generateOrderBy(transactionFilterOptions));
+
             Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
             query.setProperties(params);
+
 
             return Optional.ofNullable(query.list());
         }
     }
-
 
     @Override
     public Optional<Transaction> getTransactionById(int transactionId) {
@@ -84,7 +85,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public Optional<List<Transaction>> getAllTransactionsByUserId(int userId,
-                                                                  TransactionHistoryFilterOptions transactionHistoryFilterOptions) {
+                                                                  TransactionHistoryFilterOptions
+                                                                          transactionHistoryFilterOptions) {
         try (Session session = sessionFactory.openSession()) {
             String baseQuery = "FROM Transaction as t WHERE t.userSender.id = :userId OR t.userReceiver.id = :userId";
 
@@ -97,12 +99,10 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 filters.add("t.date >= :startDate");
                 params.put("startDate", value);
             });
-
             transactionHistoryFilterOptions.getEndDate().ifPresent(value -> {
                 filters.add("t.date <= :endDate");
                 params.put("endDate", value);
             });
-
             transactionHistoryFilterOptions.getCounterparty().ifPresent(value -> {
                 filters.add("(t.userSender.username = :counterparty OR t.userReceiver.username = :counterparty)");
                 params.put("counterparty", value);
@@ -113,13 +113,13 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             }
 
             queryString.append(generateOrderByUserId(transactionHistoryFilterOptions));
+
             Query<Transaction> query = session.createQuery(queryString.toString(), Transaction.class);
             query.setProperties(params);
 
             return Optional.ofNullable(query.list());
         }
     }
-
 
     @Override
     public Optional<List<Transaction>> getAllTransactionsByWalletId(int walletId) {
@@ -150,9 +150,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             query.setParameter("userId", user.getId());
 
             List<Transaction> transactions = query.list();
-
             if (!transactions.isEmpty()) {
-                return Optional.ofNullable(transactions);
+                return Optional.of(transactions);
             } else {
                 return Optional.empty();
             }
@@ -170,9 +169,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             query.setParameter("userId", user.getId());
 
             List<Transaction> transactions = query.list();
-
             if (!transactions.isEmpty()) {
-                return Optional.ofNullable(transactions);
+                return Optional.of(transactions);
             } else {
                 return Optional.empty();
             }
@@ -232,7 +230,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         orderBy = String.format(" order by %s", orderBy);
 
-        if (transactionFilterOptions.getSortOrder().isPresent() && transactionFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
+        if (transactionFilterOptions.getSortOrder().isPresent()
+                && transactionFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
             orderBy = String.format("%s desc", orderBy);
         }
 
@@ -261,7 +260,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         orderBy = String.format(" order by %s", orderBy);
 
-        if (transactionHistoryFilterOptions.getSortOrder().isPresent() && transactionHistoryFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
+        if (transactionHistoryFilterOptions.getSortOrder().isPresent()
+                && transactionHistoryFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
             orderBy = String.format("%s desc", orderBy);
         }
 

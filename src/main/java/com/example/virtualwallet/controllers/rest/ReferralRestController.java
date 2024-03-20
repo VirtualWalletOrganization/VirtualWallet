@@ -22,8 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Ref;
-
 @RestController
 @RequestMapping("/api/referrals")
 public class ReferralRestController {
@@ -33,7 +31,8 @@ public class ReferralRestController {
     private final UserService userService;
 
     @Autowired
-    public ReferralRestController(ReferralService referralService, AuthenticationHelper authenticationHelper, UserService userService) {
+    public ReferralRestController(ReferralService referralService,
+                                  AuthenticationHelper authenticationHelper, UserService userService) {
         this.referralService = referralService;
         this.authenticationHelper = authenticationHelper;
         this.userService = userService;

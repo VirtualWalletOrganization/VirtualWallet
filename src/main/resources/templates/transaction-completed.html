@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="utf-8"/>
@@ -28,27 +28,16 @@
                         <div class="alert alert-success" th:if="${transactionCompleted} == null">
                             <h4 class="mb-4" th:text="#{transaction.successful}"></h4>
                             <span th:text="#{transaction.successful.text}"></span> <span th:text="${amount}"></span>
-<!--                            <span th:text="${currency}"></span>-->
-<!--                            <span th:text="#{transaction.successful.textTwo}"></span>-->
-<!--                            <span th:text="${contactField}"></span><span> </span><span th:text="${recipient}"-->
-<!--                                                                                       class="text-light font-weight-bold"></span>-->
                             <div class="margin-top"><span th:text="#{transaction.viewAll}"></span>
                                 <a th:href="@{/transactions/user-history}" th:text="#{transaction.link}"
                                    class="text-light font-weight-bold"></a></div>
                         </div>
                         <div class="alert alert-success" th:unless="${transactionCompleted} == null">
-<!--                            <h4 class="mb-4" th:text="#{transaction.already.completed}"></h4>-->
-<!--                            <p th:text="#{transaction.already.completedTextOne}"></p>-->
-<!--                            <span th:text="#{transaction.already.completedTextTwo}"></span>-->
-<!--                            <a th:href="@{/transactions/user-history}"-->
-<!--                               th:text="#{transaction.already.completedTextThree}"-->
-<!--                               class="text-light font-weight-bold"></a> <span-->
-<!--                                th:text="#{transaction.already.completedTextFour}"-->
-<!--                                class="text-light"></span>-->
-<!--                        </div>-->
-                    </div> <!--end col-->
-                </div><!--end row-->
-            </div> <!--end container-->
+
+                        </div> <!--end col-->
+                    </div><!--end row-->
+                </div> <!--end container-->
+            </div>
         </div>
     </div>
 </section><!--end section-->

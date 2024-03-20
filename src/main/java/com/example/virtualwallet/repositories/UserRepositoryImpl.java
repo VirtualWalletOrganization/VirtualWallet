@@ -29,6 +29,7 @@ public class UserRepositoryImpl implements UserRepository {
             List<String> filters = new ArrayList<>();
             Map<String, Object> params = new HashMap<>();
 
+
             userFilterOptions.getUsername().ifPresent(value -> {
                 filters.add("username like :username");
                 params.put("username", String.format("%%%s%%", value));
@@ -67,6 +68,7 @@ public class UserRepositoryImpl implements UserRepository {
             }
 
             queryString.append(generateOrderBy(userFilterOptions));
+
             Query<User> query = session.createQuery(queryString.toString(), User.class);
             query.setProperties(params);
 
@@ -79,6 +81,7 @@ public class UserRepositoryImpl implements UserRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("FROM User", User.class);
             return query.list().size();
+
         }
     }
 
@@ -86,6 +89,7 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> getById(int id) {
         try (Session session = sessionFactory.openSession()) {
             User user = session.get(User.class, id);
+
             return Optional.ofNullable(user);
         }
     }
@@ -95,9 +99,7 @@ public class UserRepositoryImpl implements UserRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);
-
             List<User> userList = query.list();
-
             if (!userList.isEmpty()) {
                 return Optional.ofNullable(userList.get(0));
             } else {
@@ -111,9 +113,7 @@ public class UserRepositoryImpl implements UserRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where email = :email", User.class);
             query.setParameter("email", email);
-
             List<User> userList = query.list();
-
             if (!userList.isEmpty()) {
                 return Optional.ofNullable(userList.get(0));
             } else {
@@ -126,9 +126,7 @@ public class UserRepositoryImpl implements UserRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from User where phoneNumber = :phoneNumber", User.class);
             query.setParameter("phoneNumber", phoneNumber);
-
             List<User> userList = query.list();
-
             if (!userList.isEmpty()) {
                 return Optional.ofNullable(userList.get(0));
             } else {
@@ -142,9 +140,7 @@ public class UserRepositoryImpl implements UserRepository {
             Query<User> query = session.createQuery("FROM User WHERE phoneNumber = :contact " +
                     "OR email = :contact OR username = :contact", User.class);
             query.setParameter("contact", contact);
-
             List<User> userList = query.list();
-
             if (!userList.isEmpty()) {
                 return Optional.ofNullable(userList.get(0));
             } else {
@@ -159,10 +155,10 @@ public class UserRepositoryImpl implements UserRepository {
             Query<User> query = session.createQuery(
                     "SELECT u FROM User u JOIN u.wallets w WHERE w.id = :walletId", User.class);
             query.setParameter("walletId", walletId);
-
             return Optional.ofNullable(query.list());
         }
     }
+
 
     @Override
     public void registerUser(User user) {
@@ -188,26 +184,6 @@ public class UserRepositoryImpl implements UserRepository {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.merge(targetUser);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void reactivated(User targetUser) {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            targetUser.setDeleted(false);
-            session.merge(targetUser);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void deleteUser(User userToDelete) {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            userToDelete.setDeleted(true);
-            session.merge(userToDelete);
             session.getTransaction().commit();
         }
     }
@@ -242,7 +218,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     public boolean existsByPhoneNumber(User userPhoneNumberToBeUpdate) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Long> query = session.createQuery("SELECT COUNT(u) FROM User  u WHERE u.phoneNumber = :phoneNumber", Long.class);
+            Query<Long> query = session.createQuery("SELECT COUNT(u) FROM User  u WHERE u.phoneNumber = :phoneNumber",
+                    Long.class);
             query.setParameter("phoneNumber", userPhoneNumberToBeUpdate.getPhoneNumber());
             Long userCount = query.uniqueResult();
 
@@ -272,7 +249,8 @@ public class UserRepositoryImpl implements UserRepository {
 
         orderBy = String.format(" order by %s", orderBy);
 
-        if (userFilterOptions.getSortOrder().isPresent() && userFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
+        if (userFilterOptions.getSortOrder().isPresent()
+                && userFilterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
             orderBy = String.format("%s desc", orderBy);
         }
 

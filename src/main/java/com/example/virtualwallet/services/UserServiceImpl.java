@@ -5,7 +5,6 @@ import com.example.virtualwallet.models.*;
 import com.example.virtualwallet.models.enums.Identity;
 import com.example.virtualwallet.models.enums.Role;
 import com.example.virtualwallet.models.enums.UserStatus;
-import com.example.virtualwallet.repositories.contracts.ReferralRepository;
 import com.example.virtualwallet.repositories.contracts.UserRepository;
 import com.example.virtualwallet.repositories.contracts.WalletRepository;
 import com.example.virtualwallet.services.contracts.UserService;
@@ -26,14 +25,13 @@ import static com.example.virtualwallet.utils.Messages.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ReferralRepository referralRepository;
     private final WalletRepository walletRepository;
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ReferralRepository referralRepository, WalletRepository walletRepository, SessionFactory sessionFactory) {
+    public UserServiceImpl(UserRepository userRepository,
+                           WalletRepository walletRepository, SessionFactory sessionFactory) {
         this.userRepository = userRepository;
-        this.referralRepository = referralRepository;
         this.walletRepository = walletRepository;
         this.sessionFactory = sessionFactory;
     }
@@ -59,7 +57,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.getByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User", "username", username));
     }
-
 
     @Override
     public User getByEmail(String email) {
@@ -126,7 +123,8 @@ public class UserServiceImpl implements UserService {
 
         if (user.getIdentityStatus().getIdentity().equals(Identity.APPROVED)) {
             throw new DuplicateEntityException("User", "id", String.valueOf(user.getId()), ALREADY_APPROVED);
-        } else if (userToBeVerified.getPhoto() == null || userToBeVerified.getPhoto().getSelfie() == null || userToBeVerified.getPhoto().getCardId() == null) {
+        } else if (userToBeVerified.getPhoto() == null || userToBeVerified.getPhoto().getSelfie() == null
+                || userToBeVerified.getPhoto().getCardId() == null) {
             IdentityStatus identityStatus = new IdentityStatus();
             identityStatus.setId(Identity.REJECTED.ordinal() + 1);
             identityStatus.setIdentity(Identity.REJECTED);

@@ -1,9 +1,6 @@
 package com.example.virtualwallet.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
-import java.util.Set;
 
 @Entity
 @Table(name = "spending_categories")

@@ -37,7 +37,8 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
 
     @Autowired
     public RecurringTransactionServiceImpl(RecurringTransactionRepository recurringTransactionRepository,
-                                           TransactionService transactionService, WalletService walletService, TransactionMapper transactionMapper) {
+                                           TransactionService transactionService,
+                                           WalletService walletService, TransactionMapper transactionMapper) {
         this.recurringTransactionRepository = recurringTransactionRepository;
         this.transactionService = transactionService;
         this.walletService = walletService;
@@ -65,7 +66,8 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
     public void createRecurringTransaction(RecurringTransaction recurringTransaction, Wallet walletSender,
                                            User userSender, Wallet walletReceiver,
                                            User userReceiver) {
-        if (recurringTransaction.getStartDate().isBefore(LocalDate.now()) && recurringTransaction.getEndDate().isBefore(LocalDate.now())) {
+        if (recurringTransaction.getStartDate().isBefore(LocalDate.now())
+                && recurringTransaction.getEndDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Start date and end date can not be in the past");
         }
 
@@ -77,7 +79,8 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
         checkBlockOrDeleteUser(user, USER_HAS_BEEN_BLOCKED_OR_DELETED);
         checkPermissionExistingUsersInWallet(recurringTransaction.getWalletSender(), user, ERROR_TRANSACTION);
 
-        if (recurringTransaction.getStartDate().isBefore(LocalDate.now()) && recurringTransaction.getEndDate().isBefore(LocalDate.now())) {
+        if (recurringTransaction.getStartDate().isBefore(LocalDate.now())
+                && recurringTransaction.getEndDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Start date and end date can not be in the past");
         }
 
@@ -138,9 +141,11 @@ public class RecurringTransactionServiceImpl implements RecurringTransactionServ
             newTransaction.getTransactionsStatus().setTransactionStatus(Status.COMPLETED);
             transactionService.createRecurringTransaction(newTransaction);
 
-            newTransaction.getWalletSender().setBalance(newTransaction.getWalletSender().getBalance().subtract(transaction.getAmount()));
+            newTransaction.getWalletSender().setBalance(newTransaction.getWalletSender().getBalance()
+                    .subtract(transaction.getAmount()));
             newTransaction.getWalletSender().getSentTransactions().add(newTransaction);
-            newTransaction.getWalletReceiver().setBalance(newTransaction.getWalletReceiver().getBalance().add(transaction.getAmount()));
+            newTransaction.getWalletReceiver().setBalance(newTransaction.getWalletReceiver().getBalance()
+                    .add(transaction.getAmount()));
             newTransaction.getWalletReceiver().getReceiverTransactions().add(newTransaction);
             walletService.updateRecurringTransaction(newTransaction.getWalletSender());
             walletService.updateRecurringTransaction(newTransaction.getWalletReceiver());

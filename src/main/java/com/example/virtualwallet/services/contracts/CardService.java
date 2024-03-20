@@ -2,7 +2,6 @@ package com.example.virtualwallet.services.contracts;
 
 import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ public interface CardService {
 
     List<Card> getAllCards();
 
-    List<Card> getAllCardsByCurrentUser( User user);
+    List<Card> getAllCardsByCurrentUser(User user);
 
     Card getCardById(int cardId, User user);
 

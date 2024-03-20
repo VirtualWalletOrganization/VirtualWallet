@@ -25,11 +25,12 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminMvcController {
 
-    private UserService userService;
-    private AuthenticationHelper authenticationHelper;
-    private TransactionService transactionService;
+    private final UserService userService;
+    private final AuthenticationHelper authenticationHelper;
+    private final TransactionService transactionService;
 
-    public AdminMvcController(UserService userService, AuthenticationHelper authenticationHelper, TransactionService transactionService) {
+    public AdminMvcController(UserService userService, AuthenticationHelper authenticationHelper,
+                              TransactionService transactionService) {
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
         this.transactionService = transactionService;
@@ -81,46 +82,6 @@ public class AdminMvcController {
         model.addAttribute("user", user);
         model.addAttribute("users", users);
         return "admin-users";
-
-//        if (bindingResult.hasErrors()) {
-//            return "admin-users";
-//        }
-//
-//        UserFilterOptions userFilterOptions = new UserFilterOptions(
-//                filterDto.getUsername(),
-//                filterDto.getFirstName(),
-//                filterDto.getLastName(),
-//                filterDto.getEmail(),
-//                filterDto.getPhoneNumber(),
-//                filterDto.getRole(),
-//                filterDto.getStatus(),
-//                filterDto.getSortBy(),
-//                filterDto.getSortOrder());
-//
-//        User user;
-//        try {
-//            user = authenticationHelper.tryGetCurrentUser(session);
-//        } catch (AuthorizationException e) {
-//            return "redirect:/auth/login";
-//        }
-//
-//        try {
-//            List<User> users = userService.getAll(userFilterOptions);
-//            model.addAttribute("users", users);
-//            model.addAttribute("user", user);
-////            model.addAttribute("currentUser", user);
-//            model.addAttribute("filterOptions", filterDto);
-////            model.addAttribute("isAuthenticated", true);
-//            return "admin-users";
-//        } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-//            model.addAttribute("error", e.getMessage());
-//            return "error";
-//        } catch (AuthorizationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-//            model.addAttribute("error", e.getMessage());
-//            return "error";
-//        }
     }
 
     @GetMapping("/transactions")
@@ -315,11 +276,7 @@ public class AdminMvcController {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "error";
-        } catch (DuplicateEntityException e) {
-            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        } catch (IdentityNotVerifiedException e) {
+        } catch (DuplicateEntityException | IdentityNotVerifiedException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "error";

@@ -28,16 +28,6 @@ public class UserResponseDto {
         this.username = username;
     }
 
-    public UserResponseDto(int id, String firstName, String lastName,
-                           String email, Role role, String phoneNumber) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.role = role;
-        this.phoneNumber = phoneNumber;
-    }
-
     public int getId() {
         return id;
     }

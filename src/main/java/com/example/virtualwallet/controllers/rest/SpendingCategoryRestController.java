@@ -4,10 +4,8 @@ import com.example.virtualwallet.exceptions.AuthorizationException;
 import com.example.virtualwallet.exceptions.EntityNotFoundException;
 import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.models.Contact;
-import com.example.virtualwallet.models.Overdraft;
 import com.example.virtualwallet.models.SpendingCategory;
 import com.example.virtualwallet.services.contracts.SpendingCategoryService;
-import com.example.virtualwallet.services.contracts.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,20 +26,19 @@ public class SpendingCategoryRestController {
 
     private final SpendingCategoryService spendingCategoryService;
     private final AuthenticationHelper authenticationHelper;
-    private final UserService userService;
 
     @Autowired
-    public SpendingCategoryRestController(SpendingCategoryService spendingCategoryService, AuthenticationHelper authenticationHelper, UserService userService) {
+    public SpendingCategoryRestController(SpendingCategoryService spendingCategoryService,
+                                          AuthenticationHelper authenticationHelper) {
         this.spendingCategoryService = spendingCategoryService;
         this.authenticationHelper = authenticationHelper;
-        this.userService = userService;
     }
 
     @GetMapping
-    @Operation(tags ={"Get all spending categories"},
+    @Operation(tags = {"Get all spending categories"},
             summary = "This method retrieve information about all spending categories.",
             description = "This method search for all spending categories in the data base. When a person is authenticated and there are spending categories, a list with all spending categories will be presented.",
-            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = SpendingCategory.class)), description = "Spending categories were found successfully"),
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = SpendingCategory.class)), description = "Spending categories were found successfully"),
                     @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = SpendingCategory.class)), description = "You are not allowed to access the list of spending categories."),
                     @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = SpendingCategory.class)), description = "Spending categories were not found.")})
     public ResponseEntity<List<SpendingCategory>> getAllSpendingCategories(@RequestHeader HttpHeaders headers) {

@@ -96,17 +96,6 @@ public class WalletRepositoryImpl implements WalletRepository {
     }
 
     @Override
-    public Wallet getByCreatorIdWhenRegistering(int creatorId) {
-        try (Session session = sessionFactory.openSession()) {
-            Query<Wallet> query = session.createQuery(
-                    "SELECT w FROM Wallet w WHERE w.creator.id = :creatorId", Wallet.class);
-            query.setParameter("creatorId", creatorId);
-
-            return query.list().get(0);
-        }
-    }
-
-    @Override
     public Wallet create(Wallet wallet) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();

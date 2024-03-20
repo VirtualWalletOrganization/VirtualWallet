@@ -14,7 +14,7 @@ public class TransactionHistoryFilterOptions {
     private Optional<String> sortOrder;
 
     public TransactionHistoryFilterOptions() {
-        this(null, null,null, null, null, null);
+        this(null, null, null, null, null, null);
     }
 
     public TransactionHistoryFilterOptions(

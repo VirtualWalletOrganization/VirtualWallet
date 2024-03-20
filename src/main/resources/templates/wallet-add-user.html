@@ -31,10 +31,6 @@
 
           <div class="p-4">
             <form th:action="@{'/wallets/' + ${wallet.id}+'/users'}" method="post">
-<!--              <div class="form-group">-->
-<!--                <label for="walletId" th:text="#{wallet.id}">Wallet ID:</label>-->
-<!--                <input type="text" id="walletId" name="walletId" class="form-control" required>-->
-<!--              </div>-->
 
               <div class="form-group">
                 <label for="userToAdd" th:text="#{user.name.to.add}">Username to Add:</label>

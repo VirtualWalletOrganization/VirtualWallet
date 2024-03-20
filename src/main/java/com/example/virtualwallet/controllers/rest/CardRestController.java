@@ -8,10 +8,8 @@ import com.example.virtualwallet.helpers.AuthenticationHelper;
 import com.example.virtualwallet.helpers.CardMapper;
 import com.example.virtualwallet.models.Card;
 import com.example.virtualwallet.models.User;
-import com.example.virtualwallet.models.Wallet;
 import com.example.virtualwallet.models.dtos.CardDto;
 import com.example.virtualwallet.services.contracts.CardService;
-import com.example.virtualwallet.services.contracts.WalletService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,24 +31,24 @@ public class CardRestController {
 
     private final CardService cardService;
     private final CardMapper cardMapper;
-    private final WalletService walletService;
     private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public CardRestController(CardService cardService, CardMapper cardMapper, WalletService walletService, AuthenticationHelper authenticationHelper) {
+    public CardRestController(CardService cardService,
+                              CardMapper cardMapper,
+                              AuthenticationHelper authenticationHelper) {
         this.cardService = cardService;
         this.cardMapper = cardMapper;
-        this.walletService = walletService;
         this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping("/{cardId}")
-    @Operation(tags ={"Get a card"},
+    @Operation(tags = {"Get a card"},
             operationId = "Id to be searched for",
             summary = "This method search for a card when id is given.",
             description = "This method search for a card. A valid id must be given as an input and proper authentication must be in place.",
-            parameters = {@Parameter( name = "id", description = "path variable", example = "5")},
-            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Card.class)), description = "The card has been found successfully"),
+            parameters = {@Parameter(name = "id", description = "path variable", example = "5")},
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Card.class)), description = "The card has been found successfully"),
                     @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Card.class)), description = "You are not allowed to access this card."),
                     @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Card.class)), description = "Card with this id was not found.")})
     public ResponseEntity<Card> getCardById(@RequestHeader HttpHeaders headers, @PathVariable int cardId) {
@@ -66,10 +64,10 @@ public class CardRestController {
     }
 
     @GetMapping
-    @Operation(tags ={"Get cards"},
+    @Operation(tags = {"Get cards"},
             summary = "This method search for cards.",
             description = "This method search for cards. A valid authentication must be in place.",
-            responses ={@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Card.class)), description = "The cards have been found successfully"),
+            responses = {@ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Card.class)), description = "The cards have been found successfully"),
                     @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Card.class)), description = "You are not allowed to access these cards."),
                     @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Card.class)), description = "No cards for this user were found")})
     public ResponseEntity<List<Card>> getAllCardsByCurrentUser(@RequestHeader HttpHeaders headers) {
@@ -100,8 +98,8 @@ public class CardRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Card cardToAdd = cardMapper.fromDto(cardDto, user);
-             cardService.addCard(cardToAdd, walletId, user);
-            return new ResponseEntity<>( HttpStatus.CREATED);
+            cardService.addCard(cardToAdd, walletId, user);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthorizationException e) {
@@ -144,11 +142,11 @@ public class CardRestController {
     }
 
     @DeleteMapping("/{cardId}")
-    @Operation(tags ={"Delete a card"},
+    @Operation(tags = {"Delete a card"},
             summary = "Using this method, a card is being deleted.",
             description = "This method deletes a card. When valid id is given as an input and proper authentication is in place, the card is deleted.",
-            parameters = {@Parameter( name = "id", description = "card's id", example = "1")},
-            responses ={@ApiResponse(responseCode = "410", content = @Content(schema = @Schema(implementation = Card.class)), description = "The card has been deleted successfully"),
+            parameters = {@Parameter(name = "id", description = "card's id", example = "1")},
+            responses = {@ApiResponse(responseCode = "410", content = @Content(schema = @Schema(implementation = Card.class)), description = "The card has been deleted successfully"),
                     @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = Card.class)), description = "You are not allowed to delete this card."),
                     @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Card.class)), description = "Card with this id was not found.")})
     public ResponseEntity<Void> delete(@RequestHeader HttpHeaders headers, @PathVariable int cardId) {

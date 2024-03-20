@@ -30,7 +30,8 @@ public class ContactRestController {
     private final UserService userService;
 
     @Autowired
-    public ContactRestController(ContactService contactService, AuthenticationHelper authenticationHelper, UserService userService) {
+    public ContactRestController(ContactService contactService,
+                                 AuthenticationHelper authenticationHelper, UserService userService) {
         this.contactService = contactService;
         this.authenticationHelper = authenticationHelper;
         this.userService = userService;

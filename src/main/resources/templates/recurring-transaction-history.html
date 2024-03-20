@@ -140,8 +140,6 @@
                     </div><!--end row-->
                 </form><!--end form-->
             </div>
-            <!--        <div class="p-4" th:if="!${transactions.list.isEmpty()}">-->
-            <!--            <div class="table-responsive bg-white shadow rounded">-->
             <table class="table mb-0 table-center">
                 <thead>
                 <tr>
@@ -165,12 +163,9 @@
                     <!--                        <td th:text="${trans.userSender.username + (trans.userSender.id == currentUser.id ? '/' + trans.walletSender.getWalletsType().getWalletType().name() + ' wallet' : '')}">-->
                     <td th:text="${transaction.userSender.username + '/ '  + transaction.walletSender.getWalletsType().getWalletType().name() + ' wallet'}">
 
-                        Jane/Jane's wallet
                     </td>
-                    <!--                        <td th:text="${trans.userReceiver.username + (trans.userReceiver.id == currentUser.id ? '/' + trans.walletReceiver.getWalletsType().getWalletType().name() + ' wallet'  : '')}">-->
                     <td th:text="${transaction.userReceiver.username +  '/ ' + transaction.walletReceiver.getWalletsType().getWalletType().name() + ' wallet'}">
 
-                        John/John's wallet
                     </td>
                     <td th:text="${transaction.description} ? ${transaction.description} : #{value.NA}">Reason for
                         transfer

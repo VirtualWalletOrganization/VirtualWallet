@@ -81,11 +81,6 @@
                             <li class="has-submenu"><a href="#" th:if="${isAuthenticated}"
                                                        th:text="#{header.menu.cards}"
                                                        th:href="@{/cards}">Cards</a>
-                                <!--                                <span-->
-                                <!--                                    class="submenu-arrow"></span>-->
-                                <!--                                <ul class="submenu">-->
-                                <!--                                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add(walletId=${walletId})}">Add card</a></li>-->
-                                <!--                                </ul>-->
                             </li>
                         </ul>
                     </li>
@@ -113,16 +108,6 @@
                         <ul class="submenu">
                             <li><a href="#" th:if="${isAuthenticated}" th:text="#{header.menu.deposit}"
                                    th:href="@{/wallets/add-money}">Deposit Money</a></li>
-                            <!--                            <li><a th:href="@{/transaction/create-funding}" th:text="#{header.menu.topUpWallet}"></a></li>-->
-<!--                            <li class="has-submenu"><a href="#" th:if="${isAuthenticated}"-->
-<!--                                                       th:text="#{header.menu.cards}"-->
-<!--                                                       th:href="@{/cards}">Cards</a>-->
-<!--                                &lt;!&ndash;                                <span&ndash;&gt;-->
-<!--                                &lt;!&ndash;                                    class="submenu-arrow"></span>&ndash;&gt;-->
-<!--                                &lt;!&ndash;                                <ul class="submenu">&ndash;&gt;-->
-<!--                                &lt;!&ndash;                                    <li><a  href="#" th:if="${isAuthenticated}" th:href="@{/cards/wallets/{walletId}/add(walletId=${walletId})}">Add card</a></li>&ndash;&gt;-->
-<!--                                &lt;!&ndash;                                </ul>&ndash;&gt;-->
-<!--                            </li>-->
                         </ul>
                     </li>
 
@@ -152,7 +137,8 @@
                                                    th:value="Logout"></form>
                     </li>
                     <li>
-                        <a href="#" th:if="${isAuthenticated}" th:text="${session.currentUser}" style="color: #2f55d4;"></a>
+                        <a href="#" th:if="${isAuthenticated}" th:text="${session.currentUser}"
+                           style="color: #2f55d4;"></a>
                     </li>
                 </ul><!--end navigation menu-->
             </div><!--end navigation-->
